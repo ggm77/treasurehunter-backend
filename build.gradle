@@ -35,9 +35,9 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     //JWT
-    implementation group: 'io.jsonwebtoken', name: 'jjwt-api'
-    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl'
-    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.12.7'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.12.7'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.12.7'
     //OAuth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     //JDBC
