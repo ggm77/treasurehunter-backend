@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.treasurehunter'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 description = 'Treasure Hunter'
 
 java {
@@ -25,18 +25,28 @@ repositories {
 }
 
 dependencies {
+    //spring
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    //JWT
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson'
+    //OAuth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    //JDBC
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    //lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    //swagger-ui
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui'
 }
 
 tasks.named('test') {
