@@ -18,7 +18,7 @@ public class UserController {
     private final UserService userService;
 
     //회원가입 API, 프론트에서 OAuth로 등록후 이 API호출
-    @PostMapping("/user")
+    @PostMapping("/auth/user")
     @ApiResponse(
             responseCode = "200",
             description = "유저 등록 성공",
