@@ -1,12 +1,10 @@
 package com.treasurehunter.treasurehunter.global.auth.jwt;
 
-import com.treasurehunter.treasurehunter.global.exception.CustomException;
-import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.*;
 import io.jsonwebtoken.io.Decoders;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.time.Instant;
@@ -16,7 +14,7 @@ import java.util.Date;
  * JWT를 생성하고 검증한다.
  * 시크릿키는 application.properties에서 가져옴
  */
-@Service
+@Component
 public class JwtProvider {
 
     //HS512
@@ -63,17 +61,11 @@ public class JwtProvider {
 
         final SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
 
-        //JWT검증 및 만료시 예외 처리
-        final Jws<Claims> claimsJws;
-        try {
-            claimsJws = Jwts.parser()
+        final Jws<Claims> claimsJws =
+                Jwts.parser()
                     .verifyWith(key)
                     .build()
                     .parseSignedClaims(jwt);
-        } catch (JwtException ex) {
-            //클라이언트에게 JWT관련 예외는 전부 401로만 보여줌
-            throw new CustomException(ExceptionCode.AUTHENTICATION_ERROR);
-        }
 
         return claimsJws.getPayload().getSubject();
     }

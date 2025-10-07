@@ -20,7 +20,8 @@ public class WebSecurityConfig {
                 .httpBasic((httpBasic) -> httpBasic.disable())
                 .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests.requestMatchers(
-                        "/**" //개발중에만 사용
+                        "/api/swagger/**",
+                        "/api/v1/auth/**"//개발중에만 사용
                 ).permitAll().anyRequest().authenticated());
 
         return httpSecurity.build();
