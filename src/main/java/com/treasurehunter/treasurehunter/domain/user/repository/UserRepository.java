@@ -1,4 +1,4 @@
-package com.treasurehunter.treasurehunter.domain.user.service;
+package com.treasurehunter.treasurehunter.domain.user.repository;
 
 import com.treasurehunter.treasurehunter.domain.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;

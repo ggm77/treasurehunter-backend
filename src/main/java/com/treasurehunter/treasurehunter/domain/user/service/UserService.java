@@ -3,6 +3,7 @@ package com.treasurehunter.treasurehunter.domain.user.service;
 import com.treasurehunter.treasurehunter.domain.user.domain.User;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserRequestDto;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserResponseDto;
+import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
