@@ -28,7 +28,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     public final ResponseEntity<ExceptionResponse> handleAllException(final Exception ex) {
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                ex.getMessage()
+                "Internal Server Error"
         );
 
         log.error("CustomizedResponseEntityExceptionHandler.handleAllExceptions message:{}", ex.getMessage(), ex);
