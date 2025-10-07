@@ -26,8 +26,10 @@ public class WebSecurityConfig {
                 .httpBasic((httpBasic) -> httpBasic.disable())
                 .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests.requestMatchers(
+                        "/ping",
+                        "/ready",
                         "/api/swagger/**",
-                        "/api/v1/auth/**"//개발중에만 사용
+                        "/api/v1/auth/**"
                 ).permitAll().anyRequest().authenticated());
 
         httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
