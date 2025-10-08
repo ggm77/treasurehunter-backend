@@ -49,7 +49,7 @@ public class User {
     @Column(length = 255, nullable = false)
     private String uid;
 
-    @Column(length = 255, nullable = true)
+    @Column(length = 320, nullable = true)
     private String email;
 
     //사용자가 가진 포인트
