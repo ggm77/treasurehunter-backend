@@ -1,6 +1,8 @@
 package com.treasurehunter.treasurehunter.domain.user.domain;
 
+import com.treasurehunter.treasurehunter.domain.user.domain.oauth.UserOauth2Accounts;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserRequestDto;
+import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -9,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 유저 정보를 저장하는 엔티티
@@ -36,21 +39,13 @@ public class User {
     @Column(length = 255, nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;   // enum Role { USER, ADMIN, NOT_REGISTERED }
+
     //회원 등록일시 (자동 생성)
     @CreationTimestamp
     @Column(nullable = false)
     private LocalDateTime createdAt;
-
-    //등록한 oauth 종류
-    @Column(length = 255, nullable = false)
-    private String oauth;
-
-    //oauth uid
-    @Column(length = 255, nullable = false)
-    private String uid;
-
-    @Column(length = 320, nullable = true)
-    private String email;
 
     //사용자가 가진 포인트
     @Column(length = 255, nullable = false)
@@ -72,14 +67,33 @@ public class User {
     @Column(nullable = false)
     private Integer totalReviews;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserOauth2Accounts> userOauth2Accounts;
+
+
     //회원가입용 생성자
     @Builder
     public User(final UserRequestDto userRequestDto){
         this.nickname = userRequestDto.getNickname();
         this.profileImage = userRequestDto.getProfileImage();
         this.name = userRequestDto.getName();
-        this.oauth = userRequestDto.getOauth();
-        this.uid = userRequestDto.getUid();
+        this.role = Role.USER;
+        this.point = 0;
+        this.returnedItemsCount = 0;
+        this.badgeCount = 0;
+        this.totalScore = 0;
+        this.totalReviews = 0;
+    }
+
+    //oauth 회원가입용 생성자
+    @Builder
+    public User(
+            final UserOauth2AccountsRequestDto userOauth2AccountsRequestDto
+    ){
+        this.nickname = "temp";
+        this.profileImage = userOauth2AccountsRequestDto.getProfileImage();
+        this.name = userOauth2AccountsRequestDto.getName();
+        this.role = Role.NOT_REGISTERED;
         this.point = 0;
         this.returnedItemsCount = 0;
         this.badgeCount = 0;

@@ -24,15 +24,6 @@ public class UserService {
      */
     public UserResponseDto createUser(final UserRequestDto userRequestDto){
 
-        //uid 입력값 null 검사
-        if(userRequestDto.getUid() == null || userRequestDto.getUid().isEmpty()){
-            throw new CustomException(ExceptionCode.INVALID_REQUEST);
-        }
-
-        //oauth 입력값 null 검사
-        if(userRequestDto.getOauth() == null || userRequestDto.getOauth().isEmpty()){
-            throw new CustomException(ExceptionCode.INVALID_REQUEST);
-        }
 
         //nickname 입력값 null 검사
         if(userRequestDto.getNickname() == null || userRequestDto.getNickname().isEmpty()){
