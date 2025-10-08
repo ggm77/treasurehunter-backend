@@ -12,6 +12,7 @@ public class UserResponseDto {
     private final String name;
     private final String oauth;
     private final String uid;
+    private final String email;
     private final Integer point;
     private final Integer returnedItemsCount;
     private final Integer badgeCount;
@@ -27,6 +28,7 @@ public class UserResponseDto {
         this.name = user.getName();
         this.oauth = user.getOauth();
         this.uid = user.getUid();
+        this.email = user.getEmail();
         this.point = user.getPoint();
         this.returnedItemsCount = user.getReturnedItemsCount();
         this.badgeCount = user.getBadgeCount();
