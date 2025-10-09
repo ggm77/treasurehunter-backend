@@ -1,5 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.user.dto;
 
+import com.treasurehunter.treasurehunter.domain.user.domain.Role;
 import com.treasurehunter.treasurehunter.domain.user.domain.User;
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsResponseDto;
 import lombok.Builder;
@@ -15,6 +16,8 @@ public class UserResponseDto {
     private final String nickname;
     private final String profileImage;
     private final String name;
+    private final String phoneNumber;
+    private final Role role;
     private final Integer point;
     private final Integer returnedItemsCount;
     private final Integer badgeCount;
@@ -29,6 +32,8 @@ public class UserResponseDto {
         this.nickname = user.getNickname();
         this.profileImage = user.getProfileImage();
         this.name = user.getName();
+        this.phoneNumber = user.getPhoneNumber();
+        this.role = user.getRole();
         this.point = user.getPoint();
         this.returnedItemsCount = user.getReturnedItemsCount();
         this.badgeCount = user.getBadgeCount();

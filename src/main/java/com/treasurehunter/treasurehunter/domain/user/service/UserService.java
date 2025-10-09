@@ -1,5 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.user.service;
 
+import com.treasurehunter.treasurehunter.domain.user.domain.Role;
 import com.treasurehunter.treasurehunter.domain.user.domain.User;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserRequestDto;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserResponseDto;
@@ -20,10 +21,14 @@ public class UserService {
     /**
      * 유저정보를 등록하는 서비스
      * @param userRequestDto 회원가입 요청 DTO
+     * @param userId oauth에서 등록된 유저 아이디
      * @return 등록된 유저 정보 DTO
      */
-    public UserResponseDto createUser(final UserRequestDto userRequestDto){
-
+    @Transactional
+    public UserResponseDto createUser(
+            final UserRequestDto userRequestDto,
+            final Long userId
+    ){
 
         //nickname 입력값 null 검사
         if(userRequestDto.getNickname() == null || userRequestDto.getNickname().isEmpty()){
@@ -41,11 +46,22 @@ public class UserService {
             throw new CustomException(ExceptionCode.NICKNAME_DUPLICATE);
         }
 
-        //유저 엔티티 생성 및 저장
-        final User user = new User(userRequestDto);
-        final User savedUserProfile = userRepository.save(user);
+        final User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_EXIST));
 
-        return new UserResponseDto(savedUserProfile);
+        if(user.getRole() != Role.NOT_REGISTERED){
+            throw new CustomException(ExceptionCode.USER_ALREADY_EXIST);
+        }
+
+        user.changeNickname(userRequestDto.getNickname());
+        user.changeName(userRequestDto.getName());
+        user.changeRoleToNotVerified();
+
+        if(userRequestDto.getProfileImage() != null && !userRequestDto.getProfileImage().isEmpty()){
+            user.changeProfileImage(userRequestDto.getProfileImage());
+        }
+
+        return new UserResponseDto(user);
     }
 
     /**

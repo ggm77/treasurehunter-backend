@@ -24,17 +24,29 @@ public class UserController {
     private final JwtProvider jwtProvider;
 
     //회원가입 API, 프론트에서 OAuth로 등록후 이 API호출
-    @PostMapping("/auth/user")
+    @PostMapping("/user/{id}")
     @ApiResponse(
             responseCode = "200",
             description = "유저 등록 성공",
             content = @Content(schema = @Schema(implementation = UserResponseDto.class))
     )
     public ResponseEntity<UserResponseDto> createUser(
+            @PathVariable final String id,
+            @RequestHeader(value = "Authorization") final String accessToken,
             @RequestBody final UserRequestDto userRequestDto
     ){
 
-        final UserResponseDto userResponseDto = userService.createUser(userRequestDto);
+        final String tokenSub = jwtProvider.validateToken(accessToken.substring(7));
+
+        //다른 유저의 정보에 접근 방지
+        if(!Objects.equals(tokenSub, id)){
+            throw new CustomException(ExceptionCode.FORBIDDEN_USER_RESOURCE_ACCESS);
+        }
+
+        //다른 유저의 정보에 접근 방지
+        final Long userId = Long.parseLong(tokenSub);
+
+        final UserResponseDto userResponseDto = userService.createUser(userRequestDto, userId);
 
         return ResponseEntity.ok(userResponseDto);
     }

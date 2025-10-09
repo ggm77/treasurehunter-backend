@@ -1,7 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.user.domain;
 
 import com.treasurehunter.treasurehunter.domain.user.domain.oauth.UserOauth2Accounts;
-import com.treasurehunter.treasurehunter.domain.user.dto.UserRequestDto;
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -39,6 +38,9 @@ public class User {
     @Column(length = 255, nullable = true)
     private String name;
 
+    @Column(length = 11, nullable = true)
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
     private Role role;   // enum Role { USER, ADMIN, NOT_REGISTERED }
 
@@ -70,21 +72,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserOauth2Accounts> userOauth2Accounts;
 
-
-    //회원가입용 생성자
-    @Builder
-    public User(final UserRequestDto userRequestDto){
-        this.nickname = userRequestDto.getNickname();
-        this.profileImage = userRequestDto.getProfileImage();
-        this.name = userRequestDto.getName();
-        this.role = Role.USER;
-        this.point = 0;
-        this.returnedItemsCount = 0;
-        this.badgeCount = 0;
-        this.totalScore = 0;
-        this.totalReviews = 0;
-    }
-
     //oauth 회원가입용 생성자
     @Builder
     public User(
@@ -114,5 +101,15 @@ public class User {
     //이름 변경
     public void changeName(final String newName){
         this.name = newName;
+    }
+
+    //role을 본인 인증 되지 않은 유저로 변경
+    public void changeRoleToNotVerified(){
+        this.role = Role.NOT_VERIFIED;
+    }
+
+    //role을 일반 유저로 변경
+    public void changeRoleToUser(){
+        this.role = Role.USER;
     }
 }
