@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ExceptionCode {
+    TOKEN_NOT_FOUND_IN_COOKIE(HttpStatus.BAD_REQUEST, "쿠키에서 토큰을 찾을 수 없습니다."),
     UNSUPPORTED_PROVIDER(HttpStatus.BAD_REQUEST, "지원되지 않는 OAuth입니다."),
     NICKNAME_DUPLICATE(HttpStatus.BAD_REQUEST, "닉네임이 이미 존재합니다."),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "요청 정보가 잘못되어 있습니다."),
