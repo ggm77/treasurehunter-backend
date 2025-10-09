@@ -36,7 +36,7 @@ public class User {
     private String profileImage;
 
     //실제 이름
-    @Column(length = 255, nullable = false)
+    @Column(length = 255, nullable = true)
     private String name;
 
     @Enumerated(EnumType.STRING)
@@ -92,7 +92,7 @@ public class User {
     ){
         this.nickname = "temp";
         this.profileImage = userOauth2AccountsRequestDto.getProfileImage();
-        this.name = userOauth2AccountsRequestDto.getName();
+        this.name = "temp";
         this.role = Role.NOT_REGISTERED;
         this.point = 0;
         this.returnedItemsCount = 0;
