@@ -11,6 +11,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 
+/**
+ * OAuth가 실패한 경우를 처리하는 핸들러
+ * 실패시 특정 페이지로 리다이렉트 시킴
+ */
 @Component
 public class Oauth2FailureHandler extends SimpleUrlAuthenticationFailureHandler {
 

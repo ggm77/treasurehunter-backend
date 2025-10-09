@@ -19,9 +19,11 @@ public class UserOauth2Accounts {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //google, apple...
     @Column(length = 20, nullable = false)
     private String provider;
 
+    //google에서의 sub, naver의 id같이 oauth에서 쓰는 식별자
     @Column(length = 255, nullable = false)
     private String providerUserId;
 

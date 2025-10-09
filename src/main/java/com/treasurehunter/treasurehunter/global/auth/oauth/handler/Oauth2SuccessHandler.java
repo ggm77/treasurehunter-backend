@@ -19,6 +19,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 
+/**
+ * OAuth 인증에 성공한 경우를 처리하는 핸들러
+ * 이미 등록된 유저면 JWT를 쿠키에 담아준 후 특정 페이지로 리다이렉트
+ * 신규 유저면 JWT를 쿠키에 담아주고 특정 페이지로 리다이렉트
+ */
 @Component
 public class Oauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
@@ -84,9 +89,9 @@ public class Oauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         //리다이렉트할 URI만들고 리다이렉트 시키기
         final String redirectUri = getRedirectUriByRole(user.getRole(), user.getId());
         getRedirectStrategy().sendRedirect(httpServletRequest, httpServletResponse, redirectUri);
-
     }
 
+    //유저 role (신규 / 기존 유저)에 따라서 리다이렉트 URI설정
     private String getRedirectUriByRole(
             final Role role,
             final Long userId
