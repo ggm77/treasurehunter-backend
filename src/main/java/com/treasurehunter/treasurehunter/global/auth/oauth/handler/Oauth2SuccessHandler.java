@@ -7,10 +7,10 @@ import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.time.Duration;
 
 /**
  * OAuth 인증에 성공한 경우를 처리하는 핸들러
@@ -70,21 +71,27 @@ public class Oauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         //리프레시 토큰 발급 (유효 1일)
         final String refreshToken = jwtProvider.creatToken(user.getId(), refreshTokenExpireTime);
 
-        //엑세스 토큰 담은 쿠키 생성 및 response에 추가
-        final Cookie accessTokenCookie = new Cookie("ACCESS_TOKEN", accessToken);
-        accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(true);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(accessTokenExpireTime.intValue());
-        httpServletResponse.addCookie(accessTokenCookie);
+        //엑세스 토큰 담은 쿠키 생성 및
+        final ResponseCookie accessTokenCookie = ResponseCookie.from("ACCESS_TOKEN", accessToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
+                .maxAge(Duration.ofSeconds(accessTokenExpireTime))
+                .build();
 
-        //리프레시 토큰 담은 쿠키 생성 및 response에 추가
-        final Cookie refreshTokenCookie = new Cookie("REFRESH_TOKEN", refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(refreshTokenExpireTime.intValue());
-        httpServletResponse.addCookie(refreshTokenCookie);
+        //리프레시 토큰 담은 쿠키 생성
+        final ResponseCookie refreshTokenCookie = ResponseCookie.from("REFRESH_TOKEN", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("none")
+                .path("/")
+                .maxAge(Duration.ofSeconds(refreshTokenExpireTime))
+                .build();
+
+        //쿠키 response에 추가
+        httpServletResponse.addHeader("Set-Cookie", accessTokenCookie.toString());
+        httpServletResponse.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
         //리다이렉트할 URI만들고 리다이렉트 시키기
         final String redirectUri = getRedirectUriByRole(user.getRole(), user.getId());
