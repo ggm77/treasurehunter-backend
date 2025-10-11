@@ -37,7 +37,7 @@ public class UserOauth2Accounts {
     private String profileImage;
 
     //oauth에서 제공하는 엑세스 토큰 (unlink시 필요함)
-    @Column(length = 255, nullable = false)
+    @Column(length = 4100, nullable = false)
     private String accessToken;
 
     @CreationTimestamp

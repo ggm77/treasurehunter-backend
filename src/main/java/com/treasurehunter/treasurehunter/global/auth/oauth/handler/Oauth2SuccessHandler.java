@@ -32,6 +32,8 @@ public class Oauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final String EXISTING_USER_URI;
     private final Long accessTokenExpireTime;
     private final Long refreshTokenExpireTime;
+    private final String jwtCookieDomain;
+    private final Boolean isHttps;
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
 
@@ -41,6 +43,8 @@ public class Oauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             @Value("${path.existing-user}") String EXISTING_USER_PATH,
             @Value("${jwt.accessToken.exprTime}") Long accessTokenExpireTime,
             @Value("${jwt.refreshToken.exprTime}") Long refreshTokenExpireTime,
+            @Value("${jwt.cookie.domain}") String jwtCookieDomain,
+            @Value("${server.isHttps}")  Boolean isHttps,
             final UserRepository userRepository,
             final JwtProvider jwtProvider
     ){
@@ -48,6 +52,8 @@ public class Oauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         this.EXISTING_USER_URI = BASE_URL + EXISTING_USER_PATH;
         this.accessTokenExpireTime = accessTokenExpireTime;
         this.refreshTokenExpireTime = refreshTokenExpireTime;
+        this.jwtCookieDomain = jwtCookieDomain;
+        this.isHttps = isHttps;
         this.userRepository = userRepository;
         this.jwtProvider = jwtProvider;
     }
@@ -71,23 +77,53 @@ public class Oauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         //리프레시 토큰 발급 (유효 1일)
         final String refreshToken = jwtProvider.creatToken(user.getId(), refreshTokenExpireTime);
 
-        //엑세스 토큰 담은 쿠키 생성 및
-        final ResponseCookie accessTokenCookie = ResponseCookie.from("ACCESS_TOKEN", accessToken)
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
-                .path("/")
-                .maxAge(Duration.ofSeconds(accessTokenExpireTime))
-                .build();
+        final ResponseCookie accessTokenCookie;
+        final ResponseCookie refreshTokenCookie;
 
-        //리프레시 토큰 담은 쿠키 생성
-        final ResponseCookie refreshTokenCookie = ResponseCookie.from("REFRESH_TOKEN", refreshToken)
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("none")
-                .path("/")
-                .maxAge(Duration.ofSeconds(refreshTokenExpireTime))
-                .build();
+        //https일 경우 쿠키세팅
+        if(isHttps) {
+            //엑세스 토큰 담은 쿠키 생성
+            accessTokenCookie = ResponseCookie.from("ACCESS_TOKEN", accessToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("None")
+                    //프론트가 서버와 같은 Url에서 배포 된다면 주석 풀기
+//                    .partitioned(true)
+                    .domain(jwtCookieDomain)
+                    .path("/")
+                    .maxAge(Duration.ofSeconds(accessTokenExpireTime))
+                    .build();
+
+            //리프레시 토큰 담은 쿠키 생성
+            refreshTokenCookie = ResponseCookie.from("REFRESH_TOKEN", refreshToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("None")
+                    //프론트가 서버와 같은 Url에서 배포 된다면 주석 풀기
+//                    .partitioned(true)
+                    .domain(jwtCookieDomain)
+                    .path("/")
+                    .maxAge(Duration.ofSeconds(refreshTokenExpireTime))
+                    .build();
+        } else {
+            //엑세스 토큰 담은 쿠키 생성
+            accessTokenCookie = ResponseCookie.from("ACCESS_TOKEN", accessToken)
+                    .httpOnly(true)
+                    .secure(false)
+                    .sameSite("Lax")
+                    .path("/")
+                    .maxAge(Duration.ofSeconds(accessTokenExpireTime))
+                    .build();
+
+            //리프레시 토큰 담은 쿠키 생성
+            refreshTokenCookie = ResponseCookie.from("REFRESH_TOKEN", refreshToken)
+                    .httpOnly(true)
+                    .secure(false)
+                    .sameSite("Lax")
+                    .path("/")
+                    .maxAge(Duration.ofSeconds(refreshTokenExpireTime))
+                    .build();
+        }
 
         //쿠키 response에 추가
         httpServletResponse.addHeader("Set-Cookie", accessTokenCookie.toString());
