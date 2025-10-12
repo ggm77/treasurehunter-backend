@@ -6,6 +6,7 @@ import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2Account
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ public class UserResponseDto {
     private final String name;
     private final String phoneNumber;
     private final Role role;
+    private final LocalDateTime createdAt;
     private final Integer point;
     private final Integer returnedItemsCount;
     private final Integer badgeCount;
@@ -34,6 +36,7 @@ public class UserResponseDto {
         this.name = user.getName();
         this.phoneNumber = user.getPhoneNumber();
         this.role = user.getRole();
+        this.createdAt = user.getCreatedAt();
         this.point = user.getPoint();
         this.returnedItemsCount = user.getReturnedItemsCount();
         this.badgeCount = user.getBadgeCount();
