@@ -1,6 +1,7 @@
 package com.treasurehunter.treasurehunter.global.config;
 
 import com.treasurehunter.treasurehunter.global.auth.filter.JwtAuthenticationFilter;
+import com.treasurehunter.treasurehunter.global.auth.filter.Oauth2RegistrationPrecheckFilter;
 import com.treasurehunter.treasurehunter.global.auth.oauth.CustomOauth2UserService;
 import com.treasurehunter.treasurehunter.global.auth.oauth.handler.Oauth2FailureHandler;
 import com.treasurehunter.treasurehunter.global.auth.oauth.handler.Oauth2SuccessHandler;
@@ -11,6 +12,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -20,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final Oauth2RegistrationPrecheckFilter oauth2AuthenticationRequestExceptionHandlingFilter;
     private final Oauth2SuccessHandler oauth2SuccessHandler;
     private final Oauth2FailureHandler oauth2FailureHandler;
     private final CustomOauth2UserService customOauth2UserService;
@@ -46,6 +49,10 @@ public class WebSecurityConfig {
                 );
 
         httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(
+                oauth2AuthenticationRequestExceptionHandlingFilter,
+                OAuth2AuthorizationRequestRedirectFilter.class
+        );
 
         return httpSecurity.build();
     }
