@@ -47,6 +47,17 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     //swagger-ui
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
+    //redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+}
+
+tasks.named('bootRun') {
+    jvmArgs = [
+            //for netty 4.1.127 with jdk25
+            "--sun-misc-unsafe-memory-access=allow",
+            "--add-opens", "java.base/jdk.internal.misc=ALL-UNNAMED",
+            "--add-opens", "java.base/sun.misc=ALL-UNNAMED"
+    ]
 }
 
 tasks.named('test') {

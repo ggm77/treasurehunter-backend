@@ -15,6 +15,8 @@ public enum ExceptionCode {
     USER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "회원가입된 유저가 이미 존재 합니다."),
     AUTHENTICATION_ERROR(HttpStatus.UNAUTHORIZED, "인증 되지 않았습니다."),
     FORBIDDEN_USER_RESOURCE_ACCESS(HttpStatus.FORBIDDEN, "해당 정보에 접근할 수 없습니다."),
+    COOL_DOWN(HttpStatus.TOO_MANY_REQUESTS, "쿨다운 중 입니다."),
+    DAILY_LIMIT(HttpStatus.TOO_MANY_REQUESTS, "일일 요청가능한 횟수를 초과했습니다."),
 
     SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "현재 서버를 이용할 수 없습니다.")
     ;
