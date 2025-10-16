@@ -18,11 +18,16 @@ public class CorsConfig {
         return new WebMvcConfigurer(){
             @Override
             public void addCorsMappings(final CorsRegistry corsRegistry){
-                corsRegistry.addMapping("/**")
-                        .allowedOrigins(allowedOrigins)
+                corsRegistry.addMapping("/api/v1/auth/token")
+                        .allowedOriginPatterns(allowedOrigins)
                         .allowedMethods("GET", "POST", "PATCH", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true)
+                        .maxAge(3600);
+                corsRegistry.addMapping("/**")
+                        .allowedOriginPatterns(allowedOrigins)
+                        .allowedMethods("GET", "POST", "PATCH", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
                         .maxAge(3600);
             }
         };
