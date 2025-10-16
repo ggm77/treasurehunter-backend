@@ -1,6 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.smsVerification.service;
 
-import com.treasurehunter.treasurehunter.domain.smsVerification.dto.RequestSmsVerificationRequestDto;
+import com.treasurehunter.treasurehunter.domain.smsVerification.dto.SendSmsVerificationCodeRequestDto;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import com.treasurehunter.treasurehunter.global.util.RandomUtil;
@@ -9,15 +9,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
-public class SmsVerificationService {
+public class SendSmsVerificationCodeService {
 
     //실제 표시될 만료 시간보다 조금 더 길게 설정하기
     @Value("${sms.verification.code.ttl}")
@@ -41,9 +37,9 @@ public class SmsVerificationService {
     private final RedisTemplate<String, String> redisTemplate;
     private final RandomUtil randomUtil;
 
-    public void createVerificationCode(final RequestSmsVerificationRequestDto requestSmsVerificationRequestDto) {
+    public void createVerificationCode(final SendSmsVerificationCodeRequestDto sendSmsVerificationCodeRequestDto) {
 
-        final String e164 = requestSmsVerificationRequestDto.getE164();
+        final String e164 = sendSmsVerificationCodeRequestDto.getPhoneNumber();
 
         // 1) 쿨다운
         final Boolean ok = redisTemplate.opsForValue().setIfAbsent(
