@@ -38,7 +38,7 @@ public class User {
     @Column(length = 255, nullable = true)
     private String name;
 
-    @Column(length = 11, nullable = true)
+    @Column(length = 15, nullable = true)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
@@ -101,6 +101,11 @@ public class User {
     //이름 변경
     public void changeName(final String newName){
         this.name = newName;
+    }
+
+    //전화번호 변경
+    public void changePhoneNumber(final String phoneNumber){
+        this.phoneNumber = phoneNumber;
     }
 
     //role을 본인 인증 되지 않은 유저로 변경

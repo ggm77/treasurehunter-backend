@@ -1,8 +1,13 @@
 package com.treasurehunter.treasurehunter.domain.smsVerification.service;
 
 import com.treasurehunter.treasurehunter.domain.smsVerification.dto.SendSmsVerificationCodeRequestDto;
+import com.treasurehunter.treasurehunter.domain.user.domain.Role;
+import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
+import com.treasurehunter.treasurehunter.global.infra.solapi.SolapiSmsSender;
+import com.treasurehunter.treasurehunter.global.util.AppPhoneNumberUtil;
 import com.treasurehunter.treasurehunter.global.util.RandomUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,13 +40,32 @@ public class SendSmsVerificationCodeService {
     private static String qKey(final String e164){ return "sv:q:" + e164; }
 
     private final RedisTemplate<String, String> redisTemplate;
+    private final UserRepository userRepository;
     private final RandomUtil randomUtil;
+    private final AppPhoneNumberUtil appPhoneNumberUtil;
+    private final SolapiSmsSender solapiSmsSender;
 
-    public void createVerificationCode(final SendSmsVerificationCodeRequestDto sendSmsVerificationCodeRequestDto) {
+    public void createVerificationCode(
+            final SendSmsVerificationCodeRequestDto sendSmsVerificationCodeRequestDto,
+            final Long userId
+    ) {
 
-        final String e164 = sendSmsVerificationCodeRequestDto.getPhoneNumber();
+        final String e164 = appPhoneNumberUtil.normalizeE164(sendSmsVerificationCodeRequestDto.getPhoneNumber());
 
-        // 1) 쿨다운
+        // 1) 전화번호 유효성 확인
+        if(!appPhoneNumberUtil.isValidE164(e164)){
+            throw new CustomException(ExceptionCode.INVALID_REQUEST);
+        }
+
+        // 2) 본인 인증 해야하는지 확인
+        final User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_EXIST));
+        //유저 role이 NOT_VERIFIED나 USER가 아닌 경우에는 에러
+        if( !(user.getRole() == Role.NOT_VERIFIED || user.getRole() == Role.USER) ){
+            throw new CustomException(ExceptionCode.PERMISSION_DENIED);
+        }
+
+        // 3) 쿨다운
         final Boolean ok = redisTemplate.opsForValue().setIfAbsent(
                 cdKey(e164),
                 "1",
@@ -53,7 +77,7 @@ public class SendSmsVerificationCodeService {
             throw new CustomException(ExceptionCode.COOL_DOWN);
         }
 
-        // 2) 일일 한도
+        // 4) 일일 한도
         final String qk = qKey(e164);
         final Long used = redisTemplate.opsForValue().increment(qk);
 
@@ -67,13 +91,16 @@ public class SendSmsVerificationCodeService {
             throw new CustomException(ExceptionCode.DAILY_LIMIT);
         }
 
-        // 3) 시도 횟수 초기화
+        // 5) 시도 횟수 초기화
         redisTemplate.delete(attKey(e164));
 
-        // 4) 6자리 인증번호 생성
+        // 6) 6자리 인증번호 생성
         final String code = randomUtil.getRandomNumber(6);
 
-        // 5) 인증번호 저장
+        // 7) 인증번호 저장
         redisTemplate.opsForValue().set(codeKey(e164), code, Duration.ofSeconds(CODE_TTL));
+
+        // 8) 인증번호 SMS로 전송
+        solapiSmsSender.sendSmsVerificationCode(appPhoneNumberUtil.e164ToNational(e164), code);
     }
 }
