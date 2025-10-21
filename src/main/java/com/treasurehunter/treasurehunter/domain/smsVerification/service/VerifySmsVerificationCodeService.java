@@ -91,8 +91,8 @@ public class VerifySmsVerificationCodeService {
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_EXIST));
 
-        user.changePhoneNumber(e164);
-        user.changeRoleToUser();
+        user.updatePhoneNumber(e164);
+        user.updateRoleToUser();
 
         // 7) 인증 코드 삭제
         redisTemplate.delete(codeK);

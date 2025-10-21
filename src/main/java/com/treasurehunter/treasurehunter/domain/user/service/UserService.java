@@ -53,12 +53,12 @@ public class UserService {
             throw new CustomException(ExceptionCode.USER_ALREADY_EXIST);
         }
 
-        user.changeNickname(userRequestDto.getNickname());
-        user.changeName(userRequestDto.getName());
-        user.changeRoleToNotVerified();
+        user.updateNickname(userRequestDto.getNickname());
+        user.updateName(userRequestDto.getName());
+        user.updateRoleToNotVerified();
 
         if(userRequestDto.getProfileImage() != null && !userRequestDto.getProfileImage().isEmpty()){
-            user.changeProfileImage(userRequestDto.getProfileImage());
+            user.updateProfileImage(userRequestDto.getProfileImage());
         }
 
         return new UserResponseDto(user);
@@ -103,17 +103,17 @@ public class UserService {
                 throw new CustomException(ExceptionCode.NICKNAME_DUPLICATE);
             }
 
-            user.changeNickname(userRequestDto.getNickname());
+            user.updateNickname(userRequestDto.getNickname());
         }
 
         //변경할 프로필 사진이 존재하면 변경
         if(userRequestDto.getProfileImage() != null && !userRequestDto.getProfileImage().isEmpty()){
-            user.changeProfileImage(userRequestDto.getProfileImage());
+            user.updateProfileImage(userRequestDto.getProfileImage());
         }
 
         //변경할 이름이 존재하면 변경
         if(userRequestDto.getName() != null && !userRequestDto.getName().isEmpty()){
-            user.changeName(userRequestDto.getName());
+            user.updateName(userRequestDto.getName());
         }
 
         return new UserResponseDto(user);

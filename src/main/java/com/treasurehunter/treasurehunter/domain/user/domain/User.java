@@ -1,5 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.user.domain;
 
+import com.treasurehunter.treasurehunter.domain.post.domain.Post;
 import com.treasurehunter.treasurehunter.domain.user.domain.oauth.UserOauth2Accounts;
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsRequestDto;
 import jakarta.persistence.*;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -70,10 +72,13 @@ public class User {
     private Integer totalReviews;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserOauth2Accounts> userOauth2Accounts;
+    private List<UserOauth2Accounts> userOauth2Accounts  = new ArrayList<>();
+
+    //유저가 탈퇴해도 게시글 남기기 위해서 cascade와 orphanRemoval 둘다 끔
+    @OneToMany(mappedBy = "author", orphanRemoval = false)
+    private List<Post> posts = new ArrayList<>();
 
     //oauth 회원가입용 생성자
-    @Builder
     public User(
             final UserOauth2AccountsRequestDto userOauth2AccountsRequestDto
     ){
@@ -89,32 +94,42 @@ public class User {
     }
 
     //닉네임 변경
-    public void changeNickname(final String newNickname){
+    public void updateNickname(final String newNickname){
         this.nickname = newNickname;
     }
 
     //프로필 사진 변경
-    public void changeProfileImage(final String newProfileImage){
+    public void updateProfileImage(final String newProfileImage){
         this.profileImage = newProfileImage;
     }
 
     //이름 변경
-    public void changeName(final String newName){
+    public void updateName(final String newName){
         this.name = newName;
     }
 
     //전화번호 변경
-    public void changePhoneNumber(final String phoneNumber){
+    public void updatePhoneNumber(final String phoneNumber){
         this.phoneNumber = phoneNumber;
     }
 
     //role을 본인 인증 되지 않은 유저로 변경
-    public void changeRoleToNotVerified(){
+    public void updateRoleToNotVerified(){
         this.role = Role.NOT_VERIFIED;
     }
 
     //role을 일반 유저로 변경
-    public void changeRoleToUser(){
+    public void updateRoleToUser(){
         this.role = Role.USER;
+    }
+
+    //파라미터 값 만큼 포인트 소비
+    public void consumePoint(final int point){
+        //포인트 부족하면 예외 처리
+        if(this.point < point){
+            throw new IllegalArgumentException("보유 포인트 부족");
+        }
+
+        this.point -= point;
     }
 }

@@ -2,6 +2,8 @@ HELP.md
 .gradle
 .DS_Store
 application.properties
+application-dev.properties
+application-prod.properties
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
