@@ -117,12 +117,17 @@ public class PostService {
         final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_EXIST));
 
-        // 2) 자신의 게시글인지 검사
+        // 2) 게시글이 완료 처리 되어있는 경우 처리
+        if(post.isCompleted()){
+            throw new CustomException(ExceptionCode.POST_IS_COMPLETED);
+        }
+
+        // 3) 자신의 게시글인지 검사
         if(!userId.equals(post.getAuthor().getId())){
             throw new CustomException(ExceptionCode.PERMISSION_DENIED);
         }
 
-        // 3) 게시물 유형과 카테고리 검증 및 변환 (비어있다면 null)
+        // 4) 게시물 유형과 카테고리 검증 및 변환 (비어있다면 null)
         final PostType postType;
         final ItemCategory itemCategory;
         if(postRequestDto.getType() != null && !postRequestDto.getType().isEmpty()){
@@ -138,7 +143,7 @@ public class PostService {
             itemCategory = null;
         }
 
-        // 4) 비어있지 않으면 변경
+        // 5) 비어있지 않으면 변경
 
         // 포인트 수정
         if(postRequestDto.getSetPoint() != null){

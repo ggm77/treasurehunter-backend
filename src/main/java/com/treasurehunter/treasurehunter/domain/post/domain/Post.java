@@ -79,10 +79,10 @@ public class Post {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TINYINT(1)", nullable = false)
     private boolean isAnonymous;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TINYINT(1)", nullable = false)
     private boolean isCompleted;
 
     @Builder
