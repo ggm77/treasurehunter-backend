@@ -1,17 +1,11 @@
 package com.treasurehunter.treasurehunter.domain.post.dto;
 
-import com.treasurehunter.treasurehunter.domain.post.domain.ItemCategory;
 import com.treasurehunter.treasurehunter.domain.post.domain.Post;
-import com.treasurehunter.treasurehunter.domain.post.domain.PostType;
-import com.treasurehunter.treasurehunter.domain.post.domain.image.PostImage;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserSimpleResponseDto;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Getter
@@ -19,11 +13,11 @@ public class PostResponseDto {
     private final Long id;
     private final String title;
     private final String content;
-    private final PostType type;
+    private final String type;
     private final UserSimpleResponseDto author;
     private final List<String> images;
     private final Integer setPoint;
-    private final ItemCategory itemCategory;
+    private final String itemCategory;
     private final BigDecimal lat;
     private final BigDecimal lon;
     private final LocalDateTime lostAt;
@@ -37,21 +31,18 @@ public class PostResponseDto {
         this.id = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.type = post.getType();
-        this.author = new UserSimpleResponseDto(post.getAuthor());
+        this.type = post.getType().name();
 
-        //게시물에 사진이 존재 할 때
-        if(post.getImages() != null) {
-            this.images = post.getImages().stream()
-                    .sorted(Comparator.comparing(PostImage::getImageIndex))
-                    .map(PostImage::getUrl)
-                    .toList();
+        //익명인 경우 유저 정보 제공 X
+        if(!post.isAnonymous()) {
+            this.author = new UserSimpleResponseDto(post.getAuthor());
         } else {
-            this.images = new ArrayList<>();
+            this.author = null;
         }
 
+        this.images = post.getImagesUrls();
         this.setPoint = post.getSetPoint();
-        this.itemCategory = post.getItemCategory();
+        this.itemCategory = post.getItemCategory().name();
         this.lat = post.getLat();
         this.lon = post.getLon();
         this.lostAt = post.getLostAt();

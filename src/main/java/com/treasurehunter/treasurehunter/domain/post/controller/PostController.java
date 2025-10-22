@@ -4,9 +4,11 @@ import com.treasurehunter.treasurehunter.domain.post.dto.PostRequestDto;
 import com.treasurehunter.treasurehunter.domain.post.dto.PostResponseDto;
 import com.treasurehunter.treasurehunter.domain.post.service.PostService;
 import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
-import jakarta.validation.Valid;
+import com.treasurehunter.treasurehunter.global.validation.Create;
+import com.treasurehunter.treasurehunter.global.validation.Update;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,13 +22,46 @@ public class PostController {
     @PostMapping("/post")
     public ResponseEntity<PostResponseDto> createPost(
             @RequestHeader(value = "Authorization") final String token,
-            @Valid @RequestBody final PostRequestDto postRequestDto
+            @Validated(Create.class) @RequestBody final PostRequestDto postRequestDto
     ){
 
         final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
 
-        final PostResponseDto postResponseDto = postService.createPost(postRequestDto, userId);
+        return ResponseEntity.ok(postService.createPost(postRequestDto, userId));
+    }
 
-        return ResponseEntity.ok(postResponseDto);
+    @GetMapping("/post/{id}")
+    public ResponseEntity<PostResponseDto> getPost(
+            @PathVariable final Long id,
+            @RequestHeader(value = "Authorization") final String token
+    ){
+        jwtProvider.validateToken(token.substring(7));
+
+        return ResponseEntity.ok(postService.getPost(id));
+    }
+
+    @PatchMapping("/post/{id}")
+    public ResponseEntity<PostResponseDto> updatePost(
+            @PathVariable final Long id,
+            @RequestHeader(value = "Authorization") final String token,
+            @Validated(Update.class) @RequestBody final PostRequestDto postRequestDto
+    ){
+
+        final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
+
+        return ResponseEntity.ok(postService.updatePost(id, postRequestDto, userId));
+    }
+
+    @DeleteMapping("/post/{id}")
+    public ResponseEntity<Void> deletePost(
+            @PathVariable final Long id,
+            @RequestHeader(value = "Authorization") final String token
+    ){
+
+        final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
+
+        postService.deletePost(id, userId);
+
+        return ResponseEntity.noContent().build();
     }
 }

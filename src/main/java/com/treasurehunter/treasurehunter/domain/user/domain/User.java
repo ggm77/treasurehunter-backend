@@ -5,7 +5,6 @@ import com.treasurehunter.treasurehunter.domain.user.domain.oauth.UserOauth2Acco
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -121,6 +120,23 @@ public class User {
     //role을 일반 유저로 변경
     public void updateRoleToUser(){
         this.role = Role.USER;
+    }
+
+    public void addPoint(final int point){
+        //불필요한 갱신 방지
+        if(point <= 0){
+            return;
+        }
+        this.point += point;
+    }
+
+    //게시글 수정시 포인트를 변경 할 때 쓰는 메서드
+    public void adjustPointForPostUpdate(final int oldPoint, final int newPoint){
+        final int updatePoint = this.point + oldPoint - newPoint;
+        if(updatePoint < 0){
+            throw new IllegalArgumentException("보유 포인트 부족");
+        }
+        this.point = updatePoint;
     }
 
     //파라미터 값 만큼 포인트 소비

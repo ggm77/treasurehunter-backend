@@ -1,5 +1,8 @@
 package com.treasurehunter.treasurehunter.domain.post.dto;
 
+import com.treasurehunter.treasurehunter.global.validation.Create;
+import com.treasurehunter.treasurehunter.global.validation.Update;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
@@ -10,33 +13,34 @@ import java.util.List;
 @Getter
 public class PostRequestDto {
 
-    @NotNull
+    @NotNull(groups = Create.class)
     private String title;
 
-    @NotNull
+    @NotNull(groups = Create.class)
     private String content;
 
-    @NotNull
+    @NotNull(groups = Create.class)
     private String type;
 
-    // 비어있어도 됨
+    //비어도 됨
     private List<String> images;
 
-    @NotNull
+    @NotNull(groups = Create.class)
+    @Min(value = 0, groups = { Create.class, Update.class })
     private Integer setPoint;
 
-    @NotNull
+    @NotNull(groups = Create.class)
     private String itemCategory;
 
-    @NotNull
+    @NotNull(groups = Create.class)
     private BigDecimal lat;
 
-    @NotNull
+    @NotNull(groups = Create.class)
     private BigDecimal lon;
 
-    @NotNull
+    @NotNull(groups = Create.class)
     private LocalDateTime lostAt;
 
-    @NotNull
+    @NotNull(groups = Create.class)
     private Boolean isAnonymous;
 }

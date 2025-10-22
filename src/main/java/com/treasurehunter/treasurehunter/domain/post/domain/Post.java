@@ -14,7 +14,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Entity
@@ -52,6 +55,7 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostImage> images = new ArrayList<>();
 
+    @Column(nullable = false)
     private int setPoint;
 
     @Enumerated(EnumType.STRING)
@@ -110,6 +114,18 @@ public class Post {
 
     //후기 연관관계 추가
 
+    // 엔티티에서 값 가져올 때 List<String>형태로 바로 가져올 수 있게 하기 위함
+    public List<String> getImagesUrls(){
+        if(this.images == null || this.images.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return this.images.stream()
+                .sorted(Comparator.comparing(PostImage::getImageIndex))
+                .map(PostImage::getUrl)
+                .toList();
+    }
+
     public void updateTitle(final String title){
         this.title = title;
     }
@@ -123,7 +139,21 @@ public class Post {
     }
 
     public void updateImage(final List<PostImage> images){
-        this.images = images;
+
+        // 기존 연관 관계 끊기
+        for (final PostImage image : new ArrayList<>(this.images)) {
+            image.updatePost(null);
+            this.images.remove(image);
+        }
+
+        // 새 연관 관계 만들기
+        if(images == null){
+            return;
+        }
+        for (final PostImage image : images) {
+            image.updatePost(this);
+            this.images.add(image);
+        }
     }
 
     public void updateSetPoint(final int setPoint){
@@ -147,12 +177,12 @@ public class Post {
     }
 
     //익명인지 여부 true false 전환
-    public void toggleIsAnonymous(){
-        this.isAnonymous = !this.isAnonymous;
+    public void updateIsAnonymous(final boolean isAnonymous){
+        this.isAnonymous = isAnonymous;
     }
 
     //완료 되었는지 여부 true false 전환
-    public void toggleIsCompleted(){
-        this.isCompleted = !this.isCompleted;
+    public void updateIsCompleted(final boolean isCompleted){
+        this.isCompleted = isCompleted;
     }
 }

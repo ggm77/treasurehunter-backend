@@ -3,11 +3,8 @@ package com.treasurehunter.treasurehunter.domain.post.domain.image;
 import com.treasurehunter.treasurehunter.domain.post.domain.Post;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -28,10 +25,13 @@ public class PostImage {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @Builder
     public PostImage(final String url, final int imageIndex, final Post post) {
         this.url = url;
         this.imageIndex = imageIndex;
+        this.post = post;
+    }
+
+    public void updatePost(final Post post){
         this.post = post;
     }
 }

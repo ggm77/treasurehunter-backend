@@ -21,9 +21,16 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     @ExceptionHandler(CustomException.class)
     public final ResponseEntity<ExceptionResponse> handleException(final CustomException ex) {
 
+        final String message;
+        if(ex.getMessage() == null || ex.getMessage().isEmpty()) {
+            message = ex.getExceptionCode().getMessage();
+        } else {
+            message = ex.getMessage();
+        }
+
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
                 ex.getExceptionCode().getStatus(),
-                ex.getExceptionCode().getMessage()
+                message
         );
 
         return new ResponseEntity<>(exceptionResponse, ex.getExceptionCode().getStatus());
