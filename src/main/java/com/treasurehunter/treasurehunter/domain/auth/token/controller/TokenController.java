@@ -1,13 +1,12 @@
 package com.treasurehunter.treasurehunter.domain.auth.token.controller;
 
+import com.treasurehunter.treasurehunter.domain.auth.token.dto.RefreshTokenRequestDto;
 import com.treasurehunter.treasurehunter.domain.auth.token.dto.TokenResponseDto;
 import com.treasurehunter.treasurehunter.domain.auth.token.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,5 +22,13 @@ public class TokenController {
         final TokenResponseDto tokenResponseDto = tokenService.getToken(httpServletRequest);
 
         return ResponseEntity.ok(tokenResponseDto);
+    }
+
+    //토큰 리프레시하는 API
+    @PostMapping("/auth/token/refresh")
+    public ResponseEntity<TokenResponseDto> refreshToken(
+            @RequestBody final RefreshTokenRequestDto refreshTokenDto
+    ){
+        return ResponseEntity.ok(tokenService.refreshToken(refreshTokenDto));
     }
 }
