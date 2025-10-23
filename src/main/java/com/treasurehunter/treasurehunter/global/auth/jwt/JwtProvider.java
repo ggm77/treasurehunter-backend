@@ -1,5 +1,7 @@
 package com.treasurehunter.treasurehunter.global.auth.jwt;
 
+import com.treasurehunter.treasurehunter.global.exception.CustomException;
+import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.*;
 import io.jsonwebtoken.io.Decoders;
@@ -54,6 +56,7 @@ public class JwtProvider {
     /**
      * JWT를 검증하는 메서드
      * 문자열이 된 유저의 고유 아이디 번호를 리턴함
+     * 검증 실패시 io.jsonwebtoken.JwtException 예외 던짐
      * @param jwt JWT
      * @return 문자열이 된 유저 아이디
      */
@@ -61,12 +64,16 @@ public class JwtProvider {
 
         final SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
 
-        final Jws<Claims> claimsJws =
-                Jwts.parser()
-                    .verifyWith(key)
-                    .build()
-                    .parseSignedClaims(jwt);
+        try {
+            final Jws<Claims> claimsJws =
+                    Jwts.parser()
+                            .verifyWith(key)
+                            .build()
+                            .parseSignedClaims(jwt);
 
-        return claimsJws.getPayload().getSubject();
+            return claimsJws.getPayload().getSubject();
+        } catch (JwtException ex) {
+            throw new CustomException(ExceptionCode.INVALID_TOKEN);
+        }
     }
 }

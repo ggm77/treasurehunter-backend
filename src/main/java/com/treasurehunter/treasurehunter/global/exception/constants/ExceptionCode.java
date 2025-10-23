@@ -21,6 +21,7 @@ public enum ExceptionCode {
     POINT_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "포인트가 부족합니다."),
     POST_IS_COMPLETED(HttpStatus.BAD_REQUEST, "게시글이 완료 처리되어 있습니다."),
     AUTHENTICATION_ERROR(HttpStatus.UNAUTHORIZED, "인증 되지 않았습니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
     FORBIDDEN_USER_RESOURCE_ACCESS(HttpStatus.FORBIDDEN, "해당 정보에 접근할 수 없습니다."),
     PERMISSION_DENIED(HttpStatus.FORBIDDEN, "해당 기능에 접근할 수 없습니다."),
     COOL_DOWN(HttpStatus.TOO_MANY_REQUESTS, "쿨다운 중 입니다."),
