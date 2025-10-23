@@ -1,5 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.user.dto;
 
+import com.treasurehunter.treasurehunter.domain.post.dto.PostSimpleResponseDto;
 import com.treasurehunter.treasurehunter.domain.user.domain.Role;
 import com.treasurehunter.treasurehunter.domain.user.domain.User;
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsResponseDto;
@@ -26,6 +27,7 @@ public class UserResponseDto {
     private final Integer totalScore;
     private final Integer totalReviews;
     private final List<UserOauth2AccountsResponseDto> userOauth2Accounts;
+    private final List<PostSimpleResponseDto> posts;
     //각각 구현후 아래에 receivedReviews, reviews, posts, blockedUser 추가하기
 
     @Builder
@@ -50,5 +52,9 @@ public class UserResponseDto {
         } else{
             this.userOauth2Accounts = new ArrayList<>();
         }
+
+        this.posts = user.getPosts().stream()
+                .map(PostSimpleResponseDto::new)
+                .toList();
     }
 }
