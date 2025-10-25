@@ -12,6 +12,12 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(
+        name = "image",
+        indexes = {
+                @Index(name = "idx_image_object_key", columnList = "object_key")
+        }
+)
 public class Image {
 
     @Id

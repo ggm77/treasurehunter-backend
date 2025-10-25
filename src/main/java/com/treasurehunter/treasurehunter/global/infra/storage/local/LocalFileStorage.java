@@ -23,7 +23,7 @@ public class LocalFileStorage {
             final String objectKey // 파일 이름 포함한 path ( = Image 엔티티의 objectKey와 같은 값)
     ){
         //파일 저장 위치 생성
-        final String savePath = IMAGE_DIRECTORY_PATH + "/" + objectKey;
+        final String savePath = IMAGE_DIRECTORY_PATH + File.separator + objectKey;
 
         //파일 객체 생성
         final File file = new File(savePath);
@@ -48,14 +48,31 @@ public class LocalFileStorage {
         final Path baseDir = Paths.get(IMAGE_DIRECTORY_PATH);
         final Path normalizedPath = baseDir.resolve(objectKey).normalize();
 
+        //경로 탈출 방지
         if(!normalizedPath.startsWith(baseDir)){
             throw new RuntimeException("올바르지 않은 경로입니다.");
         }
 
+        //존재 유무 확인
         if(!Files.exists(normalizedPath) || !Files.isRegularFile(normalizedPath)){
             throw new RuntimeException("파일을 찾을 수 없습니다.");
         }
 
         return new FileSystemResource(normalizedPath);
+    }
+
+    public void deleteImage(final String objectKey) throws IOException {
+
+        final File file = new File(IMAGE_DIRECTORY_PATH + File.separator + objectKey);
+
+        //존재 유무 확인
+        if(!file.exists()){
+            throw new RuntimeException("파일이 없습니다.");
+        }
+
+        //삭제 시도
+        if(!file.delete()){
+            throw new IOException("파일 삭제에 실패했습니다.");
+        }
     }
 }

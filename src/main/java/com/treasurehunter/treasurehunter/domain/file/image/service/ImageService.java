@@ -157,4 +157,28 @@ public class ImageService {
                 .headers(headers)
                 .body(file);
     }
+
+    @Transactional
+    public void deleteImage(
+            final String objectKey,
+            final Long userId
+    ){
+
+        final Image image = imageRepository.findByObjectKey(objectKey)
+                .orElseThrow(() -> new CustomException(ExceptionCode.FILE_NOT_FOUND));
+
+        if(!image.getOwnerId().equals(userId)){
+            throw new CustomException(ExceptionCode.PERMISSION_DENIED);
+        }
+
+        imageRepository.delete(image);
+
+        try{
+            localFileStorage.deleteImage(objectKey);
+        } catch (RuntimeException ex){
+            throw new CustomException(ExceptionCode.FILE_NOT_FOUND);
+        } catch (IOException ex){
+            throw new CustomException(ExceptionCode.FILE_DELETE_FAILED);
+        }
+    }
 }

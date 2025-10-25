@@ -34,8 +34,15 @@ public class ImageController {
         return ResponseEntity.ok(imageService.createImage(multipartFile, userId));
     }
 
+    /**
+     * 이미지 조회하는 API
+     * 바로 이미지를 띄워줌
+     * @param objectKey 이미지 objectKey
+     * @param token JWT
+     * @return 이미지
+     */
     @GetMapping("/file/image")
-    public ResponseEntity<?> getImage(
+    public ResponseEntity<Resource> getImage(
             @RequestParam("objectKey") final String objectKey,
             @RequestHeader(value = "Authorization") final String token
     ){
@@ -43,5 +50,23 @@ public class ImageController {
 
 
         return imageService.getImage(objectKey);
+    }
+
+    /**
+     * 이미지 삭제하는 API
+     * @param objectKey 이미지 objectKey
+     * @param token JWT
+     * @return 없음
+     */
+    @DeleteMapping("/file/image")
+    public ResponseEntity<Void> deleteImage(
+            @RequestParam("objectKey") final String objectKey,
+            @RequestHeader(value = "Authorization") final String token
+    ){
+        final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
+
+        imageService.deleteImage(objectKey, userId);
+
+        return ResponseEntity.noContent().build();
     }
 }
