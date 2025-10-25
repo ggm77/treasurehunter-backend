@@ -20,6 +20,12 @@ public enum ExceptionCode {
     SMS_SEND_FAILED(HttpStatus.BAD_REQUEST, "SMS 발송에 실패 했습니다."),
     POINT_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "포인트가 부족합니다."),
     POST_IS_COMPLETED(HttpStatus.BAD_REQUEST, "게시글이 완료 처리되어 있습니다."),
+    FILE_NOT_UPLOADED(HttpStatus.BAD_REQUEST, "파일이 업로드 되지 않았습니다."),
+    INVALID_FILE_NAME(HttpStatus.BAD_REQUEST, "파일명이 올바르지 않습니다."),
+    INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "파일 확장자가 올바르지 않습니다."),
+    TOO_BIG_FILE(HttpStatus.BAD_REQUEST, "너무 큰 파일입니다."),
+    INVALID_FILE(HttpStatus.BAD_REQUEST, "잘못된 파일입니다."),
+    FILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "파일을 찾을 수 없습니다."),
     AUTHENTICATION_ERROR(HttpStatus.UNAUTHORIZED, "인증 되지 않았습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
     FORBIDDEN_USER_RESOURCE_ACCESS(HttpStatus.FORBIDDEN, "해당 정보에 접근할 수 없습니다."),
@@ -28,6 +34,8 @@ public enum ExceptionCode {
     DAILY_LIMIT(HttpStatus.TOO_MANY_REQUESTS, "일일 요청가능한 횟수를 초과했습니다."),
     ATTEMPT_LIMIT(HttpStatus.TOO_MANY_REQUESTS, "시도 가능한 횟수를 초과했습니다."),
 
+    FILE_SAVE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 저장에 실패 했습니다."),
+    FILE_NAME_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일명 생성에 실패했습니다."),
     SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "현재 서버를 이용할 수 없습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 오류가 발생했습니다.")
     ;
