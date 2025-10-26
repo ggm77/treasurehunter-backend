@@ -70,6 +70,7 @@ public class UserService {
      * @param userId 조회할 유저 아이디
      * @return 등록된 유저 DTO
      */
+    @Transactional //LazyInitializationException 방어 //N+1 해결을 통해 문제 해결되면 지우기
     public UserResponseDto getUser(final Long userId){
 
         final User user = userRepository.findById(userId)

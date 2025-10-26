@@ -1,6 +1,7 @@
 package com.treasurehunter.treasurehunter.domain.user.domain;
 
 import com.treasurehunter.treasurehunter.domain.post.domain.Post;
+import com.treasurehunter.treasurehunter.domain.post.domain.like.PostLike;
 import com.treasurehunter.treasurehunter.domain.user.domain.oauth.UserOauth2Accounts;
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsRequestDto;
 import jakarta.persistence.*;
@@ -76,6 +77,10 @@ public class User {
     //유저가 탈퇴해도 게시글 남기기 위해서 cascade와 orphanRemoval 둘다 끔
     @OneToMany(mappedBy = "author", orphanRemoval = false)
     private List<Post> posts = new ArrayList<>();
+
+    //게시물 좋아요 구현을 위한 조인 테이블
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostLike> postLikes = new ArrayList<>();
 
     //oauth 회원가입용 생성자
     public User(

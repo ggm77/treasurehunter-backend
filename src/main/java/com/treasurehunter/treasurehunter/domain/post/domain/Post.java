@@ -1,6 +1,7 @@
 package com.treasurehunter.treasurehunter.domain.post.domain;
 
 import com.treasurehunter.treasurehunter.domain.post.domain.image.PostImage;
+import com.treasurehunter.treasurehunter.domain.post.domain.like.PostLike;
 import com.treasurehunter.treasurehunter.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -84,6 +85,9 @@ public class Post {
 
     @Column(columnDefinition = "TINYINT(1)", nullable = false)
     private boolean isCompleted;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostLike> postLikes = new ArrayList<>();
 
     @Builder
     public Post(

@@ -26,6 +26,8 @@ public enum ExceptionCode {
     TOO_BIG_FILE(HttpStatus.BAD_REQUEST, "너무 큰 파일입니다."),
     INVALID_FILE(HttpStatus.BAD_REQUEST, "잘못된 파일입니다."),
     FILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "파일을 찾을 수 없습니다."),
+    POST_LIKE_NOT_EXIST(HttpStatus.BAD_REQUEST, "좋아요가 존재하지 않습니다."),
+    POST_LIKE_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "좋아요를 이미 눌렀습니다."),
 
     AUTHENTICATION_ERROR(HttpStatus.UNAUTHORIZED, "인증 되지 않았습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
