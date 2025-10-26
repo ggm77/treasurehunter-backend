@@ -10,13 +10,11 @@ import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCod
 import com.treasurehunter.treasurehunter.global.infra.storage.local.LocalFileStorage;
 import com.treasurehunter.treasurehunter.global.util.FileNameUtil;
 import com.treasurehunter.treasurehunter.global.util.ImageUtil;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties;
-import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;

@@ -13,7 +13,7 @@ import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import com.treasurehunter.treasurehunter.global.util.EnumUtil;
 import com.treasurehunter.treasurehunter.global.util.PostImageConverterUtil;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
