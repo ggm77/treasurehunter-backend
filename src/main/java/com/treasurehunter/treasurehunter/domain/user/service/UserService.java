@@ -1,5 +1,7 @@
 package com.treasurehunter.treasurehunter.domain.user.service;
 
+import com.treasurehunter.treasurehunter.domain.post.domain.Post;
+import com.treasurehunter.treasurehunter.domain.review.domain.Review;
 import com.treasurehunter.treasurehunter.domain.user.domain.Role;
 import com.treasurehunter.treasurehunter.domain.user.domain.User;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserRequestDto;
@@ -128,10 +130,21 @@ public class UserService {
     @Transactional
     public void deleteUser(final Long userId){
 
-        try{
-            userRepository.deleteById(userId);
-        } catch(EmptyResultDataAccessException ex){
-            throw new CustomException(ExceptionCode.USER_NOT_EXIST);
+        final User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_EXIST));
+
+        //자식 정리 (게시글)
+        if(user.getPosts() != null){
+            user.getPosts()
+                    .forEach(Post::detachAuthor);
         }
+
+        // 자식 정리 (후기)
+        if(user.getReviews() != null){
+            user.getReviews()
+                    .forEach(Review::detachAuthor);
+        }
+
+        userRepository.delete(user);
     }
 }

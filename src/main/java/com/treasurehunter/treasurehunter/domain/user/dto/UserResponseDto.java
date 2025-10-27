@@ -1,7 +1,9 @@
 package com.treasurehunter.treasurehunter.domain.user.dto;
 
+import com.treasurehunter.treasurehunter.domain.post.domain.Post;
 import com.treasurehunter.treasurehunter.domain.post.domain.like.PostLike;
 import com.treasurehunter.treasurehunter.domain.post.dto.PostSimpleResponseDto;
+import com.treasurehunter.treasurehunter.domain.review.dto.ReviewResponseDto;
 import com.treasurehunter.treasurehunter.domain.user.domain.Role;
 import com.treasurehunter.treasurehunter.domain.user.domain.User;
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsResponseDto;
@@ -11,6 +13,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
@@ -28,6 +31,8 @@ public class UserResponseDto {
     private final Integer totalScore;
     private final Integer totalReviews;
     private final List<UserOauth2AccountsResponseDto> userOauth2Accounts;
+    private final List<ReviewResponseDto> receivedReviews;
+    private final List<ReviewResponseDto> reviews;
     private final List<PostSimpleResponseDto> posts;
     private final List<PostSimpleResponseDto> likedPosts;
     //각각 구현후 아래에 receivedReviews, reviews, posts, blockedUser 추가하기
@@ -55,11 +60,25 @@ public class UserResponseDto {
             this.userOauth2Accounts = new ArrayList<>();
         }
 
+        //정상적인 방법 찾기
+        this.receivedReviews = user.getPosts().stream()
+                .map(Post::getReview)
+                .filter(Objects::nonNull)
+                .map(ReviewResponseDto::new)
+                .toList();
+
+        this.reviews = user.getReviews().stream()
+                .map(ReviewResponseDto::new)
+                .toList();
+
         this.posts = user.getPosts().stream()
                 .map(PostSimpleResponseDto::new)
                 .toList();
+
+        //정상적인 방법 찾기
         this.likedPosts = user.getPostLikes().stream()
                 .map(PostLike::getPost)
+                .filter(Objects::nonNull)
                 .map(PostSimpleResponseDto::new)
                 .toList();
     }

@@ -7,18 +7,21 @@ import com.treasurehunter.treasurehunter.domain.post.domain.image.PostImage;
 import com.treasurehunter.treasurehunter.domain.post.dto.PostRequestDto;
 import com.treasurehunter.treasurehunter.domain.post.dto.PostResponseDto;
 import com.treasurehunter.treasurehunter.domain.post.repository.PostRepository;
+import com.treasurehunter.treasurehunter.domain.post.repository.image.PostImageRepository;
+import com.treasurehunter.treasurehunter.domain.post.repository.like.PostLikeRepository;
+import com.treasurehunter.treasurehunter.domain.review.domain.Review;
 import com.treasurehunter.treasurehunter.domain.user.domain.User;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import com.treasurehunter.treasurehunter.global.util.EnumUtil;
-import com.treasurehunter.treasurehunter.global.util.PostImageConverterUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +29,13 @@ public class PostService {
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final PostImageConverterUtil postImageConverterUtil;
+    private final PostImageRepository postImageRepository;
+    private final PostLikeRepository postLikeRepository;
     private final EnumUtil enumUtil;
+
+    //entityManager.flush()를 사용하기 위함
+    @PersistenceContext
+    private EntityManager entityManager;
 
     /**
      * 게시글 등록하는 메서드
@@ -66,6 +74,7 @@ public class PostService {
                 .content(postRequestDto.getContent())
                 .type(postType)
                 .author(user)
+                .setPoint(postRequestDto.getSetPoint())
                 .itemCategory(itemCategory)
                 .lat(postRequestDto.getLat())
                 .lon(postRequestDto.getLon())
@@ -74,16 +83,45 @@ public class PostService {
                 .isCompleted(false)
                 .build();
 
-        // 5) List<String> 형태를 List<PostImage> 형태로 변환
-        final List<PostImage> postImages = postImageConverterUtil.toPostImage(postRequestDto.getImages(), post);
-
-        // 6) 게시글과 연관 관계 세팅(집합 교체)
-        post.updateImage(postImages);
-
-        // 7) 게시글 DB에 저장 (전이로 사진도 함께 저장)
+        // 5) 게시글 DB에 저장
         final Post savedPost = postRepository.save(post);
 
-        return new PostResponseDto(savedPost);
+        // 6) 이미지 연관 관계 설정 및 DB에 저장
+        //리스트가 null인 경우, 요소가 null인경우, 빈경우 예외처리
+        final List<String> validUrls = Optional.ofNullable(postRequestDto.getImages())
+                .orElseGet(List::of).stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .toList();
+
+        //null제거후 빈 리스트 대응
+        if(!validUrls.isEmpty()) {
+            //PostImage 리스트 생성
+            final List<PostImage> postImages =  new ArrayList<>(validUrls.size());
+            for(int i = 0; i < validUrls.size(); i++) {
+                final PostImage img = PostImage.builder()
+                        .url(validUrls.get(i))
+                        .imageIndex(i)
+                        .build();
+                img.updatePost(savedPost);
+                postImages.add(img);
+            }
+
+            postImageRepository.saveAll(postImages);
+        }
+
+        // 7) 응답값에서 이미지가 제대로 표시되지 않는 문제 해결
+        final Long savedPostId = savedPost.getId();
+        //변경사항 적용
+        entityManager.flush();
+        entityManager.clear();
+
+        //최신 정보로 다시 가져오기
+        final Post updatedPost = postRepository.findById(savedPostId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_EXIST));
+
+        return new PostResponseDto(updatedPost);
     }
 
     /**
@@ -165,8 +203,33 @@ public class PostService {
         // 이미지 수정
         // null이면 무시, []이라면 사진 삭제, 요소가 존재하면 변경
         if(postRequestDto.getImages() != null){
-            final List<PostImage> postImages = postImageConverterUtil.toPostImage(postRequestDto.getImages(), post);
-            post.updateImage(postImages);
+            //연관 되어있는 PostImage 전량 삭제
+            postImageRepository.deleteByPostId(postId);
+
+            //이미지 새로 저장
+            //리스트가 null인 경우, 요소가 null인경우, 빈경우 예외처리
+            final List<String> validUrls = Optional.ofNullable(postRequestDto.getImages())
+                    .orElseGet(List::of).stream()
+                    .filter(Objects::nonNull)
+                    .map(String::trim)
+                    .filter(s -> !s.isBlank())
+                    .toList();
+
+            //null제거후 빈 리스트 대응
+            if(!validUrls.isEmpty()) {
+                //PostImage 리스트 생성
+                final List<PostImage> postImages =  new ArrayList<>(validUrls.size());
+                for(int i = 0; i < validUrls.size(); i++) {
+                    final PostImage img = PostImage.builder()
+                            .url(validUrls.get(i))
+                            .imageIndex(i)
+                            .build();
+                    img.updatePost(post);
+                    postImages.add(img);
+                }
+
+                postImageRepository.saveAll(postImages);
+            }
         }
 
         // 게시물 유형 수정
@@ -186,7 +249,16 @@ public class PostService {
         Optional.ofNullable(postRequestDto.getLostAt()).ifPresent(post::updateLostAt);
         Optional.ofNullable(postRequestDto.getIsAnonymous()).ifPresent(post::updateIsAnonymous);
 
-        return new PostResponseDto(post);
+        // 4) deleteByPostId가 트랜잭션을 우회해서 생긴 문제 해결
+        //변경사항 적용
+        entityManager.flush();
+        entityManager.clear();
+
+        //최신 정보로 다시 가져오기
+        final Post patchedPost = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_EXIST));
+
+        return new PostResponseDto(patchedPost);
     }
 
     /**
@@ -215,7 +287,17 @@ public class PostService {
             user.addPoint(post.getSetPoint());
         }
 
-        // 4) 게시글 삭제
+        // 4) 자식 정리
+        //사진 정리(삭제)
+        postImageRepository.deleteByPostId(postId);
+        //리뷰 존재하면 리뷰도 정리(리뷰는 삭제 X)
+        if(post.getReview() != null){
+            post.getReview().detachPost();
+        }
+        //좋아요 정리(삭제)
+        postLikeRepository.deleteByPostId(postId);
+
+        // 5) 게시글 삭제
         postRepository.delete(post);
     }
 }

@@ -2,6 +2,7 @@ package com.treasurehunter.treasurehunter.domain.user.domain;
 
 import com.treasurehunter.treasurehunter.domain.post.domain.Post;
 import com.treasurehunter.treasurehunter.domain.post.domain.like.PostLike;
+import com.treasurehunter.treasurehunter.domain.review.domain.Review;
 import com.treasurehunter.treasurehunter.domain.user.domain.oauth.UserOauth2Accounts;
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsRequestDto;
 import jakarta.persistence.*;
@@ -82,6 +83,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostLike> postLikes = new ArrayList<>();
 
+    //탈퇴시에도 후기 남기기 위해 cascade, orphanRemoval 둘다 끔
+    @OneToMany(mappedBy = "author", orphanRemoval = false)
+    private List<Review> reviews = new ArrayList<>();
+
     //oauth 회원가입용 생성자
     public User(
             final UserOauth2AccountsRequestDto userOauth2AccountsRequestDto
@@ -152,5 +157,20 @@ public class User {
         }
 
         this.point -= point;
+    }
+
+    //totalScore에 일정 수치만큼 증가
+    public void increaseTotalScore(final int score){
+        //불필요한  갱신 방지
+        if(score <= 0){
+            return;
+        }
+
+        this.totalScore += score;
+    }
+
+    //totalReviews를 1증가
+    public void incrementTotalReviews(){
+        this.totalReviews += 1;
     }
 }

@@ -2,6 +2,7 @@ package com.treasurehunter.treasurehunter.domain.post.domain;
 
 import com.treasurehunter.treasurehunter.domain.post.domain.image.PostImage;
 import com.treasurehunter.treasurehunter.domain.post.domain.like.PostLike;
+import com.treasurehunter.treasurehunter.domain.review.domain.Review;
 import com.treasurehunter.treasurehunter.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -14,11 +15,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Getter
 @Entity
@@ -52,8 +49,8 @@ public class Post {
     @JoinColumn(name = "author_id")
     private User author;
 
-    //게시글 삭제되면 사진도 삭제
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    //게시글 삭제되면 사진도 삭제 // cascade 없이 수동으로 연관관계 설정
+    @OneToMany(mappedBy = "post", orphanRemoval = true)
     private List<PostImage> images = new ArrayList<>();
 
     @Column(nullable = false)
@@ -86,8 +83,13 @@ public class Post {
     @Column(columnDefinition = "TINYINT(1)", nullable = false)
     private boolean isCompleted;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    //cascade 없이 수동으로 삭제
+    @OneToMany(mappedBy = "post", orphanRemoval = true)
     private List<PostLike> postLikes = new ArrayList<>();
+
+    //게시글에 작성된 후기
+    @OneToOne(mappedBy = "post", fetch = FetchType.LAZY)
+    private Review review;
 
     @Builder
     public Post(
@@ -116,8 +118,6 @@ public class Post {
         this.isCompleted = isCompleted;
     }
 
-    //후기 연관관계 추가
-
     // 엔티티에서 값 가져올 때 List<String>형태로 바로 가져올 수 있게 하기 위함
     public List<String> getImagesUrls(){
         if(this.images == null || this.images.isEmpty()){
@@ -140,24 +140,6 @@ public class Post {
 
     public void updateType(final PostType type){
         this.type = type;
-    }
-
-    public void updateImage(final List<PostImage> images){
-
-        // 기존 연관 관계 끊기
-        for (final PostImage image : new ArrayList<>(this.images)) {
-            image.updatePost(null);
-            this.images.remove(image);
-        }
-
-        // 새 연관 관계 만들기
-        if(images == null){
-            return;
-        }
-        for (final PostImage image : images) {
-            image.updatePost(this);
-            this.images.add(image);
-        }
     }
 
     public void updateSetPoint(final int setPoint){
@@ -188,5 +170,10 @@ public class Post {
     //완료 되었는지 여부 true false 전환
     public void updateIsCompleted(final boolean isCompleted){
         this.isCompleted = isCompleted;
+    }
+
+    //작성자와 연관 관계 끊는 메서드
+    public void detachAuthor(){
+        this.author = null;
     }
 }

@@ -33,8 +33,8 @@ public class PostResponseDto {
         this.content = post.getContent();
         this.type = post.getType().name();
 
-        //익명인 경우 유저 정보 제공 X
-        if(!post.isAnonymous()) {
+        //익명인 경우 유저 정보 제공 X, 유저가 존재하지 않으면 null
+        if(!post.isAnonymous() && post.getAuthor() != null){
             this.author = new UserSimpleResponseDto(post.getAuthor());
         } else {
             this.author = null;
