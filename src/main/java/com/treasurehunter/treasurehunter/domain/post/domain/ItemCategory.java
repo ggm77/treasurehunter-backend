@@ -8,10 +8,12 @@ import lombok.Getter;
 public enum ItemCategory {
 
     WALLET("WALLET", "지갑"),
-    PHONE("PHONE", "핸드폰"),
-    ELECTRONIC_DEVICE("ELECTRONIC_DEVICE", "전자제품"),
     CLOTHES("CLOTHES", "의류"),
+    PHONE("PHONE", "핸드폰"),
     BAG("BAG", "가방"),
+    ELECTRONICS("ELECTRONIC_DEVICE", "전자제품"),
+    ACCESSORY("ACCESSORY", "액세서리"),
+    STATIONERY("STATIONERY", "문구류"),
     ETC("ETC", "기타 물품")
     ;
 
