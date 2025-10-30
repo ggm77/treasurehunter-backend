@@ -1,6 +1,8 @@
 package com.treasurehunter.treasurehunter.domain.post.dto;
 
 import com.treasurehunter.treasurehunter.domain.post.domain.Post;
+import com.treasurehunter.treasurehunter.domain.review.domain.Review;
+import com.treasurehunter.treasurehunter.domain.review.dto.ReviewResponseDto;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserSimpleResponseDto;
 import lombok.Getter;
 
@@ -25,7 +27,7 @@ public class PostResponseDto {
     private final LocalDateTime updatedAt;
     private final Boolean isAnonymous;
     private final Boolean isCompleted;
-    //리뷰 추가
+    private final ReviewResponseDto review;
 
     public PostResponseDto(final Post post) {
         this.id = post.getId();
@@ -50,5 +52,12 @@ public class PostResponseDto {
         this.updatedAt = post.getUpdatedAt();
         this.isAnonymous = post.isAnonymous();
         this.isCompleted = post.isCompleted();
+
+        //리뷰 존재하지 않으면 null
+        if(post.getReview() != null) {
+            this.review = new ReviewResponseDto(post.getReview());
+        } else  {
+            this.review = null;
+        }
     }
 }
