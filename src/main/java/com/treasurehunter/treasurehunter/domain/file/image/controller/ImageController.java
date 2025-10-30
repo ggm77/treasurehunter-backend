@@ -38,17 +38,12 @@ public class ImageController {
      * 이미지 조회하는 API
      * 바로 이미지를 띄워줌
      * @param objectKey 이미지 objectKey
-     * @param token JWT
      * @return 이미지
      */
     @GetMapping("/file/image")
     public ResponseEntity<Resource> getImage(
-            @RequestParam("objectKey") final String objectKey,
-            @RequestHeader(value = "Authorization") final String token
+            @RequestParam("objectKey") final String objectKey
     ){
-        jwtProvider.validateToken(token.substring(7));
-
-
         return imageService.getImage(objectKey);
     }
 

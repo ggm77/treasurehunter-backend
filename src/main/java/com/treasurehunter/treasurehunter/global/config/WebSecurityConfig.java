@@ -8,6 +8,7 @@ import com.treasurehunter.treasurehunter.global.auth.oauth.handler.Oauth2Success
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -34,14 +35,18 @@ public class WebSecurityConfig {
                 .csrf((csrf) -> csrf.disable())
                 .httpBasic((httpBasic) -> httpBasic.disable())
                 .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests.requestMatchers(
-                        "/ping",
-                        "/ready",
-                        "/login/oauth2/code/**", //oauth 리다이렉트 하는 곳
-                        "/oauth2/authorization/**", //프론트에서 로그인 요청하는 곳
-                        "/api/swagger/**",
-                        "/api/v1/auth/**"
-                ).permitAll().anyRequest().authenticated())
+                .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
+                        .requestMatchers(
+                                "/ping",
+                                "/ready",
+                                "/login/oauth2/code/**", //oauth 리다이렉트 하는 곳
+                                "/oauth2/authorization/**", //프론트에서 로그인 요청하는 곳
+                                "/api/swagger/**",
+                                "/api/v1/auth/**",
+                                "/api/v1/file/image"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/file/image").permitAll() // 사진 조회 API
+                        .anyRequest().authenticated())
                 .oauth2Login(customConfigurer -> customConfigurer
                         .successHandler(oauth2SuccessHandler)
                         .failureHandler(oauth2FailureHandler)
