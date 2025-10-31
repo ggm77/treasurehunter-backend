@@ -6,9 +6,6 @@ import com.treasurehunter.treasurehunter.domain.user.service.UserService;
 import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +28,7 @@ public class UserController {
             @RequestBody final UserRequestDto userRequestDto
     ){
 
-        final String tokenSub = jwtProvider.validateToken(accessToken.substring(7));
+        final String tokenSub = jwtProvider.getPayload(accessToken.substring(7));
 
         //다른 유저의 정보에 접근 방지
         if(!Objects.equals(tokenSub, id)){
@@ -61,7 +58,7 @@ public class UserController {
             @RequestHeader(value = "Authorization") final String accessToken,
             @RequestBody final UserRequestDto userRequestDto
     ){
-        final String tokenSub = jwtProvider.validateToken(accessToken.substring(7));
+        final String tokenSub = jwtProvider.getPayload(accessToken.substring(7));
 
         //다른 유저의 정보에 접근 방지
         if(!Objects.equals(tokenSub, id)){
@@ -79,7 +76,7 @@ public class UserController {
             @PathVariable final String id,
             @RequestHeader(value = "Authorization") final String accessToken
     ){
-        final String tokenSub = jwtProvider.validateToken(accessToken.substring(7));
+        final String tokenSub = jwtProvider.getPayload(accessToken.substring(7));
 
         //다른 유저의 정보에 접근 방지
         if(!Objects.equals(tokenSub, id)){

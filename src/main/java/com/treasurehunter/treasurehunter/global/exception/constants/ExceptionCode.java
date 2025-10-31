@@ -30,6 +30,8 @@ public enum ExceptionCode {
     POST_LIKE_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "좋아요를 이미 눌렀습니다."),
     POST_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "게시글이 완료되지 않았습니다."),
     REVIEW_NOT_EXIST(HttpStatus.BAD_REQUEST, "후기가 존재하지 않습니다."),
+    BADGE_NOT_EXIST(HttpStatus.BAD_REQUEST, "뱃지 정보가 존재하지 않습니다."),
+    BADGE_ALREADY_OWNED(HttpStatus.BAD_REQUEST, "뱃지를 유저가 소유하고 있기 때문에 삭제가 불가능합니다."),
 
     AUTHENTICATION_ERROR(HttpStatus.UNAUTHORIZED, "인증 되지 않았습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),

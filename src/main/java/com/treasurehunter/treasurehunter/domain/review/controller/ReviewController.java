@@ -25,7 +25,7 @@ public class ReviewController {
             @RequestHeader(value = "Authorization") final String token,
             @Validated(Create.class) @RequestBody final ReviewRequestDto reviewRequestDto
     ){
-        final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
+        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
 
         return ResponseEntity.ok().body(reviewService.createReview(reviewRequestDto, userId));
     }
@@ -36,7 +36,7 @@ public class ReviewController {
             @PathVariable("id") final Long reviewId,
             @RequestHeader(value = "Authorization") final String token
     ){
-        jwtProvider.validateToken(token.substring(7));
+        jwtProvider.getPayload(token.substring(7));
 
         return ResponseEntity.ok().body(reviewService.getReview(reviewId));
     }
@@ -48,7 +48,7 @@ public class ReviewController {
             @RequestHeader(value = "Authorization") final String token,
             @Validated(Update.class) @RequestBody final ReviewRequestDto reviewRequestDto
     ){
-        final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
+        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
 
         return ResponseEntity.ok().body(reviewService.updateReview(reviewRequestDto, reviewId, userId));
     }
@@ -59,7 +59,7 @@ public class ReviewController {
             @PathVariable("id") final Long reviewId,
             @RequestHeader(value = "Authorization") final String token
     ){
-        final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
+        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
 
         reviewService.deleteReview(reviewId, userId);
 

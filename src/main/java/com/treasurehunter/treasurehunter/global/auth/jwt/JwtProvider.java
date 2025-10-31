@@ -1,5 +1,6 @@
 package com.treasurehunter.treasurehunter.global.auth.jwt;
 
+import com.treasurehunter.treasurehunter.domain.user.domain.Role;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import io.jsonwebtoken.*;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 
 /**
  * JWT를 생성하고 검증한다.
@@ -34,7 +36,7 @@ public class JwtProvider {
      * @param ttlSeconds JWT의 유효 시간 (초)
      * @return JWT
      */
-    public String creatToken(final Long userId, final Long ttlSeconds){
+    public String creatToken(final Long userId, final Role role, final Long ttlSeconds){
 
         final SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
 
@@ -47,6 +49,7 @@ public class JwtProvider {
                 .type("JWT")
                 .and()
                 .subject(userIdStr)
+                .claim("authorities", List.of(role.getKey()))
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(exp))
                 .signWith(key)
@@ -60,7 +63,7 @@ public class JwtProvider {
      * @param jwt JWT
      * @return 문자열이 된 유저 아이디
      */
-    public String validateToken(final String jwt){
+    public String getPayload(final String jwt){
 
         final SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
 
@@ -72,6 +75,26 @@ public class JwtProvider {
                             .parseSignedClaims(jwt);
 
             return claimsJws.getPayload().getSubject();
+        } catch (JwtException ex) {
+            throw new CustomException(ExceptionCode.INVALID_TOKEN);
+        }
+    }
+
+    /**
+     * JWT에서 claims만 얻어오는 메서드
+     * @param jwt JWT
+     * @return JWT의 Claims
+     */
+    public Claims getClaims(final String jwt){
+
+        final SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
+
+        try{
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(jwt)
+                    .getPayload();
         } catch (JwtException ex) {
             throw new CustomException(ExceptionCode.INVALID_TOKEN);
         }

@@ -23,7 +23,7 @@ public class PostListController {
             @RequestHeader(value = "Authorization") final String token
     ){
 
-        jwtProvider.validateToken(token.substring(7));
+        jwtProvider.getPayload(token.substring(7));
 
         return ResponseEntity.ok(postListService.getLatestPosts());
     }

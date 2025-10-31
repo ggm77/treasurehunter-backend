@@ -4,6 +4,7 @@ import com.treasurehunter.treasurehunter.domain.post.domain.Post;
 import com.treasurehunter.treasurehunter.domain.post.domain.like.PostLike;
 import com.treasurehunter.treasurehunter.domain.review.domain.Review;
 import com.treasurehunter.treasurehunter.domain.user.domain.oauth.UserOauth2Accounts;
+import com.treasurehunter.treasurehunter.domain.userBadge.domain.UserBadge;
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -86,6 +87,10 @@ public class User {
     //탈퇴시에도 후기 남기기 위해 cascade, orphanRemoval 둘다 끔
     @OneToMany(mappedBy = "author", orphanRemoval = false)
     private List<Review> reviews = new ArrayList<>();
+
+    //유저가 얻은 뱃지에 대한 기록 저장하는 엔티티와 연관관계 설정
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<UserBadge> userBadges = new ArrayList<>();
 
     //oauth 회원가입용 생성자
     public User(

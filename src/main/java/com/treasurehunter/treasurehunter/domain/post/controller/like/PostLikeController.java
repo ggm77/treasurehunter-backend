@@ -20,7 +20,7 @@ public class PostLikeController {
             @PathVariable("id") final String postId,
             @RequestHeader(value = "Authorization") final String token
     ){
-        final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
+        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
         postLikeService.likePost(Long.parseLong(postId), userId);
 
         return ResponseEntity.noContent().build();
@@ -32,7 +32,7 @@ public class PostLikeController {
             @PathVariable("id") final String postId,
             @RequestHeader(value = "Authorization") final String token
     ){
-        final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
+        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
 
         postLikeService.unlikePost(Long.parseLong(postId), userId);
 

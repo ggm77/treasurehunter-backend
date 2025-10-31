@@ -25,7 +25,7 @@ public class PostController {
             @Validated(Create.class) @RequestBody final PostRequestDto postRequestDto
     ){
 
-        final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
+        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
 
         return ResponseEntity.ok(postService.createPost(postRequestDto, userId));
     }
@@ -35,7 +35,7 @@ public class PostController {
             @PathVariable final Long id,
             @RequestHeader(value = "Authorization") final String token
     ){
-        jwtProvider.validateToken(token.substring(7));
+        jwtProvider.getPayload(token.substring(7));
 
         return ResponseEntity.ok(postService.getPost(id));
     }
@@ -47,7 +47,7 @@ public class PostController {
             @Validated(Update.class) @RequestBody final PostRequestDto postRequestDto
     ){
 
-        final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
+        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
 
         return ResponseEntity.ok(postService.updatePost(id, postRequestDto, userId));
     }
@@ -58,7 +58,7 @@ public class PostController {
             @RequestHeader(value = "Authorization") final String token
     ){
 
-        final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
+        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
 
         postService.deletePost(id, userId);
 

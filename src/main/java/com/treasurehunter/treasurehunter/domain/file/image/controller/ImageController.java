@@ -29,7 +29,7 @@ public class ImageController {
             @RequestHeader(value = "Authorization") final String token,
             @RequestPart(value = "file") final MultipartFile multipartFile
     ){
-        final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
+        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
 
         return ResponseEntity.ok(imageService.createImage(multipartFile, userId));
     }
@@ -58,7 +58,7 @@ public class ImageController {
             @RequestParam("objectKey") final String objectKey,
             @RequestHeader(value = "Authorization") final String token
     ){
-        final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
+        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
 
         imageService.deleteImage(objectKey, userId);
 

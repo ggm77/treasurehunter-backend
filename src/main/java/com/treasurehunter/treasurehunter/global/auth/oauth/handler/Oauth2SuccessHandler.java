@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -59,6 +60,7 @@ public class Oauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     }
 
     @Override
+    @Transactional
     public void onAuthenticationSuccess(
             final HttpServletRequest httpServletRequest,
             final HttpServletResponse httpServletResponse,
@@ -73,9 +75,9 @@ public class Oauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_EXIST));
 
         //엑세스 토큰 발급 (유효 1시간)
-        final String accessToken = jwtProvider.creatToken(user.getId(), accessTokenExpireTime);
+        final String accessToken = jwtProvider.creatToken(user.getId(), user.getRole(), accessTokenExpireTime);
         //리프레시 토큰 발급 (유효 1일)
-        final String refreshToken = jwtProvider.creatToken(user.getId(), refreshTokenExpireTime);
+        final String refreshToken = jwtProvider.creatToken(user.getId(), user.getRole(), refreshTokenExpireTime);
 
         final ResponseCookie accessTokenCookie;
         final ResponseCookie refreshTokenCookie;

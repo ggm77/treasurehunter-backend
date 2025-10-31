@@ -24,7 +24,7 @@ public class SmsVerificationCodeController {
             @RequestBody final SendSmsVerificationCodeRequestDto sendSmsVerificationCodeRequestDto
     ){
 
-        final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
+        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
 
         sendSmsVerificationCodeService.createVerificationCode(sendSmsVerificationCodeRequestDto, userId);
 
@@ -37,7 +37,7 @@ public class SmsVerificationCodeController {
             @RequestHeader(value = "Authorization") final String token,
             @RequestBody final VerifySmsVerificationCodeRequestDto verifySmsVerificationCodeRequestDto
     ){
-        final Long userId = Long.parseLong(jwtProvider.validateToken(token.substring(7)));
+        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
 
         verifySmsVerificationCodeService.verifyVerificationCode(verifySmsVerificationCodeRequestDto, userId);
 

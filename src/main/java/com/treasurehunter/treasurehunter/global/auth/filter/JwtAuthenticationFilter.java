@@ -8,13 +8,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 필터에 JWT 검증 과정 추가
@@ -47,11 +48,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             //JWT 검증
             //검증 실패하면 예외 던짐
-            final String userIdStr = jwtProvider.validateToken(jwt);
+            final String userIdStr = jwtProvider.getPayload(jwt);
+            final List<SimpleGrantedAuthority> authorities = getAuthorities(jwt);
 
             //이미 JWT 검증으로 인증 완료됨
             final Authentication auth =
-                    new UsernamePasswordAuthenticationToken(userIdStr, null, AuthorityUtils.NO_AUTHORITIES);
+                    new UsernamePasswordAuthenticationToken(userIdStr, null, authorities);
 
             SecurityContextHolder.getContext().setAuthentication(auth);
             filterChain.doFilter(httpServletRequest, httpServletResponse);
@@ -65,5 +67,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     "{\"status\":\"UNAUTHORIZED\",\"message\":\"토큰이 만료되었거나 없습니다.\",\"timestamp\":\"" + LocalDateTime.now() + "\"}"
             );
         }
+    }
+
+    private List<SimpleGrantedAuthority> getAuthorities(final String jwt){
+        final List<String> roles = jwtProvider.getClaims(jwt).get("authorities", List.class);
+        return roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .toList();
     }
 }

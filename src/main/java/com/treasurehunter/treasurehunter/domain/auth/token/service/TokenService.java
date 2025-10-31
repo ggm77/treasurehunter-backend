@@ -2,12 +2,18 @@ package com.treasurehunter.treasurehunter.domain.auth.token.service;
 
 import com.treasurehunter.treasurehunter.domain.auth.token.dto.RefreshTokenRequestDto;
 import com.treasurehunter.treasurehunter.domain.auth.token.dto.TokenResponseDto;
+import com.treasurehunter.treasurehunter.domain.user.domain.Role;
+import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
 import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
+import com.treasurehunter.treasurehunter.global.exception.CustomException;
+import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import com.treasurehunter.treasurehunter.global.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +26,7 @@ public class TokenService {
 
     private final CookieUtil cookieUtil;
     private final JwtProvider jwtProvider;
+    private final UserRepository userRepository;
 
     /**
      * HttpServletRequest에서 쿠키를 가져와 토큰을 찾는 메서드
@@ -44,13 +51,19 @@ public class TokenService {
      * @param refreshTokenRequestDto 리프레시 토큰 담겨있는 DTO
      * @return TokenResponseDto에 담긴 토큰
      */
+    @Transactional
     public TokenResponseDto refreshToken(final RefreshTokenRequestDto refreshTokenRequestDto){
 
-        final String tokenSub = jwtProvider.validateToken(refreshTokenRequestDto.getRefreshToken());
+        final String tokenSub = jwtProvider.getPayload(refreshTokenRequestDto.getRefreshToken());
         final Long userId = Long.parseLong(tokenSub);
 
-        final String accessToken = jwtProvider.creatToken(userId,  accessTokenExpireTime);
-        final String refreshToken = jwtProvider.creatToken(userId,  refreshTokenExpireTime);
+        final User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_EXIST));
+
+        final Role role = user.getRole();
+
+        final String accessToken = jwtProvider.creatToken(userId, role, accessTokenExpireTime);
+        final String refreshToken = jwtProvider.creatToken(userId, role, refreshTokenExpireTime);
 
         return TokenResponseDto.builder()
                 .accessToken(accessToken)
