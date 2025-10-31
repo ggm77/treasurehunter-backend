@@ -28,7 +28,10 @@ public class UserBadge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //생성일 == 유저가 뱃지 얻은 시점 (자동으로 채워짐)
+    @Column(nullable = false)
+    private LocalDateTime earnedDate;
+
+    //생성일 (자동으로 채워짐)
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -48,9 +51,11 @@ public class UserBadge {
 
     @Builder
     public UserBadge(
+            final LocalDateTime earnedDate,
             final User user,
             final Badge badge
     ){
+        this.earnedDate = earnedDate;
         this.user = user;
         this.badge = badge;
     }
