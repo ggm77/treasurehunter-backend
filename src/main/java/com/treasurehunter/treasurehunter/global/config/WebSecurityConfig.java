@@ -36,6 +36,7 @@ public class WebSecurityConfig {
                 .httpBasic((httpBasic) -> httpBasic.disable())
                 .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
+                        //인증 필요 없는 API들
                         .requestMatchers(
                                 "/ping",
                                 "/ready",
@@ -45,7 +46,14 @@ public class WebSecurityConfig {
                                 "/api/v1/auth/**",
                                 "/api/v1/file/image"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/file/image").permitAll() // 사진 조회 API
+
+                        //사진 조회 API GET만 제외
+                        .requestMatchers(HttpMethod.GET, "/api/v1/file/image").permitAll()
+
+                        //어드민 API는 어드민만 사용가능
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+
+                        //그 외 요청은 인증 필요
                         .anyRequest().authenticated())
                 .oauth2Login(customConfigurer -> customConfigurer
                         .successHandler(oauth2SuccessHandler)
