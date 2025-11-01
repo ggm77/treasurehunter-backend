@@ -22,7 +22,9 @@ import java.util.*;
 @Table(
         name = "review",
         indexes = {
-                @Index(name = "idx_author_id", columnList = "author_id")
+                @Index(name = "idx_author_id", columnList = "author_id"),
+                @Index(name = "idx_target_user_id", columnList = "target_user_id"),
+                @Index(name = "idx_post_id", columnList = "post_id")
         }
 )
 public class Review {
@@ -54,7 +56,7 @@ public class Review {
 
     //후기가 적힐 게시글
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id", unique = true)
     private Post post;
 
     //후기 작성한 유저
@@ -62,19 +64,26 @@ public class Review {
     @JoinColumn(name = "author_id")
     private User author;
 
+    //리뷰 당한 유저
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "target_user_id")
+    private User targetUser;
+
     @Builder
     public Review(
             final String title,
             final String content,
             final int score,
             final User author,
-            final Post post
+            final Post post,
+            final User targetUser
     ){
         this.title = title;
         this.content = content;
         this.score = score;
         this.author = author;
         this.post = post;
+        this.targetUser = targetUser;
     }
 
     //연관 관계가 설정된 ReviewImage에서 URL만 가져오는 메서드

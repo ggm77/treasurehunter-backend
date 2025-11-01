@@ -72,13 +72,15 @@ public class ReviewService {
                 .orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_EXIST));
 
         // 5) 후기 작성에 따른 유저 정보 갱신
+        //리뷰 당할 유저 조회
+        final User targetUser = post.getAuthor();
         //불필요한 갱신 제외
         if(reviewRequestDto.getScore() != 0){
             // 총 점수 증가
-            post.getAuthor().increaseTotalScore(reviewRequestDto.getScore());
+            targetUser.increaseTotalScore(reviewRequestDto.getScore());
         }
         // 총 리뷰 수 1 증가
-        post.getAuthor().incrementTotalReviews();
+        targetUser.incrementTotalReviews();
 
         // 6) review 엔티티 생성
         final Review review = Review.builder()
@@ -87,6 +89,7 @@ public class ReviewService {
                 .score(reviewRequestDto.getScore())
                 .author(user)
                 .post(post)
+                .targetUser(targetUser)
                 .build();
 
         // 7) review DB에 저장

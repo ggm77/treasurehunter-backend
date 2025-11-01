@@ -35,7 +35,7 @@ public class User {
     private String nickname;
 
     //프로필 사진 url
-    @Column(length = 255, nullable = true)
+    @Column(length = 1024, nullable = true)
     private String profileImage;
 
     //실제 이름
@@ -54,7 +54,7 @@ public class User {
     private LocalDateTime createdAt;
 
     //사용자가 가진 포인트
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private Integer point;
 
     //찾아준 물건 총 개수
@@ -91,6 +91,10 @@ public class User {
     //유저가 얻은 뱃지에 대한 기록 저장하는 엔티티와 연관관계 설정
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<UserBadge> userBadges = new ArrayList<>();
+
+    //유저가 받은 후기에 대한 관계 설정
+    @OneToMany(mappedBy = "targetUser", orphanRemoval = false)
+    private List<Review> receivedReviews = new ArrayList<>();
 
     //oauth 회원가입용 생성자
     public User(

@@ -60,10 +60,7 @@ public class UserResponseDto {
             this.userOauth2Accounts = new ArrayList<>();
         }
 
-        //정상적인 방법 찾기
-        this.receivedReviews = user.getPosts().stream()
-                .map(Post::getReview)
-                .filter(Objects::nonNull)
+        this.receivedReviews = user.getReceivedReviews().stream()
                 .map(ReviewResponseDto::new)
                 .toList();
 
