@@ -86,7 +86,7 @@ public class PostService {
                 .isCompleted(false)
                 .build();
 
-        // 5) 이미지 연관 관계 설정 및 DB에 저장
+        // 5) 이미지 연관 관계 설정
         //리스트가 null인 경우, 요소가 null인경우, 빈경우 예외처리
         final List<String> validUrls = Optional.ofNullable(postRequestDto.getImages())
                 .orElseGet(List::of).stream()

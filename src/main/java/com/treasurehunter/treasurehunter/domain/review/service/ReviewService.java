@@ -87,15 +87,15 @@ public class ReviewService {
                 .title(reviewRequestDto.getTitle())
                 .content(reviewRequestDto.getContent())
                 .score(reviewRequestDto.getScore())
+                .images(new ArrayList<>())
                 .author(user)
                 .post(post)
                 .targetUser(targetUser)
                 .build();
 
-        // 7) review DB에 저장
-        final Review savedReview = reviewRepository.save(review);
 
-        // 8) ReviewImage 연관 관계 설정 및 DB에 저장
+
+        // 7) ReviewImage 연관 관계 설정
         //리스트가 null인 경우, 요소가 null인경우, 빈경우 예외처리
         final List<String> validUrls = Optional.ofNullable(reviewRequestDto.getImages())
                 .orElseGet(List::of).stream()
@@ -106,40 +106,29 @@ public class ReviewService {
 
         //null제거후 빈 리스트 대응
         if(!validUrls.isEmpty()) {
-            //ReviewImage 리스트 생성
-            final List<ReviewImage> reviewImages =  new ArrayList<>(validUrls.size());
             for(int i = 0; i < validUrls.size(); i++) {
                 final ReviewImage img = ReviewImage.builder()
                         .url(validUrls.get(i))
                         .imageIndex(i)
                         .build();
-                img.updateReview(savedReview);
-                reviewImages.add(img);
+                img.updateReview(review);
+                //review 엔티티에 집어 넣기
+                review.getImages().add(img);
             }
-
-            reviewImageRepository.saveAll(reviewImages);
         }
 
-        // 8) 이미지 정보가 최신 정보로 표시 되지 않는 문제 해결
-        final Long savedReviewId = savedReview.getId();
+        // 8) review DB에 저장
+        final Review savedReview = reviewRepository.save(review);
 
-        // 10) 배지 수여용 이벤트 발생 시키기
+        // 9) 배지 수여용 이벤트 발생 시키기
         eventPublisher.publish(
                 ReviewCreateEvent.builder()
                         .userId(userId)
-                        .reviewId(savedReviewId)
+                        .reviewId(savedReview.getId())
                         .build()
         );
 
-        // 11) 변경사항 적용
-        entityManager.flush();
-        entityManager.clear();
-
-        // 12) 최신 정보로 다시 가져오기
-        final Review updatedReview = reviewRepository.findById(savedReviewId)
-                .orElseThrow(() -> new CustomException(ExceptionCode.REVIEW_NOT_EXIST));
-
-        return new ReviewResponseDto(updatedReview);
+        return new ReviewResponseDto(savedReview);
     }
 
     /**
@@ -183,8 +172,8 @@ public class ReviewService {
         //이미지 수정
         //null이면 무시, []이면 사진 삭제, 요소 존재하면 변경
         if(reviewRequestDto.getImages() != null){
-            //원래 있던 이미지 삭제로 연관 관계 초기화
-            reviewImageRepository.deleteByReviewId(reviewId);
+            //원래 있던 이미지 연관 관계 초기화로 삭제
+            review.getImages().clear();
 
             // 이미지 새로 저장
             //리스트가 null인 경우, 요소가 null인경우, 빈경우 예외처리
@@ -197,35 +186,23 @@ public class ReviewService {
 
             //null제거후 빈 리스트 대응
             if(!validUrls.isEmpty()) {
-                //ReviewImage 리스트 생성
-                final List<ReviewImage> reviewImages =  new ArrayList<>(validUrls.size());
                 for(int i = 0; i < validUrls.size(); i++) {
                     final ReviewImage img = ReviewImage.builder()
                             .url(validUrls.get(i))
                             .imageIndex(i)
                             .build();
                     img.updateReview(review);
-                    reviewImages.add(img);
+                    review.getImages().add(img);
                 }
-
-                reviewImageRepository.saveAll(reviewImages);
             }
         }
 
+        //나머지 정보들 수정
         Optional.ofNullable(reviewRequestDto.getTitle()).filter(s -> !s.isBlank()).ifPresent(review::updateTitle);
         Optional.ofNullable(reviewRequestDto.getContent()).filter(s -> !s.isBlank()).ifPresent(review::updateContent);
         Optional.ofNullable(reviewRequestDto.getScore()).ifPresent(review::updateScore);
 
-        // 4) deleteByReviewId가 트랜잭션을 우회해서 생긴 문제 해결
-        //변경사항 적용
-        entityManager.flush();
-        entityManager.clear();
-
-        //최신 정보로 다시 가져오기
-        final Review patchedReview = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(ExceptionCode.REVIEW_NOT_EXIST));
-
-        return new ReviewResponseDto(patchedReview);
+        return new ReviewResponseDto(review);
     }
 
     /**
@@ -248,10 +225,7 @@ public class ReviewService {
             throw new CustomException(ExceptionCode.PERMISSION_DENIED);
         }
 
-        // 3) 자식 정리
-        reviewImageRepository.deleteByReviewId(reviewId);
-
-        // 4) 후기 삭제
+        // 3) 후기 삭제
         reviewRepository.delete(review);
     }
 }

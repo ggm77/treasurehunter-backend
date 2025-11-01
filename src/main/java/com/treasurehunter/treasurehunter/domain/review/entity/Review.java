@@ -51,7 +51,7 @@ public class Review {
     private int score;
 
     //리뷰 삭제되면 사진도 삭제
-    @OneToMany(mappedBy = "review", orphanRemoval = true)
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewImage> images = new ArrayList<>();
 
     //후기가 적힐 게시글
@@ -74,6 +74,7 @@ public class Review {
             final String title,
             final String content,
             final int score,
+            final List<ReviewImage> images,
             final User author,
             final Post post,
             final User targetUser
@@ -81,6 +82,7 @@ public class Review {
         this.title = title;
         this.content = content;
         this.score = score;
+        this.images = images;
         this.author = author;
         this.post = post;
         this.targetUser = targetUser;
