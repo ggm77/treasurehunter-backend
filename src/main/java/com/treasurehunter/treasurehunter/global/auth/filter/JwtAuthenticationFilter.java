@@ -1,6 +1,7 @@
 package com.treasurehunter.treasurehunter.global.auth.filter;
 
 import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
+import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,8 +48,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             final String jwt =  authorizationHeader.substring(7);
 
             //JWT 검증
-            //검증 실패하면 예외 던짐
-            final String userIdStr = jwtProvider.getPayload(jwt);
+            //검증 실패하면 익명으로 진행
+            final String userIdStr;
+            try {
+                userIdStr = jwtProvider.getPayload(jwt);
+            } catch (CustomException ex) { //검증 실패시 던져지는 CustomException 무시하고 진행시키기
+                filterChain.doFilter(httpServletRequest, httpServletResponse);
+                return;
+            }
+
+            //토큰에서 Claims 추출
             final List<SimpleGrantedAuthority> authorities = getAuthorities(jwt);
 
             //이미 JWT 검증으로 인증 완료됨
