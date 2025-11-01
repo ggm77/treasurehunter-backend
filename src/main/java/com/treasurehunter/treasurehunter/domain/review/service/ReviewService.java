@@ -62,11 +62,16 @@ public class ReviewService {
             throw new CustomException(ExceptionCode.POST_NOT_COMPLETED);
         }
 
-        // 3) 유저 존재 확인
+        // 3) 게시글에 리뷰가 이미 존재하면 실패 처리
+        if(post.getReview() != null){
+            throw new CustomException(ExceptionCode.REVIEW_ALREADY_EXIST);
+        }
+
+        // 4) 유저 존재 확인
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_EXIST));
 
-        // 4) 후기 작성에 따른 유저 정보 갱신
+        // 5) 후기 작성에 따른 유저 정보 갱신
         //불필요한 갱신 제외
         if(reviewRequestDto.getScore() != 0){
             // 총 점수 증가
@@ -75,7 +80,7 @@ public class ReviewService {
         // 총 리뷰 수 1 증가
         post.getAuthor().incrementTotalReviews();
 
-        // 5) review 엔티티 생성
+        // 6) review 엔티티 생성
         final Review review = Review.builder()
                 .title(reviewRequestDto.getTitle())
                 .content(reviewRequestDto.getContent())
@@ -84,10 +89,10 @@ public class ReviewService {
                 .post(post)
                 .build();
 
-        // 6) review DB에 저장
+        // 7) review DB에 저장
         final Review savedReview = reviewRepository.save(review);
 
-        // 7) ReviewImage 연관 관계 설정 및 DB에 저장
+        // 8) ReviewImage 연관 관계 설정 및 DB에 저장
         //리스트가 null인 경우, 요소가 null인경우, 빈경우 예외처리
         final List<String> validUrls = Optional.ofNullable(reviewRequestDto.getImages())
                 .orElseGet(List::of).stream()
@@ -115,7 +120,7 @@ public class ReviewService {
         // 8) 이미지 정보가 최신 정보로 표시 되지 않는 문제 해결
         final Long savedReviewId = savedReview.getId();
 
-        // 9) 배지 수여용 이벤트 발생 시키기
+        // 10) 배지 수여용 이벤트 발생 시키기
         eventPublisher.publish(
                 ReviewCreateEvent.builder()
                         .userId(userId)
@@ -123,11 +128,11 @@ public class ReviewService {
                         .build()
         );
 
-        // 10) 변경사항 적용
+        // 11) 변경사항 적용
         entityManager.flush();
         entityManager.clear();
 
-        // 11) 최신 정보로 다시 가져오기
+        // 12) 최신 정보로 다시 가져오기
         final Review updatedReview = reviewRepository.findById(savedReviewId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.REVIEW_NOT_EXIST));
 
