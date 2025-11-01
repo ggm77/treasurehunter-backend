@@ -11,7 +11,7 @@ public class BadgeResponseDto {
 
     public BadgeResponseDto(final Badge badge) {
         this.id = badge.getId();
-        this.name = badge.getName();
+        this.name = badge.getName().name();
         this.description = badge.getDescription();
     }
 }

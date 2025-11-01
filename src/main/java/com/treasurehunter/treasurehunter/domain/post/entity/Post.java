@@ -24,6 +24,7 @@ import java.util.*;
 @Table(
         name = "post",
         indexes = {
+                @Index(name = "idx_author_id", columnList = "author_id"),
                 @Index(name = "idx_post_lat_lon", columnList = "lat, lon"),
                 @Index(name = "idx_post_lat", columnList = "lat"),
                 @Index(name = "idx_post_lon", columnList = "lon"),

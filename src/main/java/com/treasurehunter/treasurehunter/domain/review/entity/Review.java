@@ -19,6 +19,12 @@ import java.util.*;
 @Getter
 @EntityListeners(AuditingEntityListener.class) // updatedAt을 위해서
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(
+        name = "review",
+        indexes = {
+                @Index(name = "idx_author_id", columnList = "author_id")
+        }
+)
 public class Review {
 
     @Id

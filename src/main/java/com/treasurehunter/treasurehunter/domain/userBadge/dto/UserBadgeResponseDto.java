@@ -17,7 +17,7 @@ public class UserBadgeResponseDto {
     public UserBadgeResponseDto(final UserBadge userBadge) {
         this.id = userBadge.getId();
         //N+1 해결하기
-        this.name = userBadge.getBadge().getName();
+        this.name = userBadge.getBadge().getName().name();
         //N+1 해결하기
         this.badgeId = userBadge.getBadge().getId();
         this.earnedDate = userBadge.getEarnedDate();

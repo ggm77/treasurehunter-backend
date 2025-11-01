@@ -10,6 +10,8 @@ import com.treasurehunter.treasurehunter.domain.review.repository.ReviewReposito
 import com.treasurehunter.treasurehunter.domain.review.repository.image.ReviewImageRepository;
 import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
+import com.treasurehunter.treasurehunter.global.event.domain.EventPublisher;
+import com.treasurehunter.treasurehunter.global.event.model.ReviewCreateEvent;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import jakarta.persistence.EntityManager;
@@ -31,6 +33,7 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final ReviewImageRepository reviewImageRepository;
+    private final EventPublisher eventPublisher;
 
     //entityManager.flush()를 사용하기 위함
     @PersistenceContext
@@ -111,11 +114,20 @@ public class ReviewService {
 
         // 8) 이미지 정보가 최신 정보로 표시 되지 않는 문제 해결
         final Long savedReviewId = savedReview.getId();
-        //변경사항 적용
+
+        // 9) 배지 수여용 이벤트 발생 시키기
+        eventPublisher.publish(
+                ReviewCreateEvent.builder()
+                        .userId(userId)
+                        .reviewId(savedReviewId)
+                        .build()
+        );
+
+        // 10) 변경사항 적용
         entityManager.flush();
         entityManager.clear();
 
-        //최신 정보로 다시 가져오기
+        // 11) 최신 정보로 다시 가져오기
         final Review updatedReview = reviewRepository.findById(savedReviewId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.REVIEW_NOT_EXIST));
 

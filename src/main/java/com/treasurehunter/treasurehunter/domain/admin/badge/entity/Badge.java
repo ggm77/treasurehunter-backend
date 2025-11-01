@@ -29,8 +29,9 @@ public class Badge {
     private Long id;
 
     //뱃지 이름
+    @Enumerated(EnumType.STRING)
     @Column(length = 255, nullable = false)
-    private String name;
+    private BadgeName name;
 
     //뱃지 설명
     @Column(length = 255, nullable = false)
@@ -50,7 +51,7 @@ public class Badge {
 
     @Builder
     public Badge(
-            final String name,
+            final BadgeName name,
             final String description
     ){
         this.name = name;
@@ -58,7 +59,7 @@ public class Badge {
     }
 
     //뱃지 이름 수정 메서드
-    public void updateName(final String name){
+    public void updateName(final BadgeName name){
         this.name = name;
     }
 

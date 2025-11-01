@@ -1,7 +1,9 @@
 package com.treasurehunter.treasurehunter.domain.userBadge.handler;
 
-import com.treasurehunter.treasurehunter.domain.userBadge.service.award.UserBadgeAwardService;
+import com.treasurehunter.treasurehunter.domain.userBadge.service.award.UserBadgePostAwardService;
+import com.treasurehunter.treasurehunter.domain.userBadge.service.award.UserBadgeReviewAwardService;
 import com.treasurehunter.treasurehunter.global.event.model.PostCreateEvent;
+import com.treasurehunter.treasurehunter.global.event.model.ReviewCreateEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -16,11 +18,18 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class BadgeEventHandler {
 
-    private final UserBadgeAwardService userBadgeAwardService;
+    private final UserBadgePostAwardService userBadgePostAwardService;
+    private final UserBadgeReviewAwardService userBadgeReviewAwardService;
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void on(final PostCreateEvent postCreateEvent){
-        userBadgeAwardService.evaluateAndAwardForPostCreateEvent(postCreateEvent);
+        userBadgePostAwardService.evaluateAndAwardForPostCreateEvent(postCreateEvent);
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void on(final ReviewCreateEvent reviewCreateEvent){
+        userBadgeReviewAwardService.evaluateAndAwardForReviewCreateEvent(reviewCreateEvent);
     }
 }

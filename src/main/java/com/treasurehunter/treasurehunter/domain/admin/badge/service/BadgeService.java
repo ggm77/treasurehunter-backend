@@ -3,6 +3,7 @@ package com.treasurehunter.treasurehunter.domain.admin.badge.service;
 import com.treasurehunter.treasurehunter.domain.admin.badge.entity.Badge;
 import com.treasurehunter.treasurehunter.domain.admin.badge.dto.BadgeRequestDto;
 import com.treasurehunter.treasurehunter.domain.admin.badge.dto.BadgeResponseDto;
+import com.treasurehunter.treasurehunter.domain.admin.badge.entity.BadgeName;
 import com.treasurehunter.treasurehunter.domain.admin.badge.repository.BadgeRepository;
 import com.treasurehunter.treasurehunter.domain.user.entity.Role;
 import com.treasurehunter.treasurehunter.domain.user.entity.User;
@@ -10,6 +11,7 @@ import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
 import com.treasurehunter.treasurehunter.domain.userBadge.repository.UserBadgeRepository;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
+import com.treasurehunter.treasurehunter.global.util.EnumUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ public class BadgeService {
     private final UserRepository userRepository;
     private final BadgeRepository badgeRepository;
     private final UserBadgeRepository userBadgeRepository;
+    private final EnumUtil enumUtil;
 
     /**
      * 뱃지 정보 생성하는 메서드
@@ -46,13 +49,17 @@ public class BadgeService {
             throw new CustomException(ExceptionCode.PERMISSION_DENIED);
         }
 
-        // 3) 뱃지 엔티티 생성
+        // 3) 뱃지 이름 Enum 변환
+        final BadgeName badgeName = enumUtil.toEnum(BadgeName.class, badgeRequestDto.getName())
+                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REQUEST));
+
+        // 4) 뱃지 엔티티 생성
         final Badge badge = Badge.builder()
-                .name(badgeRequestDto.getName())
+                .name(badgeName)
                 .description(badgeRequestDto.getDescription())
                 .build();
 
-        // 4) DB에 뱃지 정보 저장
+        // 5) DB에 뱃지 정보 저장
         final Badge savedBadge = badgeRepository.save(badge);
 
         return new BadgeResponseDto(savedBadge);
@@ -102,8 +109,15 @@ public class BadgeService {
         final Badge badge = badgeRepository.findById(badgeId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.BADGE_NOT_EXIST));
 
-        // 4) DTO 비어있지 않다면 변경
-        Optional.ofNullable(badgeRequestDto.getName()).filter(s -> !s.isBlank()).ifPresent(badge::updateName);
+        // 4) 배지 이름 Enum으로 변환 및 업데이트
+        if(badgeRequestDto.getName() != null) {
+            final BadgeName badgeName = enumUtil.toEnum(BadgeName.class, badgeRequestDto.getName())
+                    .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REQUEST));
+            // 업데이트
+            badge.updateName(badgeName);
+        }
+
+        // 5) 설명 비어있지 않다면 변경
         Optional.ofNullable(badgeRequestDto.getDescription()).filter(s -> !s.isBlank()).ifPresent(badge::updateDescription);
 
         return new BadgeResponseDto(badge);
