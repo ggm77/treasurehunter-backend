@@ -9,9 +9,10 @@ import com.treasurehunter.treasurehunter.domain.post.dto.PostResponseDto;
 import com.treasurehunter.treasurehunter.domain.post.repository.PostRepository;
 import com.treasurehunter.treasurehunter.domain.post.repository.image.PostImageRepository;
 import com.treasurehunter.treasurehunter.domain.post.repository.like.PostLikeRepository;
-import com.treasurehunter.treasurehunter.domain.review.domain.Review;
 import com.treasurehunter.treasurehunter.domain.user.domain.User;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
+import com.treasurehunter.treasurehunter.global.event.domain.EventPublisher;
+import com.treasurehunter.treasurehunter.global.event.model.PostCreateEvent;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import com.treasurehunter.treasurehunter.global.util.EnumUtil;
@@ -32,6 +33,7 @@ public class PostService {
     private final PostImageRepository postImageRepository;
     private final PostLikeRepository postLikeRepository;
     private final EnumUtil enumUtil;
+    private final EventPublisher eventPublisher;
 
     //entityManager.flush()를 사용하기 위함
     @PersistenceContext
@@ -113,11 +115,20 @@ public class PostService {
 
         // 7) 응답값에서 이미지가 제대로 표시되지 않는 문제 해결
         final Long savedPostId = savedPost.getId();
-        //변경사항 적용
+
+        // 8) 배지 수여용 이벤트 발생 시키기
+        eventPublisher.publish(
+                PostCreateEvent.builder()
+                        .userId(userId)
+                        .postId(savedPostId)
+                        .build()
+        );
+
+        // 9) 변경사항 적용
         entityManager.flush();
         entityManager.clear();
 
-        //최신 정보로 다시 가져오기
+        // 10) 최신 정보로 다시 가져오기
         final Post updatedPost = postRepository.findById(savedPostId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_EXIST));
 
