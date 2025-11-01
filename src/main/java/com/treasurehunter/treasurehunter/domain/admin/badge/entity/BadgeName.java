@@ -11,15 +11,7 @@ public enum BadgeName {
     TEN_POST("TEN_POST"),
 
     FIRST_REVIEW("FIRST_REVIEW"),
-    TEN_REVIEW("TEN_REVIEW"),
-
-    // 테스트용 -> 삭제해야함
-    TEST_POST("TEST_POST"),
-    TEST1_POST("TEST_POST"),
-    TEST2_POST("TEST_POST"),
-    TEST3_POST("TEST_POST"),
-    TEST4_POST("TEST_POST"),
-    TEST5_POST("TEST_POST")
+    TEN_REVIEW("TEN_REVIEW")
     ;
 
     private final String name;
