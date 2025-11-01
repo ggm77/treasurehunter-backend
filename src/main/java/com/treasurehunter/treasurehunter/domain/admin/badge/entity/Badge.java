@@ -16,6 +16,9 @@ import java.util.List;
 
 @Entity
 @Getter
+@Table(name = "badge", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_badge_name", columnNames = "name")
+})
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Badge {
