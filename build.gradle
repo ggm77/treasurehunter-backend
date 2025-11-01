@@ -51,7 +51,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     //solapi
     implementation 'com.solapi:sdk:1.0.3'
-    //
+    //libphonenumber
     implementation 'com.googlecode.libphonenumber:libphonenumber:9.0.16'
 }
 
