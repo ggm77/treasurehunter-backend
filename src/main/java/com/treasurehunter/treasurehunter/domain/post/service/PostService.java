@@ -76,6 +76,7 @@ public class PostService {
                 .content(postRequestDto.getContent())
                 .type(postType)
                 .author(user)
+                .images(new ArrayList<>())
                 .setPoint(postRequestDto.getSetPoint())
                 .itemCategory(itemCategory)
                 .lat(postRequestDto.getLat())
@@ -85,10 +86,7 @@ public class PostService {
                 .isCompleted(false)
                 .build();
 
-        // 5) 게시글 DB에 저장
-        final Post savedPost = postRepository.save(post);
-
-        // 6) 이미지 연관 관계 설정 및 DB에 저장
+        // 5) 이미지 연관 관계 설정 및 DB에 저장
         //리스트가 null인 경우, 요소가 null인경우, 빈경우 예외처리
         final List<String> validUrls = Optional.ofNullable(postRequestDto.getImages())
                 .orElseGet(List::of).stream()
@@ -99,40 +97,29 @@ public class PostService {
 
         //null제거후 빈 리스트 대응
         if(!validUrls.isEmpty()) {
-            //PostImage 리스트 생성
-            final List<PostImage> postImages =  new ArrayList<>(validUrls.size());
             for(int i = 0; i < validUrls.size(); i++) {
                 final PostImage img = PostImage.builder()
                         .url(validUrls.get(i))
                         .imageIndex(i)
                         .build();
-                img.updatePost(savedPost);
-                postImages.add(img);
+                img.updatePost(post);
+                //post 엔티티에 집어 넣기
+                post.getImages().add(img);
             }
-
-            postImageRepository.saveAll(postImages);
         }
 
-        // 7) 응답값에서 이미지가 제대로 표시되지 않는 문제 해결
-        final Long savedPostId = savedPost.getId();
+        // 6) 게시글 DB에 저장
+        final Post savedPost = postRepository.save(post);
 
-        // 8) 배지 수여용 이벤트 발생 시키기
+        // 7) 배지 수여용 이벤트 발생 시키기
         eventPublisher.publish(
                 PostCreateEvent.builder()
                         .userId(userId)
-                        .postId(savedPostId)
+                        .postId(savedPost.getId())
                         .build()
         );
 
-        // 9) 변경사항 적용
-        entityManager.flush();
-        entityManager.clear();
-
-        // 10) 최신 정보로 다시 가져오기
-        final Post updatedPost = postRepository.findById(savedPostId)
-                .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_EXIST));
-
-        return new PostResponseDto(updatedPost);
+        return new PostResponseDto(savedPost);
     }
 
     /**
@@ -193,7 +180,6 @@ public class PostService {
         }
 
         // 5) 비어있지 않으면 변경
-
         // 포인트 수정
         if(postRequestDto.getSetPoint() != null){
             final User user = userRepository.findById(userId)
@@ -215,7 +201,7 @@ public class PostService {
         // null이면 무시, []이라면 사진 삭제, 요소가 존재하면 변경
         if(postRequestDto.getImages() != null){
             //연관 되어있는 PostImage 전량 삭제
-            postImageRepository.deleteByPostId(postId);
+            post.getImages().clear();
 
             //이미지 새로 저장
             //리스트가 null인 경우, 요소가 null인경우, 빈경우 예외처리
@@ -228,18 +214,15 @@ public class PostService {
 
             //null제거후 빈 리스트 대응
             if(!validUrls.isEmpty()) {
-                //PostImage 리스트 생성
-                final List<PostImage> postImages =  new ArrayList<>(validUrls.size());
                 for(int i = 0; i < validUrls.size(); i++) {
                     final PostImage img = PostImage.builder()
                             .url(validUrls.get(i))
                             .imageIndex(i)
                             .build();
                     img.updatePost(post);
-                    postImages.add(img);
+                    //post 엔티티에 집어 넣기
+                    post.getImages().add(img);
                 }
-
-                postImageRepository.saveAll(postImages);
             }
         }
 
@@ -260,16 +243,7 @@ public class PostService {
         Optional.ofNullable(postRequestDto.getLostAt()).ifPresent(post::updateLostAt);
         Optional.ofNullable(postRequestDto.getIsAnonymous()).ifPresent(post::updateIsAnonymous);
 
-        // 4) deleteByPostId가 트랜잭션을 우회해서 생긴 문제 해결
-        //변경사항 적용
-        entityManager.flush();
-        entityManager.clear();
-
-        //최신 정보로 다시 가져오기
-        final Post patchedPost = postRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_EXIST));
-
-        return new PostResponseDto(patchedPost);
+        return new PostResponseDto(post);
     }
 
     /**
@@ -299,14 +273,11 @@ public class PostService {
         }
 
         // 4) 자식 정리
-        //사진 정리(삭제)
-        postImageRepository.deleteByPostId(postId);
-        //리뷰 존재하면 리뷰도 정리(리뷰는 삭제 X)
+
+        //리뷰 존재하면 정리(리뷰는 삭제 X)
         if(post.getReview() != null){
             post.getReview().detachPost();
         }
-        //좋아요 정리(삭제)
-        postLikeRepository.deleteByPostId(postId);
 
         // 5) 게시글 삭제
         postRepository.delete(post);

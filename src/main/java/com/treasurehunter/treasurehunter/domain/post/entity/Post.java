@@ -50,8 +50,8 @@ public class Post {
     @JoinColumn(name = "author_id")
     private User author;
 
-    //게시글 삭제되면 사진도 삭제 // cascade 없이 수동으로 연관관계 설정
-    @OneToMany(mappedBy = "post", orphanRemoval = true)
+    //게시글 삭제되면 사진도 삭제
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostImage> images = new ArrayList<>();
 
     @Column(nullable = false)
@@ -84,8 +84,7 @@ public class Post {
     @Column(columnDefinition = "TINYINT(1)", nullable = false)
     private boolean isCompleted;
 
-    //cascade 없이 수동으로 삭제
-    @OneToMany(mappedBy = "post", orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostLike> postLikes = new ArrayList<>();
 
     //게시글에 작성된 후기
@@ -98,6 +97,7 @@ public class Post {
             final String content,
             final PostType type,
             final User author,
+            final List<PostImage> images,
             final int setPoint,
             final ItemCategory itemCategory,
             final BigDecimal lat,
@@ -110,6 +110,7 @@ public class Post {
         this.content = content;
         this.type = type;
         this.author = author;
+        this.images = images;
         this.setPoint = setPoint;
         this.itemCategory = itemCategory;
         this.lat = lat;
