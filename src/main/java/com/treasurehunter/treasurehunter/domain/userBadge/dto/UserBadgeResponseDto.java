@@ -1,7 +1,7 @@
 package com.treasurehunter.treasurehunter.domain.userBadge.dto;
 
 import com.treasurehunter.treasurehunter.domain.user.dto.UserSimpleResponseDto;
-import com.treasurehunter.treasurehunter.domain.userBadge.domain.UserBadge;
+import com.treasurehunter.treasurehunter.domain.userBadge.entity.UserBadge;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

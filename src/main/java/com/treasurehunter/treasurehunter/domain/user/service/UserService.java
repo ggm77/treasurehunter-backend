@@ -1,9 +1,9 @@
 package com.treasurehunter.treasurehunter.domain.user.service;
 
-import com.treasurehunter.treasurehunter.domain.post.domain.Post;
-import com.treasurehunter.treasurehunter.domain.review.domain.Review;
-import com.treasurehunter.treasurehunter.domain.user.domain.Role;
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.post.entity.Post;
+import com.treasurehunter.treasurehunter.domain.review.entity.Review;
+import com.treasurehunter.treasurehunter.domain.user.entity.Role;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserRequestDto;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserResponseDto;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
@@ -11,7 +11,6 @@ import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 @Service

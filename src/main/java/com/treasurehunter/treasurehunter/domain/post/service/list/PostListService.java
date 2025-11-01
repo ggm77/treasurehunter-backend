@@ -1,6 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.post.service.list;
 
-import com.treasurehunter.treasurehunter.domain.post.domain.Post;
+import com.treasurehunter.treasurehunter.domain.post.entity.Post;
 import com.treasurehunter.treasurehunter.domain.post.dto.list.PostListResponseDto;
 import com.treasurehunter.treasurehunter.domain.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;

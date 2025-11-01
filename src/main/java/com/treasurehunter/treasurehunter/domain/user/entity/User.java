@@ -1,10 +1,10 @@
-package com.treasurehunter.treasurehunter.domain.user.domain;
+package com.treasurehunter.treasurehunter.domain.user.entity;
 
-import com.treasurehunter.treasurehunter.domain.post.domain.Post;
-import com.treasurehunter.treasurehunter.domain.post.domain.like.PostLike;
-import com.treasurehunter.treasurehunter.domain.review.domain.Review;
-import com.treasurehunter.treasurehunter.domain.user.domain.oauth.UserOauth2Accounts;
-import com.treasurehunter.treasurehunter.domain.userBadge.domain.UserBadge;
+import com.treasurehunter.treasurehunter.domain.post.entity.Post;
+import com.treasurehunter.treasurehunter.domain.post.entity.like.PostLike;
+import com.treasurehunter.treasurehunter.domain.review.entity.Review;
+import com.treasurehunter.treasurehunter.domain.user.entity.oauth.UserOauth2Accounts;
+import com.treasurehunter.treasurehunter.domain.userBadge.entity.UserBadge;
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

@@ -1,7 +1,7 @@
 package com.treasurehunter.treasurehunter.domain.user.service.oauth;
 
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
-import com.treasurehunter.treasurehunter.domain.user.domain.oauth.UserOauth2Accounts;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
+import com.treasurehunter.treasurehunter.domain.user.entity.oauth.UserOauth2Accounts;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsRequestDto;
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsResponseDto;

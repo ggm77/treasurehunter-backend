@@ -1,6 +1,6 @@
-package com.treasurehunter.treasurehunter.domain.user.domain.oauth;
+package com.treasurehunter.treasurehunter.domain.user.entity.oauth;
 
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

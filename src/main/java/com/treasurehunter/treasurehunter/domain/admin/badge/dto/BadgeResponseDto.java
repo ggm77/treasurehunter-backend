@@ -1,7 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.admin.badge.dto;
 
-import com.treasurehunter.treasurehunter.domain.admin.badge.domain.Badge;
-import lombok.Builder;
+import com.treasurehunter.treasurehunter.domain.admin.badge.entity.Badge;
 import lombok.Getter;
 
 @Getter

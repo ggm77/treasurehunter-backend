@@ -1,7 +1,7 @@
-package com.treasurehunter.treasurehunter.domain.post.domain.like;
+package com.treasurehunter.treasurehunter.domain.post.entity.like;
 
-import com.treasurehunter.treasurehunter.domain.post.domain.Post;
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.post.entity.Post;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

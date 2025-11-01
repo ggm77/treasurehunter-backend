@@ -1,4 +1,4 @@
-package com.treasurehunter.treasurehunter.domain.file.image.domain;
+package com.treasurehunter.treasurehunter.domain.file.image.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

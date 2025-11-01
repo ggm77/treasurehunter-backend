@@ -1,11 +1,11 @@
 package com.treasurehunter.treasurehunter.domain.userBadge.service.award;
 
-import com.treasurehunter.treasurehunter.domain.admin.badge.domain.Badge;
+import com.treasurehunter.treasurehunter.domain.admin.badge.entity.Badge;
 import com.treasurehunter.treasurehunter.domain.admin.badge.repository.BadgeRepository;
 import com.treasurehunter.treasurehunter.domain.post.repository.PostRepository;
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
-import com.treasurehunter.treasurehunter.domain.userBadge.domain.UserBadge;
+import com.treasurehunter.treasurehunter.domain.userBadge.entity.UserBadge;
 import com.treasurehunter.treasurehunter.domain.userBadge.repository.UserBadgeRepository;
 import com.treasurehunter.treasurehunter.global.event.model.PostCreateEvent;
 import lombok.RequiredArgsConstructor;

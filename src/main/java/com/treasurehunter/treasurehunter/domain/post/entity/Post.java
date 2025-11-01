@@ -1,9 +1,9 @@
-package com.treasurehunter.treasurehunter.domain.post.domain;
+package com.treasurehunter.treasurehunter.domain.post.entity;
 
-import com.treasurehunter.treasurehunter.domain.post.domain.image.PostImage;
-import com.treasurehunter.treasurehunter.domain.post.domain.like.PostLike;
-import com.treasurehunter.treasurehunter.domain.review.domain.Review;
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.post.entity.image.PostImage;
+import com.treasurehunter.treasurehunter.domain.post.entity.like.PostLike;
+import com.treasurehunter.treasurehunter.domain.review.entity.Review;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

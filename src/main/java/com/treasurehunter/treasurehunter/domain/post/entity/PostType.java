@@ -1,4 +1,4 @@
-package com.treasurehunter.treasurehunter.domain.post.domain;
+package com.treasurehunter.treasurehunter.domain.post.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

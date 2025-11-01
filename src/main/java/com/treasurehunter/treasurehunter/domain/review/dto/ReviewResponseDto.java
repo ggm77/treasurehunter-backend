@@ -1,10 +1,9 @@
 package com.treasurehunter.treasurehunter.domain.review.dto;
 
 import com.treasurehunter.treasurehunter.domain.post.dto.PostSimpleResponseDto;
-import com.treasurehunter.treasurehunter.domain.review.domain.Review;
+import com.treasurehunter.treasurehunter.domain.review.entity.Review;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserSimpleResponseDto;
 import lombok.Getter;
-import org.springframework.security.core.parameters.P;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,7 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.post.repository.like;
 
-import com.treasurehunter.treasurehunter.domain.post.domain.like.PostLike;
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.post.entity.like.PostLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

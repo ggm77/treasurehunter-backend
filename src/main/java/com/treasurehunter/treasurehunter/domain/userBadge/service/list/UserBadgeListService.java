@@ -1,8 +1,8 @@
 package com.treasurehunter.treasurehunter.domain.userBadge.service.list;
 
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
-import com.treasurehunter.treasurehunter.domain.userBadge.domain.UserBadge;
+import com.treasurehunter.treasurehunter.domain.userBadge.entity.UserBadge;
 import com.treasurehunter.treasurehunter.domain.userBadge.dto.UserBadgeResponseDto;
 import com.treasurehunter.treasurehunter.domain.userBadge.dto.list.UserBadgeListResponseDto;
 import com.treasurehunter.treasurehunter.domain.userBadge.repository.UserBadgeRepository;

@@ -2,8 +2,8 @@ package com.treasurehunter.treasurehunter.domain.auth.token.service;
 
 import com.treasurehunter.treasurehunter.domain.auth.token.dto.RefreshTokenRequestDto;
 import com.treasurehunter.treasurehunter.domain.auth.token.dto.TokenResponseDto;
-import com.treasurehunter.treasurehunter.domain.user.domain.Role;
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.user.entity.Role;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
 import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;

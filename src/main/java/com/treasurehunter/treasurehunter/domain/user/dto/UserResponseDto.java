@@ -1,11 +1,11 @@
 package com.treasurehunter.treasurehunter.domain.user.dto;
 
-import com.treasurehunter.treasurehunter.domain.post.domain.Post;
-import com.treasurehunter.treasurehunter.domain.post.domain.like.PostLike;
+import com.treasurehunter.treasurehunter.domain.post.entity.Post;
+import com.treasurehunter.treasurehunter.domain.post.entity.like.PostLike;
 import com.treasurehunter.treasurehunter.domain.post.dto.PostSimpleResponseDto;
 import com.treasurehunter.treasurehunter.domain.review.dto.ReviewResponseDto;
-import com.treasurehunter.treasurehunter.domain.user.domain.Role;
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.user.entity.Role;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsResponseDto;
 import lombok.Builder;
 import lombok.Getter;

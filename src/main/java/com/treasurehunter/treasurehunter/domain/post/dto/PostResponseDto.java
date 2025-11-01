@@ -1,7 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.post.dto;
 
-import com.treasurehunter.treasurehunter.domain.post.domain.Post;
-import com.treasurehunter.treasurehunter.domain.review.domain.Review;
+import com.treasurehunter.treasurehunter.domain.post.entity.Post;
 import com.treasurehunter.treasurehunter.domain.review.dto.ReviewResponseDto;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserSimpleResponseDto;
 import lombok.Getter;

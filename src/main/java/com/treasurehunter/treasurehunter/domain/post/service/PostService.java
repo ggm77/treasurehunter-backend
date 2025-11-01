@@ -1,15 +1,15 @@
 package com.treasurehunter.treasurehunter.domain.post.service;
 
-import com.treasurehunter.treasurehunter.domain.post.domain.ItemCategory;
-import com.treasurehunter.treasurehunter.domain.post.domain.Post;
-import com.treasurehunter.treasurehunter.domain.post.domain.PostType;
-import com.treasurehunter.treasurehunter.domain.post.domain.image.PostImage;
+import com.treasurehunter.treasurehunter.domain.post.entity.ItemCategory;
+import com.treasurehunter.treasurehunter.domain.post.entity.Post;
+import com.treasurehunter.treasurehunter.domain.post.entity.PostType;
+import com.treasurehunter.treasurehunter.domain.post.entity.image.PostImage;
 import com.treasurehunter.treasurehunter.domain.post.dto.PostRequestDto;
 import com.treasurehunter.treasurehunter.domain.post.dto.PostResponseDto;
 import com.treasurehunter.treasurehunter.domain.post.repository.PostRepository;
 import com.treasurehunter.treasurehunter.domain.post.repository.image.PostImageRepository;
 import com.treasurehunter.treasurehunter.domain.post.repository.like.PostLikeRepository;
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
 import com.treasurehunter.treasurehunter.global.event.domain.EventPublisher;
 import com.treasurehunter.treasurehunter.global.event.model.PostCreateEvent;

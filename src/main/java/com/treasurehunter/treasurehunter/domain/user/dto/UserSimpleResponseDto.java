@@ -1,6 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.user.dto;
 
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import lombok.Getter;
 
 @Getter

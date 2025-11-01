@@ -1,16 +1,14 @@
 package com.treasurehunter.treasurehunter.domain.review.service;
 
-import com.treasurehunter.treasurehunter.domain.post.domain.Post;
-import com.treasurehunter.treasurehunter.domain.post.domain.image.PostImage;
+import com.treasurehunter.treasurehunter.domain.post.entity.Post;
 import com.treasurehunter.treasurehunter.domain.post.repository.PostRepository;
-import com.treasurehunter.treasurehunter.domain.post.repository.image.PostImageRepository;
-import com.treasurehunter.treasurehunter.domain.review.domain.Review;
-import com.treasurehunter.treasurehunter.domain.review.domain.image.ReviewImage;
+import com.treasurehunter.treasurehunter.domain.review.entity.Review;
+import com.treasurehunter.treasurehunter.domain.review.entity.image.ReviewImage;
 import com.treasurehunter.treasurehunter.domain.review.dto.ReviewRequestDto;
 import com.treasurehunter.treasurehunter.domain.review.dto.ReviewResponseDto;
 import com.treasurehunter.treasurehunter.domain.review.repository.ReviewRepository;
 import com.treasurehunter.treasurehunter.domain.review.repository.image.ReviewImageRepository;
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;

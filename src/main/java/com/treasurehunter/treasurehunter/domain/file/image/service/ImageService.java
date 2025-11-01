@@ -1,9 +1,9 @@
 package com.treasurehunter.treasurehunter.domain.file.image.service;
 
-import com.treasurehunter.treasurehunter.domain.file.image.domain.Image;
+import com.treasurehunter.treasurehunter.domain.file.image.entity.Image;
 import com.treasurehunter.treasurehunter.domain.file.image.dto.ImageResponseDto;
 import com.treasurehunter.treasurehunter.domain.file.image.repository.ImageRepository;
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;

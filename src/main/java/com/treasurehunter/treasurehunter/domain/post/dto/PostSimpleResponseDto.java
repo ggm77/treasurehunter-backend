@@ -1,6 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.post.dto;
 
-import com.treasurehunter.treasurehunter.domain.post.domain.Post;
+import com.treasurehunter.treasurehunter.domain.post.entity.Post;
 import lombok.Getter;
 
 import java.math.BigDecimal;

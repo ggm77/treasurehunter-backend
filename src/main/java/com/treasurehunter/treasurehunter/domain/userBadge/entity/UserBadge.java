@@ -1,7 +1,7 @@
-package com.treasurehunter.treasurehunter.domain.userBadge.domain;
+package com.treasurehunter.treasurehunter.domain.userBadge.entity;
 
-import com.treasurehunter.treasurehunter.domain.admin.badge.domain.Badge;
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.admin.badge.entity.Badge;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

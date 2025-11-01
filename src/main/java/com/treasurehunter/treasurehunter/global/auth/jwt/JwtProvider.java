@@ -1,6 +1,6 @@
 package com.treasurehunter.treasurehunter.global.auth.jwt;
 
-import com.treasurehunter.treasurehunter.domain.user.domain.Role;
+import com.treasurehunter.treasurehunter.domain.user.entity.Role;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import io.jsonwebtoken.*;

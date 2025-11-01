@@ -1,4 +1,4 @@
-package com.treasurehunter.treasurehunter.domain.user.domain;
+package com.treasurehunter.treasurehunter.domain.user.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

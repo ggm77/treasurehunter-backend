@@ -1,11 +1,11 @@
 package com.treasurehunter.treasurehunter.domain.admin.badge.service;
 
-import com.treasurehunter.treasurehunter.domain.admin.badge.domain.Badge;
+import com.treasurehunter.treasurehunter.domain.admin.badge.entity.Badge;
 import com.treasurehunter.treasurehunter.domain.admin.badge.dto.BadgeRequestDto;
 import com.treasurehunter.treasurehunter.domain.admin.badge.dto.BadgeResponseDto;
 import com.treasurehunter.treasurehunter.domain.admin.badge.repository.BadgeRepository;
-import com.treasurehunter.treasurehunter.domain.user.domain.Role;
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.user.entity.Role;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
 import com.treasurehunter.treasurehunter.domain.userBadge.repository.UserBadgeRepository;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;

@@ -1,6 +1,6 @@
-package com.treasurehunter.treasurehunter.domain.review.domain.image;
+package com.treasurehunter.treasurehunter.domain.post.entity.image;
 
-import com.treasurehunter.treasurehunter.domain.review.domain.Review;
+import com.treasurehunter.treasurehunter.domain.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReviewImage {
+public class PostImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,19 +23,16 @@ public class ReviewImage {
     private int imageIndex;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id")
-    private Review review;
+    @JoinColumn(name = "post_id")
+    private Post post;
 
     @Builder
-    public ReviewImage(
-            final String url,
-            final int imageIndex
-    ){
+    public PostImage(final String url, final int imageIndex) {
         this.url = url;
         this.imageIndex = imageIndex;
     }
 
-    public void updateReview(final Review review){
-        this.review = review;
+    public void updatePost(final Post post){
+        this.post = post;
     }
 }

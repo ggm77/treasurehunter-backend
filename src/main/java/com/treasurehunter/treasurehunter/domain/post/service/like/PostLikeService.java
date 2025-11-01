@@ -1,10 +1,10 @@
 package com.treasurehunter.treasurehunter.domain.post.service.like;
 
-import com.treasurehunter.treasurehunter.domain.post.domain.Post;
-import com.treasurehunter.treasurehunter.domain.post.domain.like.PostLike;
+import com.treasurehunter.treasurehunter.domain.post.entity.Post;
+import com.treasurehunter.treasurehunter.domain.post.entity.like.PostLike;
 import com.treasurehunter.treasurehunter.domain.post.repository.PostRepository;
 import com.treasurehunter.treasurehunter.domain.post.repository.like.PostLikeRepository;
-import com.treasurehunter.treasurehunter.domain.user.domain.User;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;

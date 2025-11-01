@@ -1,7 +1,7 @@
 package com.treasurehunter.treasurehunter.global.auth.oauth.dto;
 
-import com.treasurehunter.treasurehunter.domain.user.domain.Role;
-import com.treasurehunter.treasurehunter.domain.user.domain.oauth.UserOauth2Accounts;
+import com.treasurehunter.treasurehunter.domain.user.entity.Role;
+import com.treasurehunter.treasurehunter.domain.user.entity.oauth.UserOauth2Accounts;
 import lombok.Builder;
 import lombok.Getter;
 
