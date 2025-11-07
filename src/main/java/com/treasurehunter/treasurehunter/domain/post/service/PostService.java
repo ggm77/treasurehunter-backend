@@ -1,5 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.post.service;
 
+import com.treasurehunter.treasurehunter.domain.chat.entity.room.ChatRoom;
 import com.treasurehunter.treasurehunter.domain.post.entity.ItemCategory;
 import com.treasurehunter.treasurehunter.domain.post.entity.Post;
 import com.treasurehunter.treasurehunter.domain.post.entity.PostType;
@@ -277,6 +278,12 @@ public class PostService {
         //리뷰 존재하면 정리(리뷰는 삭제 X)
         if(post.getReview() != null){
             post.getReview().detachPost();
+        }
+
+        //채팅방 존재하면 정리(채팅방은 삭제X)
+        if(post.getChatRooms() != null){
+            post.getChatRooms()
+                    .forEach(ChatRoom::detachPost);
         }
 
         // 5) 게시글 삭제

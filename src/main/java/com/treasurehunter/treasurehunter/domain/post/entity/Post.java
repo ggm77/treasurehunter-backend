@@ -1,5 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.post.entity;
 
+import com.treasurehunter.treasurehunter.domain.chat.entity.room.ChatRoom;
 import com.treasurehunter.treasurehunter.domain.post.entity.image.PostImage;
 import com.treasurehunter.treasurehunter.domain.post.entity.like.PostLike;
 import com.treasurehunter.treasurehunter.domain.review.entity.Review;
@@ -90,6 +91,10 @@ public class Post {
     //게시글에 작성된 후기
     @OneToOne(mappedBy = "post", fetch = FetchType.LAZY)
     private Review review;
+
+    //게시글에서 발생한 채팅방 연관 관계 (게시글 삭제해도 채팅방은 존재)
+    @OneToMany(mappedBy = "post", orphanRemoval = false)
+    private List<ChatRoom> chatRooms = new ArrayList<>();
 
     @Builder
     public Post(

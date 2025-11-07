@@ -33,6 +33,10 @@ public enum ExceptionCode {
     REVIEW_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "후기가 이미 존재합니다."),
     BADGE_NOT_EXIST(HttpStatus.BAD_REQUEST, "뱃지 정보가 존재하지 않습니다."),
     BADGE_ALREADY_OWNED(HttpStatus.BAD_REQUEST, "뱃지를 유저가 소유하고 있기 때문에 삭제가 불가능합니다."),
+    CHAT_WITH_SELF_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자기 자신과 채팅방을 만들 수 없습니다."),
+    CHAT_ROOM_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "채팅방이 이미 존재 합니다."),
+    CHAT_ROOM_NOT_EXIST(HttpStatus.BAD_REQUEST, "채팅방이 존재하지 않습니다."),
+    CHAT_ROOM_NOT_JOINED(HttpStatus.BAD_REQUEST, "채팅방에 참가하고 있지 않습니다."),
 
     AUTHENTICATION_ERROR(HttpStatus.UNAUTHORIZED, "인증 되지 않았습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),

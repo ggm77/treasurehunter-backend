@@ -44,7 +44,8 @@ public class WebSecurityConfig {
                                 "/oauth2/authorization/**", //프론트에서 로그인 요청하는 곳
                                 "/api/swagger/**",
                                 "/api/v1/auth/**",
-                                "/api/v1/file/image"
+                                "/api/v1/file/image",
+                                "/ws/**" //웹소켓 대응
                         ).permitAll()
 
                         //사진 조회 API GET만 제외

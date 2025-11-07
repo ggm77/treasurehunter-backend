@@ -19,4 +19,13 @@ public class UserSimpleResponseDto {
         this.totalScore = user.getTotalScore();
         this.totalReviews = user.getTotalReviews();
     }
+
+    //익명 사용자
+    public UserSimpleResponseDto(){
+        this.id = 0L;
+        this.nickname = null;
+        this.profileImage = null;
+        this.totalScore = 0;
+        this.totalReviews = 0;
+    }
 }

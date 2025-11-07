@@ -1,5 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.user.service;
 
+import com.treasurehunter.treasurehunter.domain.chat.entity.room.participant.ChatRoomParticipant;
 import com.treasurehunter.treasurehunter.domain.post.entity.Post;
 import com.treasurehunter.treasurehunter.domain.review.entity.Review;
 import com.treasurehunter.treasurehunter.domain.user.entity.Role;
@@ -142,6 +143,12 @@ public class UserService {
         if(user.getReviews() != null){
             user.getReviews()
                     .forEach(Review::detachAuthor);
+        }
+
+        // 자식 정리 (채팅방)
+        if(user.getChatRoomParticipants() != null){
+            user.getChatRoomParticipants()
+                    .forEach(ChatRoomParticipant::detachUser);
         }
 
         userRepository.delete(user);

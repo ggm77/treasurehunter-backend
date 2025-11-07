@@ -1,5 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.user.entity;
 
+import com.treasurehunter.treasurehunter.domain.chat.entity.room.participant.ChatRoomParticipant;
 import com.treasurehunter.treasurehunter.domain.post.entity.Post;
 import com.treasurehunter.treasurehunter.domain.post.entity.like.PostLike;
 import com.treasurehunter.treasurehunter.domain.review.entity.Review;
@@ -95,6 +96,10 @@ public class User {
     //유저가 받은 후기에 대한 관계 설정
     @OneToMany(mappedBy = "targetUser", orphanRemoval = false)
     private List<Review> receivedReviews = new ArrayList<>();
+
+    //참가중인 채팅방과 관계 설정
+    @OneToMany(mappedBy = "participant", orphanRemoval = false)
+    private List<ChatRoomParticipant> chatRoomParticipants = new ArrayList<>();
 
     //oauth 회원가입용 생성자
     public User(
