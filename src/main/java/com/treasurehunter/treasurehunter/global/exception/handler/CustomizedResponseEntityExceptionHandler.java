@@ -30,6 +30,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
                 ex.getExceptionCode().getStatus(),
+                ex.getExceptionCode().name(),
                 message
         );
 
@@ -48,6 +49,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
                 HttpStatus.BAD_REQUEST,
+                "INVALID_REQUEST",
                 "요청 정보가 완전하지 않습니다."
         );
 
@@ -59,6 +61,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     public final ResponseEntity<ExceptionResponse> handleAllException(final Exception ex) {
         final ExceptionResponse exceptionResponse = new ExceptionResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
+                "INTERNAL_SERVER_ERROR",
                 "Internal Server Error"
         );
 

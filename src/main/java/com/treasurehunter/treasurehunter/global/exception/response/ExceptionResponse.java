@@ -9,14 +9,17 @@ import java.time.LocalDateTime;
 public class ExceptionResponse {
     private final LocalDateTime timestamp;
     private final HttpStatus status;
+    private final String code;
     private final String message;
 
     public ExceptionResponse(
             final HttpStatus status,
+            final String code,
             final String message
     ) {
         this.timestamp = LocalDateTime.now();
         this.status = status;
+        this.code = code;
         this.message = message;
     }
 }
