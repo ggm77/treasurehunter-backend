@@ -7,6 +7,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.*;
 import io.jsonwebtoken.io.Decoders;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -98,5 +99,17 @@ public class JwtProvider {
         } catch (JwtException ex) {
             throw new CustomException(ExceptionCode.INVALID_TOKEN);
         }
+    }
+
+    /**
+     * JWT에서 Authorities를 얻는 메서드
+     * @param claims JWT의 claims
+     * @return JWT의 Authorities
+     */
+    public List<SimpleGrantedAuthority> getAuthorities(final Claims claims){
+        final List<String> roles = claims.get("authorities", List.class);
+        return roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .toList();
     }
 }

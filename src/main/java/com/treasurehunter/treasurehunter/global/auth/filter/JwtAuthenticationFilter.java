@@ -2,6 +2,7 @@ package com.treasurehunter.treasurehunter.global.auth.filter;
 
 import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,15 +51,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             //JWT 검증
             //검증 실패하면 익명으로 진행
             final String userIdStr;
+            final Claims jwtClaims;
             try {
-                userIdStr = jwtProvider.getPayload(jwt);
+                jwtClaims = jwtProvider.getClaims(jwt);
+                userIdStr = jwtClaims.getSubject();
             } catch (CustomException ex) { //검증 실패시 던져지는 CustomException 무시하고 진행시키기
                 filterChain.doFilter(httpServletRequest, httpServletResponse);
                 return;
             }
 
             //토큰에서 Claims 추출
-            final List<SimpleGrantedAuthority> authorities = getAuthorities(jwt);
+            final List<SimpleGrantedAuthority> authorities = jwtProvider.getAuthorities(jwtClaims);
 
             //이미 JWT 검증으로 인증 완료됨
             final Authentication auth =
@@ -76,12 +79,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     "{\"status\":\"UNAUTHORIZED\",\"message\":\"토큰이 만료되었거나 없습니다.\",\"timestamp\":\"" + LocalDateTime.now() + "\"}"
             );
         }
-    }
-
-    private List<SimpleGrantedAuthority> getAuthorities(final String jwt){
-        final List<String> roles = jwtProvider.getClaims(jwt).get("authorities", List.class);
-        return roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .toList();
     }
 }
