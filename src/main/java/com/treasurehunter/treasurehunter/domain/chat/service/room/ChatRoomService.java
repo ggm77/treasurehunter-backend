@@ -221,4 +221,25 @@ public class ChatRoomService {
             chatRoomRepository.delete(chatRoom);
         }
     }
+
+    /**
+     * 채팅방을 구독 할 수 있는지 확인하는 메서드
+     * @param chatRoomId 채팅방 roomId
+     * @param requestUserId 요청한 유저 ID
+     * @return 가능한지 여부
+     */
+    @Transactional
+    public boolean canSubscribeChatRoom(
+            final String chatRoomId,
+            final Long requestUserId
+    ){
+        // 1) 유저 존재 확인
+        final boolean userExist =  userRepository.existsById(requestUserId);
+        if(!userExist){
+            throw new CustomException(ExceptionCode.USER_NOT_EXIST);
+        }
+
+        // 2) 채팅방에 포함 되어있는지 확인
+        return chatRoomParticipantRepository.existsParticipantInChatRoom(chatRoomId, requestUserId);
+    }
 }

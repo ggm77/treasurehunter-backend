@@ -37,6 +37,12 @@ public enum ExceptionCode {
     CHAT_ROOM_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "채팅방이 이미 존재 합니다."),
     CHAT_ROOM_NOT_EXIST(HttpStatus.BAD_REQUEST, "채팅방이 존재하지 않습니다."),
     CHAT_ROOM_NOT_JOINED(HttpStatus.BAD_REQUEST, "채팅방에 참가하고 있지 않습니다."),
+    CHAT_ROOM_ID_NOT_MATCH(HttpStatus.BAD_REQUEST, "챼팅방 ID가 일치하지 않습니다."),
+    MISSING_USER_ID(HttpStatus.BAD_REQUEST, "유저 ID가 존재하지 않습니다."),
+    MISSING_AUTHORITIES(HttpStatus.BAD_REQUEST, "유저 권한 정보가 존재하지 않습니다."),
+    MISSING_EXP(HttpStatus.BAD_REQUEST, "만료 정보가 존재하지 않습니다."),
+    INVALID_ATTRIBUTE_FORMAT(HttpStatus.BAD_REQUEST, "어트리뷰트의 형식이나 정보가 잘못되어있습니다."),
+
 
     AUTHENTICATION_ERROR(HttpStatus.UNAUTHORIZED, "인증 되지 않았습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),

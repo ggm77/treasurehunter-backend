@@ -49,6 +49,8 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
     //redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    //netty - for rabbitmq
+    implementation 'org.springframework.boot:spring-boot-starter-reactor-netty'
     //solapi
     implementation 'com.solapi:sdk:1.0.3'
     //libphonenumber
