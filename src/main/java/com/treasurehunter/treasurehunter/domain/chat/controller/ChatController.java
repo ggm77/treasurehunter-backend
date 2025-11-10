@@ -26,7 +26,7 @@ public class ChatController {
     private final StompErrorSender stompErrorSender;
 
     //클라이언트가 메세지를 전송하는 경우
-    @MessageMapping("/chat.room.{id}.send")
+    @MessageMapping("/chat.room.{id}")
     public void send(
             @DestinationVariable("id") final String roomId,
             @Validated @Payload final ChatRequestDto chatRequestDto,
