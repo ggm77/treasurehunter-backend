@@ -5,6 +5,7 @@ import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import com.treasurehunter.treasurehunter.global.stomp.constants.StompConstants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import java.security.Principal;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class SubscribeGuard {
 
     private final ChatRoomService chatRoomService;
@@ -45,7 +47,7 @@ public class SubscribeGuard {
         final String roomId = destination.substring(StompConstants.DEST_CHAT_ROOM_PREFIX.length());
 
         // 6) 채팅방 ID가 36자리인지 (UUID인지) 확인
-        if(roomId.isBlank() || roomId.length() == StompConstants.ROOM_ID_LEN) {
+        if(roomId.isBlank() || roomId.length() != StompConstants.ROOM_ID_LEN) {
             throw new CustomException(ExceptionCode.CHAT_ROOM_NOT_EXIST);
         }
 
