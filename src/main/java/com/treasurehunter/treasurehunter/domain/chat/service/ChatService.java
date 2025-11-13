@@ -74,6 +74,7 @@ public class ChatService {
         // 7) 메세지 헤더 설정
         final Map<String, Object> headers = Map.of(
                 "persistent", "true", //메세지 내구성 설정 (ack 전까지 큐에 저장 되도록)
+                "auto-delete", "true",
                 "content-type", "application/json"
         );
 
