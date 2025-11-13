@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 public class ChatResponseDto {
     private final ChatType type;
     private final String roomId;
-    private final String sender;
     private final String message;
     private final LocalDateTime sentAt;
     private final LocalDateTime serverAt;
@@ -20,7 +19,6 @@ public class ChatResponseDto {
     public ChatResponseDto(final Chat chat){
         this.type = chat.getChatType();
         this.roomId = chat.getRoomId();
-        this.sender = chat.getSenderId();
         this.message = chat.getMessage();
         this.sentAt = chat.getSentAt();
         this.serverAt = chat.getServerAt();
