@@ -11,7 +11,7 @@ public class StompConstants {
     public static final String ATTR_AUTHORITIES = "authorities";
     public static final String ATTR_EXP = "exp";
 
-    public static final String DEST_CHAT_ROOM_PREFIX = "/topic/chat.room.";
+    public static final String DEST_CHAT_ROOM_PREFIX = "/queue/chat.room.";
     public static final String DEST_ERROR_MESSAGE = "/user/queue/error";
     public static final int ROOM_ID_LEN = 36;
 }

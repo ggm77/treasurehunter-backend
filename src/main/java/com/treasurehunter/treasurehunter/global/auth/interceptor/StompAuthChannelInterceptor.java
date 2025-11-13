@@ -5,9 +5,9 @@ import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCod
 import com.treasurehunter.treasurehunter.global.stomp.auth.JwtStompAuthenticator;
 import com.treasurehunter.treasurehunter.global.stomp.auth.StompSessionContext;
 import com.treasurehunter.treasurehunter.global.stomp.constants.StompConstants;
-import com.treasurehunter.treasurehunter.global.stomp.dto.AuthResultDto;
+import com.treasurehunter.treasurehunter.global.stomp.dto.StompAuthResultDto;
 import com.treasurehunter.treasurehunter.global.stomp.error.StompErrorSender;
-import com.treasurehunter.treasurehunter.global.stomp.subscribe.SubscribeGuard;
+import com.treasurehunter.treasurehunter.global.stomp.subscribe.StompSubscribeGuard;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
@@ -31,7 +31,7 @@ public class StompAuthChannelInterceptor implements ChannelInterceptor {
 
     private final JwtStompAuthenticator jwtStompAuthenticator;
     private final StompSessionContext stompSessionContext;
-    private final SubscribeGuard subscribeGuard;
+    private final StompSubscribeGuard stompSubscribeGuard;
     private final StompErrorSender stompErrorSender;
 
     @Override
@@ -51,15 +51,15 @@ public class StompAuthChannelInterceptor implements ChannelInterceptor {
             if (StompCommand.CONNECT.equals(accessor.getCommand())) {
 
                 // 1) jwt인증
-                final AuthResultDto authResultDto = jwtStompAuthenticator.authenticateFromAccessor(accessor);
+                final StompAuthResultDto stompAuthResultDto = jwtStompAuthenticator.authenticateFromAccessor(accessor);
 
                 // 2) 세션에 정보 저장
-                stompSessionContext.store(accessor, authResultDto);
+                stompSessionContext.store(accessor, stompAuthResultDto);
 
-                // 4) 접속 로깅
-                log.info("STOMP CONNECT by userId: {}, sessionId: {}", authResultDto.getUserIdStr(), accessor.getSessionId());
+                // 3) 접속 로깅
+                log.info("STOMP CONNECT by userId: {}, sessionId: {}", stompAuthResultDto.getUserIdStr(), accessor.getSessionId());
 
-                // 5) 메세지에 내용 저장을 확실히 하기 위해서 새로운 메세지로 리턴
+                // 4) 메세지에 내용 저장을 확실히 하기 위해서 새로운 메세지로 리턴
                 return MessageBuilder.createMessage(message.getPayload(), accessor.getMessageHeaders());
             }
             //STOMP가 Connect 단계가 아닌 다른 모든 경우에는 JWT검사 X
@@ -77,7 +77,7 @@ public class StompAuthChannelInterceptor implements ChannelInterceptor {
 
             //STOMP가 SUBSCRIBE일 경우 채팅방에 입장 가능한지 검사
             if(StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
-                // 1)요청 주소 가져오기
+                // 1) 요청 주소 가져오기
                 final String destination = accessor.getDestination();
 
                 // 2) null 검사
@@ -87,7 +87,7 @@ public class StompAuthChannelInterceptor implements ChannelInterceptor {
 
                 //채팅방 구독일 경우 채팅방에 입장 가능한지 확인
                 if(destination.startsWith(StompConstants.DEST_CHAT_ROOM_PREFIX)) {
-                    subscribeGuard.assertCanSubscribeChatRoom(accessor, destination);
+                    stompSubscribeGuard.assertCanSubscribeChatRoom(accessor, destination);
                 }
             }
 

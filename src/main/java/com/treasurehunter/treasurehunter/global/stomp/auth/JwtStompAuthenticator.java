@@ -1,8 +1,7 @@
 package com.treasurehunter.treasurehunter.global.stomp.auth;
 
 import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
-import com.treasurehunter.treasurehunter.global.exception.CustomException;
-import com.treasurehunter.treasurehunter.global.stomp.dto.AuthResultDto;
+import com.treasurehunter.treasurehunter.global.stomp.dto.StompAuthResultDto;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.MessagingException;
@@ -23,7 +22,7 @@ public class JwtStompAuthenticator {
      * @param accessor 처리할 STOMP 메세지의 헤더 정보를 포함하는 객체
      * @return AuthResultDto에 담긴 유저 정보
      */
-    public AuthResultDto authenticateFromAccessor(final StompHeaderAccessor accessor) {
+    public StompAuthResultDto authenticateFromAccessor(final StompHeaderAccessor accessor) {
         // 1) 토큰 추출
         final String token = accessor.getFirstNativeHeader("Authorization");
 
@@ -45,7 +44,7 @@ public class JwtStompAuthenticator {
         final long exp = claims.getExpiration().getTime();
 
         // 5) AuthResultDto로 리턴
-        return AuthResultDto.builder()
+        return StompAuthResultDto.builder()
                 .userIdStr(userIdStr)
                 .authorities(authorities)
                 .exp(exp)

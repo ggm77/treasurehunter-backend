@@ -1,42 +1,22 @@
 package com.treasurehunter.treasurehunter.domain.chat.controller;
 
-import com.treasurehunter.treasurehunter.domain.chat.dto.ChatRequestDto;
-import com.treasurehunter.treasurehunter.domain.chat.dto.ChatResponseDto;
-import com.treasurehunter.treasurehunter.domain.chat.service.ChatService;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.stomp.error.StompErrorSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.handler.annotation.*;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 
 import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-public class ChatController {
+public class ChatWebSocketController {
 
-    private final ChatService chatService;
-    private final SimpMessagingTemplate simpMessagingTemplate;
     private final StompErrorSender stompErrorSender;
-
-    //클라이언트가 메세지를 전송하는 경우
-    @MessageMapping("/chat.room.{id}")
-    public void send(
-            @DestinationVariable("id") final String roomId,
-            @Validated @Payload final ChatRequestDto chatRequestDto,
-            final Principal principal,
-            @Header("simpSessionId") final String sessionId
-    ){
-        final ChatResponseDto sentChat = chatService.saveMessage(roomId, chatRequestDto, principal, sessionId);
-
-        simpMessagingTemplate.convertAndSend("/topic/chat.room."+sentChat.getRoomId(), sentChat);
-    }
 
     //처리중에 낸 예외 처리용
     @MessageExceptionHandler(CustomException.class)

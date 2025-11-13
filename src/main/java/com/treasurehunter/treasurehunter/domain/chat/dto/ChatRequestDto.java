@@ -17,9 +17,6 @@ public class ChatRequestDto {
     private String roomId;
 
     @NotBlank
-    private String sender;
-
-    @NotBlank
     private String message;
 
     // UTC+0로 보내는걸 권장

@@ -7,13 +7,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.List;
 
 @Getter
-public class AuthResultDto {
+public class StompAuthResultDto {
     private final String userIdStr;
     private final List<SimpleGrantedAuthority> authorities;
     private final long exp;
 
     @Builder
-    public AuthResultDto(
+    public StompAuthResultDto(
             final String userIdStr,
             final List<SimpleGrantedAuthority> authorities,
             final long exp

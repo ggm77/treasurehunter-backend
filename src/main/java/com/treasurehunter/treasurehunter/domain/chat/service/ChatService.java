@@ -2,49 +2,86 @@ package com.treasurehunter.treasurehunter.domain.chat.service;
 
 import com.treasurehunter.treasurehunter.domain.chat.dto.ChatRequestDto;
 import com.treasurehunter.treasurehunter.domain.chat.dto.ChatResponseDto;
+import com.treasurehunter.treasurehunter.domain.chat.entity.Chat;
+import com.treasurehunter.treasurehunter.domain.chat.repository.ChatRepository;
+import com.treasurehunter.treasurehunter.domain.chat.repository.room.participant.ChatRoomParticipantRepository;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatService {
 
-    /**
-     * 보낼 채팅 검증 및 처리하는 메서드
-     * (저장은 추후 구현 예정)
-     * @param roomId 채팅 보낼 채팅방 ID
-     * @param chatRequestDto 채팅 정보 담긴 DTO
-     * @param principal 채팅 보낸 사람 정보
-     * @param sessionId 채팅 보낸 사람 세션 ID
-     * @return 보낼 채팅 DTO
-     */
-    public ChatResponseDto saveMessage(
-            final String roomId,
-            final ChatRequestDto chatRequestDto,
-            final Principal principal,
-            final String sessionId
-    ){
-        // 0) null / blank검사 DTO에서 진행
+    private final SimpMessagingTemplate simpMessagingTemplate;
+    private final ChatRepository chatRepository;
+    private final ChatRoomParticipantRepository chatRoomParticipantRepository;
 
-        // 1) 입력 값 검증
-        if(!roomId.equals(chatRequestDto.getRoomId())){
-            throw new CustomException(ExceptionCode.CHAT_ROOM_ID_NOT_MATCH);
+    @Transactional
+    public ChatResponseDto sendAndPushChat(
+            final String userIdStr,
+            final ChatRequestDto chatRequestDto
+    ){
+        // 1) 채팅방 ID 저장
+        final String roomId = chatRequestDto.getRoomId();
+
+        // 2) 채팅방 참가중인 유저 아이디 가져오기
+        final List<Long> participantIds =
+                chatRoomParticipantRepository.findUserIdsByRoomId(roomId);
+
+        // 3) 채팅방이 없거나 아무도 없는 경우 처리
+        if(participantIds.size() != 2) {
+            throw new CustomException(ExceptionCode.CHAT_ROOM_NOT_EXIST);
         }
 
-        // 2) 저장 및 전송할 메세지 DTO 생성
-        final ChatResponseDto chat = ChatResponseDto.builder()
-                .chatRequestDto(chatRequestDto)
+        // 4) 채팅방 멤버가 아닌 경우 처리
+        if(!participantIds.contains(Long.parseLong(userIdStr))){
+            throw new CustomException(ExceptionCode.CHAT_ROOM_NOT_JOINED);
+        }
+
+        final List<Long> otherUserIds = participantIds.stream()
+                .filter(id -> !id.equals(Long.parseLong(userIdStr)))
+                .toList();
+
+        final Long receiverId = otherUserIds.getFirst();
+
+        // 3) 저장할 채팅 엔티티 생성
+        final Chat chat = Chat.builder()
+                .chatType(chatRequestDto.getType())
+                .roomId(roomId)
+                .senderId(userIdStr)
+                .message(chatRequestDto.getMessage())
+                .sendAt(chatRequestDto.getSentAt())
                 .serverAt(LocalDateTime.now())
                 .build();
 
-        // 3) 메세지 저장
-        // 추후 구현
+        // 4) 채팅 저장
+        final Chat savedChat = chatRepository.save(chat);
 
-        return chat;
+        // 5) 채팅 DTO에 담기
+        final ChatResponseDto chatResponseDto = ChatResponseDto.builder()
+                .chat(savedChat)
+                .build();
+
+        // 6) 메세지 헤더 설정
+        final Map<String, Object> headers = Map.of(
+                "persistent", "true", //메세지 내구성 설정 (ack 전까지 큐에 저장 되도록)
+                "content-type", "application/json"
+        );
+
+        // 6) 채팅방에 채팅 전송
+        simpMessagingTemplate.convertAndSend("/queue/chat.room."+roomId+".user."+userIdStr, chatResponseDto, headers);
+        simpMessagingTemplate.convertAndSend("/queue/chat.room."+roomId+".user."+receiverId, chatResponseDto, headers);
+
+        return chatResponseDto;
     }
 }

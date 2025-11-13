@@ -6,6 +6,7 @@ import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCod
 import com.treasurehunter.treasurehunter.global.stomp.constants.StompConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,7 @@ import java.security.Principal;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class SubscribeGuard {
+public class StompSubscribeGuard {
 
     private final ChatRoomService chatRoomService;
 
@@ -44,7 +45,9 @@ public class SubscribeGuard {
 
         // 5) 채팅방 참가 가능여부 확인 메서드를 위한 파라미터 준비
         final Long userId = Long.parseLong(userIdStr);
-        final String roomId = destination.substring(StompConstants.DEST_CHAT_ROOM_PREFIX.length());
+        final int idxStart = StompConstants.DEST_CHAT_ROOM_PREFIX.length();
+        final int idxEnd = destination.indexOf(".user.", idxStart);
+        final String roomId = destination.substring(idxStart, idxEnd);
 
         // 6) 채팅방 ID가 36자리인지 (UUID인지) 확인
         if(roomId.isBlank() || roomId.length() != StompConstants.ROOM_ID_LEN) {

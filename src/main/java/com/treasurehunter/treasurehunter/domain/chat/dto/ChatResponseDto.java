@@ -1,5 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.chat.dto;
 
+import com.treasurehunter.treasurehunter.domain.chat.entity.Chat;
 import com.treasurehunter.treasurehunter.domain.chat.entity.ChatType;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,15 +17,12 @@ public class ChatResponseDto {
     private final LocalDateTime serverAt;
 
     @Builder
-    public ChatResponseDto(
-            final ChatRequestDto chatRequestDto,
-            final LocalDateTime serverAt
-    ){
-        this.type = chatRequestDto.getType();
-        this.roomId = chatRequestDto.getRoomId();
-        this.sender = chatRequestDto.getSender();
-        this.message = chatRequestDto.getMessage();
-        this.sentAt = chatRequestDto.getSentAt();
-        this.serverAt = serverAt;
+    public ChatResponseDto(final Chat chat){
+        this.type = chat.getChatType();
+        this.roomId = chat.getRoomId();
+        this.sender = chat.getSenderId();
+        this.message = chat.getMessage();
+        this.sentAt = chat.getSentAt();
+        this.serverAt = chat.getServerAt();
     }
 }

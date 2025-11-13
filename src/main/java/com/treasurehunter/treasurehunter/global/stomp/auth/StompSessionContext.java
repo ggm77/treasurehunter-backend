@@ -3,7 +3,7 @@ package com.treasurehunter.treasurehunter.global.stomp.auth;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import com.treasurehunter.treasurehunter.global.stomp.constants.StompConstants;
-import com.treasurehunter.treasurehunter.global.stomp.dto.AuthResultDto;
+import com.treasurehunter.treasurehunter.global.stomp.dto.StompAuthResultDto;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,23 +17,23 @@ public class StompSessionContext {
     /**
      * 유저의 정보를 세션에 저장하는 메서드
      * @param accessor 저장을 진행할 STOMP 메세지의 헤더 정보를 포함한 객체
-     * @param authResultDto 저장할 정보가 담긴 DTO
+     * @param stompAuthResultDto 저장할 정보가 담긴 DTO
      */
     public void store(
             final StompHeaderAccessor accessor,
-            final AuthResultDto authResultDto
+            final StompAuthResultDto stompAuthResultDto
     ) {
         // 1) 유저 Principal 지정
         accessor.setUser(new UsernamePasswordAuthenticationToken(
-                authResultDto.getUserIdStr(),
+                stompAuthResultDto.getUserIdStr(),
                 null,
-                authResultDto.getAuthorities()
+                stompAuthResultDto.getAuthorities()
         ));
 
         // 2) 복원용 attributes 설정
-        accessor.getSessionAttributes().put("userId", authResultDto.getUserIdStr()); //유저 ID 저장
-        accessor.getSessionAttributes().put("authorities", authResultDto.getAuthorities()); //유저 authorities 저장
-        accessor.getSessionAttributes().put("exp", authResultDto.getExp()); //세션 만료시간 지정 (jwt 남은 유효 시간과 같음)
+        accessor.getSessionAttributes().put("userId", stompAuthResultDto.getUserIdStr()); //유저 ID 저장
+        accessor.getSessionAttributes().put("authorities", stompAuthResultDto.getAuthorities()); //유저 authorities 저장
+        accessor.getSessionAttributes().put("exp", stompAuthResultDto.getExp()); //세션 만료시간 지정 (jwt 남은 유효 시간과 같음)
     }
 
     /**

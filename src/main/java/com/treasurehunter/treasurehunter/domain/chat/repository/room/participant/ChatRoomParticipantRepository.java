@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface ChatRoomParticipantRepository extends JpaRepository<ChatRoomParticipant, Long> {
 
     @Query("""
@@ -23,4 +25,11 @@ public interface ChatRoomParticipantRepository extends JpaRepository<ChatRoomPar
             and c.participant.id = :userId
 """)
     int deleteByChatRoom_RoomIdAndParticipant_Id(@Param("roomId") String roomId, @Param("userId") Long userId);
+
+    @Query("""
+        select u.id from ChatRoomParticipant c
+            join c.participant u
+        where c.chatRoom.roomId = :roomId
+    """)
+    List<Long> findUserIdsByRoomId(@Param("roomId") String roomId);
 }
