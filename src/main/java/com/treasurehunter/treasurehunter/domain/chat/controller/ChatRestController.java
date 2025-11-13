@@ -1,4 +1,4 @@
-package com.treasurehunter.treasurehunter.domain.chat.controller.room;
+package com.treasurehunter.treasurehunter.domain.chat.controller;
 
 import com.treasurehunter.treasurehunter.domain.chat.dto.ChatRequestDto;
 import com.treasurehunter.treasurehunter.domain.chat.dto.ChatResponseDto;
