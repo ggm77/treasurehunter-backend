@@ -27,7 +27,7 @@ public class ChatRestController {
     ){
         final String userIdStr = jwtProvider.getPayload(token.substring(7));
 
-        return ResponseEntity.ok().body(chatService.sendAndPushChat(userIdStr, chatRequestDto));
+        return ResponseEntity.ok().body(chatService.sendAndPushChat(userIdStr, roomId, chatRequestDto));
     }
 
 }

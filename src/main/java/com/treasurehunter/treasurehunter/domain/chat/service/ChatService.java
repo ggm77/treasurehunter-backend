@@ -29,21 +29,20 @@ public class ChatService {
     @Transactional
     public ChatResponseDto sendAndPushChat(
             final String userIdStr,
+            final String roomId,
             final ChatRequestDto chatRequestDto
     ){
-        // 1) 채팅방 ID 저장
-        final String roomId = chatRequestDto.getRoomId();
 
-        // 2) 채팅방 참가중인 유저 아이디 가져오기
+        // 1) 채팅방 참가중인 유저 아이디 가져오기
         final List<Long> participantIds =
                 chatRoomParticipantRepository.findUserIdsByRoomId(roomId);
 
-        // 3) 채팅방이 없거나 아무도 없는 경우 처리
+        // 2) 채팅방이 없거나 아무도 없는 경우 처리
         if(participantIds.size() != 2) {
             throw new CustomException(ExceptionCode.CHAT_ROOM_NOT_EXIST);
         }
 
-        // 4) 채팅방 멤버가 아닌 경우 처리
+        // 3) 채팅방 멤버가 아닌 경우 처리
         if(!participantIds.contains(Long.parseLong(userIdStr))){
             throw new CustomException(ExceptionCode.CHAT_ROOM_NOT_JOINED);
         }
@@ -54,7 +53,7 @@ public class ChatService {
 
         final Long receiverId = otherUserIds.getFirst();
 
-        // 3) 저장할 채팅 엔티티 생성
+        // 4) 저장할 채팅 엔티티 생성
         final Chat chat = Chat.builder()
                 .chatType(chatRequestDto.getType())
                 .roomId(roomId)
@@ -64,21 +63,21 @@ public class ChatService {
                 .serverAt(LocalDateTime.now())
                 .build();
 
-        // 4) 채팅 저장
+        // 5) 채팅 저장
         final Chat savedChat = chatRepository.save(chat);
 
-        // 5) 채팅 DTO에 담기
+        // 6) 채팅 DTO에 담기
         final ChatResponseDto chatResponseDto = ChatResponseDto.builder()
                 .chat(savedChat)
                 .build();
 
-        // 6) 메세지 헤더 설정
+        // 7) 메세지 헤더 설정
         final Map<String, Object> headers = Map.of(
                 "persistent", "true", //메세지 내구성 설정 (ack 전까지 큐에 저장 되도록)
                 "content-type", "application/json"
         );
 
-        // 6) 채팅방에 채팅 전송
+        // 8) 채팅방에 채팅 전송
         simpMessagingTemplate.convertAndSend("/queue/chat.room."+roomId+".user."+userIdStr, chatResponseDto, headers);
         simpMessagingTemplate.convertAndSend("/queue/chat.room."+roomId+".user."+receiverId, chatResponseDto, headers);
 
