@@ -78,7 +78,8 @@ public class ChatService {
         );
 
         // 8) 채팅방에 채팅 전송
-        simpMessagingTemplate.convertAndSend("/queue/chat.room."+roomId+".user."+userIdStr, chatResponseDto, headers);
+        //멀티 디바이스를 지원하게 된다면 주석 해제 해서 자신에게도 메세지 전송하도록 하기
+//        simpMessagingTemplate.convertAndSend("/queue/chat.room."+roomId+".user."+userIdStr, chatResponseDto, headers);
         simpMessagingTemplate.convertAndSend("/queue/chat.room."+roomId+".user."+receiverId, chatResponseDto, headers);
 
         return chatResponseDto;
