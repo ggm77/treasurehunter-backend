@@ -75,9 +75,9 @@ public class Oauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_EXIST));
 
         //엑세스 토큰 발급 (유효 1시간)
-        final String accessToken = jwtProvider.creatToken(user.getId(), user.getRole(), accessTokenExpireTime);
+        final String accessToken = jwtProvider.creatAccessToken(user.getId(), user.getRole());
         //리프레시 토큰 발급 (유효 1일)
-        final String refreshToken = jwtProvider.creatToken(user.getId(), user.getRole(), refreshTokenExpireTime);
+        final String refreshToken = jwtProvider.creatRefreshToken(user.getId());
 
         final ResponseCookie accessTokenCookie;
         final ResponseCookie refreshTokenCookie;

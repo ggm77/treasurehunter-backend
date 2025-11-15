@@ -62,8 +62,8 @@ public class TokenService {
 
         final Role role = user.getRole();
 
-        final String accessToken = jwtProvider.creatToken(userId, role, accessTokenExpireTime);
-        final String refreshToken = jwtProvider.creatToken(userId, role, refreshTokenExpireTime);
+        final String accessToken = jwtProvider.creatAccessToken(userId, role);
+        final String refreshToken = jwtProvider.creatRefreshToken(userId);
 
         return TokenResponseDto.builder()
                 .accessToken(accessToken)

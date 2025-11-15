@@ -26,24 +26,29 @@ public class JwtProvider {
     @Value("${jwt.secret}")
     private String SECRET_KEY;
 
+    @Value("${jwt.accessToken.exprTime}")
+    private Integer ACCESS_TOKEN_EXPIRATION_SECONDS;
+
+    @Value("${jwt.refreshToken.exprTime}")
+    private Integer REFRESH_TOKEN_EXPIRATION_SECONDS;
+
     public String getTokenType(){
         return "Bearer";
     }
 
     /**
-     * JWT를 생성하는 메서드
+     * 액세스 토큰을 생성하는 메서드
      * ttlSeconds을 적절하게 설정하여 엑세스 토큰, 리프레시 토큰으로 사용가능하다.
      * @param userId 유저의 고유 아이디 번호
-     * @param ttlSeconds JWT의 유효 시간 (초)
      * @return JWT
      */
-    public String creatToken(final Long userId, final Role role, final Long ttlSeconds){
+    public String creatAccessToken(final Long userId, final Role role){
 
         final SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
 
         final String userIdStr = userId.toString(); //문자열이 된 유저 아이디
         final Instant now = Instant.now(); //발행 일시
-        final Instant exp = now.plusSeconds(ttlSeconds); //만료 일시
+        final Instant exp = now.plusSeconds(ACCESS_TOKEN_EXPIRATION_SECONDS); //만료 일시
 
         return Jwts.builder()
                 .header()
@@ -51,6 +56,31 @@ public class JwtProvider {
                 .and()
                 .subject(userIdStr)
                 .claim("authorities", List.of(role.getKey()))
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(exp))
+                .signWith(key)
+                .compact();
+    }
+
+    /**
+     * 리프레시 토큰을 생성하는 메서드
+     * ttlSeconds을 적절하게 설정하여 엑세스 토큰, 리프레시 토큰으로 사용가능하다.
+     * @param userId 유저의 고유 아이디 번호
+     * @return JWT
+     */
+    public String creatRefreshToken(final Long userId){
+
+        final SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
+
+        final String userIdStr = userId.toString(); //문자열이 된 유저 아이디
+        final Instant now = Instant.now(); //발행 일시
+        final Instant exp = now.plusSeconds(REFRESH_TOKEN_EXPIRATION_SECONDS); //만료 일시
+
+        return Jwts.builder()
+                .header()
+                .type("JWT")
+                .and()
+                .subject(userIdStr)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(exp))
                 .signWith(key)
