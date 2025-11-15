@@ -3,11 +3,11 @@ package com.treasurehunter.treasurehunter.domain.user.controller;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserRequestDto;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserResponseDto;
 import com.treasurehunter.treasurehunter.domain.user.service.UserService;
-import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
@@ -18,24 +18,21 @@ import java.util.Objects;
 public class UserController {
 
     private final UserService userService;
-    private final JwtProvider jwtProvider;
 
     //회원가입 API, 프론트에서 OAuth로 등록후 이 API호출
     @PostMapping("/user/{id}")
     public ResponseEntity<UserResponseDto> createUser(
             @PathVariable final String id,
-            @RequestHeader(value = "Authorization") final String accessToken,
+            @AuthenticationPrincipal String userIdStr,
             @RequestBody final UserRequestDto userRequestDto
     ){
 
-        final String tokenSub = jwtProvider.getPayload(accessToken.substring(7));
-
         //다른 유저의 정보에 접근 방지
-        if(!Objects.equals(tokenSub, id)){
+        if(!Objects.equals(userIdStr, id)){
             throw new CustomException(ExceptionCode.FORBIDDEN_USER_RESOURCE_ACCESS);
         }
 
-        final Long userId = Long.parseLong(tokenSub);
+        final Long userId = Long.parseLong(userIdStr);
 
         return ResponseEntity.ok(userService.createUser(userRequestDto, userId));
     }
@@ -43,8 +40,7 @@ public class UserController {
     //유저 조회 API
     @GetMapping("/user/{id}")
     public ResponseEntity<UserResponseDto> getUser(
-            @PathVariable final String id,
-            @RequestHeader(value = "Authorization") final String accessToken
+            @PathVariable final String id
     ){
         final Long targetUserId = Long.parseLong(id);
 
@@ -55,17 +51,16 @@ public class UserController {
     @PatchMapping("/user/{id}")
     public ResponseEntity<UserResponseDto> updateUser(
             @PathVariable final String id,
-            @RequestHeader(value = "Authorization") final String accessToken,
+            @AuthenticationPrincipal String userIdStr,
             @RequestBody final UserRequestDto userRequestDto
     ){
-        final String tokenSub = jwtProvider.getPayload(accessToken.substring(7));
 
         //다른 유저의 정보에 접근 방지
-        if(!Objects.equals(tokenSub, id)){
+        if(!Objects.equals(userIdStr, id)){
             throw new CustomException(ExceptionCode.FORBIDDEN_USER_RESOURCE_ACCESS);
         }
 
-        final Long userId = Long.parseLong(tokenSub);
+        final Long userId = Long.parseLong(userIdStr);
 
         return ResponseEntity.ok().body(userService.updateUser(userId, userRequestDto));
     }
@@ -74,16 +69,15 @@ public class UserController {
     @DeleteMapping("/user/{id}")
     public ResponseEntity<Void> deleteUser(
             @PathVariable final String id,
-            @RequestHeader(value = "Authorization") final String accessToken
+            @AuthenticationPrincipal String userIdStr
     ){
-        final String tokenSub = jwtProvider.getPayload(accessToken.substring(7));
 
         //다른 유저의 정보에 접근 방지
-        if(!Objects.equals(tokenSub, id)){
+        if(!Objects.equals(userIdStr, id)){
             throw new CustomException(ExceptionCode.FORBIDDEN_USER_RESOURCE_ACCESS);
         }
 
-        final Long userId = Long.parseLong(tokenSub);
+        final Long userId = Long.parseLong(userIdStr);
 
         userService.deleteUser(userId);
 

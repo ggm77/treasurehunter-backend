@@ -1,9 +1,9 @@
 package com.treasurehunter.treasurehunter.domain.post.controller.complete;
 
 import com.treasurehunter.treasurehunter.domain.post.service.complete.PostCompleteService;
-import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -11,15 +11,14 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PostCompleteController {
 
-    private final JwtProvider jwtProvider;
     private final PostCompleteService postCompleteService;
 
     @PostMapping("/post/{id}/complete")
     public ResponseEntity<Void> completePost(
             @PathVariable("id") final Long postId,
-            @RequestHeader(value = "Authorization") final String token
+            @AuthenticationPrincipal String userIdStr
     ){
-        final Long requestUserId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
+        final Long requestUserId = Long.parseLong(userIdStr);
 
         postCompleteService.completePost(requestUserId, postId);
 

@@ -4,9 +4,9 @@ import com.treasurehunter.treasurehunter.domain.smsVerification.dto.SendSmsVerif
 import com.treasurehunter.treasurehunter.domain.smsVerification.dto.VerifySmsVerificationCodeRequestDto;
 import com.treasurehunter.treasurehunter.domain.smsVerification.service.SendSmsVerificationCodeService;
 import com.treasurehunter.treasurehunter.domain.smsVerification.service.VerifySmsVerificationCodeService;
-import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,15 +16,14 @@ public class SmsVerificationCodeController {
 
     private final SendSmsVerificationCodeService sendSmsVerificationCodeService;
     private final VerifySmsVerificationCodeService verifySmsVerificationCodeService;
-    private final JwtProvider jwtProvider;
 
     @PostMapping(value = "/sms/verification/code")
     public ResponseEntity<?> requestSmsVerification(
-            @RequestHeader(value = "Authorization") final String token,
+            @AuthenticationPrincipal String userIdStr,
             @RequestBody final SendSmsVerificationCodeRequestDto sendSmsVerificationCodeRequestDto
     ){
 
-        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
+        final Long userId = Long.parseLong(userIdStr);
 
         sendSmsVerificationCodeService.createVerificationCode(sendSmsVerificationCodeRequestDto, userId);
 
@@ -34,10 +33,10 @@ public class SmsVerificationCodeController {
 
     @PostMapping(value = "/sms/verification/verify")
     public ResponseEntity<?> verifySmsVerification(
-            @RequestHeader(value = "Authorization") final String token,
+            @AuthenticationPrincipal String userIdStr,
             @RequestBody final VerifySmsVerificationCodeRequestDto verifySmsVerificationCodeRequestDto
     ){
-        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
+        final Long userId = Long.parseLong(userIdStr);
 
         verifySmsVerificationCodeService.verifyVerificationCode(verifySmsVerificationCodeRequestDto, userId);
 

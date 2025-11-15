@@ -3,11 +3,11 @@ package com.treasurehunter.treasurehunter.domain.review.controller;
 import com.treasurehunter.treasurehunter.domain.review.dto.ReviewRequestDto;
 import com.treasurehunter.treasurehunter.domain.review.dto.ReviewResponseDto;
 import com.treasurehunter.treasurehunter.domain.review.service.ReviewService;
-import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
 import com.treasurehunter.treasurehunter.global.validation.Create;
 import com.treasurehunter.treasurehunter.global.validation.Update;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,16 +16,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ReviewController {
 
-    private final JwtProvider jwtProvider;
     private final ReviewService reviewService;
 
     //후기 등록 API
     @PostMapping("/review")
     public ResponseEntity<ReviewResponseDto> createReview(
-            @RequestHeader(value = "Authorization") final String token,
+            @AuthenticationPrincipal String userIdStr,
             @Validated(Create.class) @RequestBody final ReviewRequestDto reviewRequestDto
     ){
-        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
+        final Long userId = Long.parseLong(userIdStr);
 
         return ResponseEntity.ok().body(reviewService.createReview(reviewRequestDto, userId));
     }
@@ -34,9 +33,8 @@ public class ReviewController {
     @GetMapping("/review/{id}")
     public ResponseEntity<ReviewResponseDto> getReview(
             @PathVariable("id") final Long reviewId,
-            @RequestHeader(value = "Authorization") final String token
+            @AuthenticationPrincipal String userIdStr
     ){
-        jwtProvider.getPayload(token.substring(7));
 
         return ResponseEntity.ok().body(reviewService.getReview(reviewId));
     }
@@ -45,10 +43,10 @@ public class ReviewController {
     @PatchMapping("/review/{id}")
     public ResponseEntity<ReviewResponseDto> updateReview(
             @PathVariable("id") final Long reviewId,
-            @RequestHeader(value = "Authorization") final String token,
+            @AuthenticationPrincipal String userIdStr,
             @Validated(Update.class) @RequestBody final ReviewRequestDto reviewRequestDto
     ){
-        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
+        final Long userId = Long.parseLong(userIdStr);
 
         return ResponseEntity.ok().body(reviewService.updateReview(reviewRequestDto, reviewId, userId));
     }
@@ -57,9 +55,9 @@ public class ReviewController {
     @DeleteMapping("/review/{id}")
     public ResponseEntity<Void> deleteReview(
             @PathVariable("id") final Long reviewId,
-            @RequestHeader(value = "Authorization") final String token
+            @AuthenticationPrincipal String userIdStr
     ){
-        final Long userId = Long.parseLong(jwtProvider.getPayload(token.substring(7)));
+        final Long userId = Long.parseLong(userIdStr);
 
         reviewService.deleteReview(reviewId, userId);
 
