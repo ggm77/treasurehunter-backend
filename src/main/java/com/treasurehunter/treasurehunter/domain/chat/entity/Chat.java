@@ -12,6 +12,12 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(
+        name = "chat",
+        indexes = {
+                @Index(name = "idx_room_id", columnList = "room_id")
+        }
+)
 public class Chat {
 
     //채팅의 고유 ID

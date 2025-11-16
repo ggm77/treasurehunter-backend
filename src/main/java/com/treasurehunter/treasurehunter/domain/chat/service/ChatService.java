@@ -2,6 +2,7 @@ package com.treasurehunter.treasurehunter.domain.chat.service;
 
 import com.treasurehunter.treasurehunter.domain.chat.dto.ChatRequestDto;
 import com.treasurehunter.treasurehunter.domain.chat.dto.ChatResponseDto;
+import com.treasurehunter.treasurehunter.domain.chat.dto.list.ChatListResponseDto;
 import com.treasurehunter.treasurehunter.domain.chat.entity.Chat;
 import com.treasurehunter.treasurehunter.domain.chat.entity.ChatUserType;
 import com.treasurehunter.treasurehunter.domain.chat.repository.ChatRepository;
@@ -11,6 +12,7 @@ import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCod
 import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,5 +94,59 @@ public class ChatService {
         simpMessagingTemplate.convertAndSend("/topic/chat.room."+roomId, chatResponseDto);
 
         return chatResponseDto;
+    }
+
+    public ChatListResponseDto syncChat(
+            final String roomId,
+            final Long lastChatId,
+            final String userIdStr,
+            final int size
+    ){
+        // 1) size 값 검사
+        if(size <= 0 || size > 300) {
+            throw new CustomException(ExceptionCode.INVALID_REQUEST);
+        }
+
+        // 2) 채팅 아이디 검사
+        if(lastChatId == null) {
+            throw new CustomException(ExceptionCode.INVALID_REQUEST);
+        }
+
+        // 3) 유저 아이디 파싱
+        final Long userId = Long.parseLong(userIdStr);
+
+        // 4) 참가자인지 검사
+        if(!chatRoomParticipantRepository.existsParticipantInChatRoom(roomId, userId)){
+            throw new CustomException(ExceptionCode.CHAT_ROOM_NOT_JOINED);
+        }
+
+        // 5) 마지막 채팅 id 기준으로 size+1개 만큼의 채팅 가져오기
+        final List<Chat> storedChats =
+                chatRepository.findByRoomIdAndIdGreaterThanOrderByIdAsc(
+                        roomId,
+                        lastChatId,
+                        PageRequest.of(0, size+1)
+                );
+
+        // 6) size + 1의 값이 있는지 확인해서 채팅이 더 있는지 확인
+        final boolean hasMore = storedChats.size() > size;
+
+        // 7) 채팅이 더 존재한다면 size+1 만큼 들고온 리스트 size로 자르기
+        final List<Chat> chats;
+        if(hasMore){
+            chats = storedChats.subList(0, size);
+        } else {
+            chats = storedChats;
+        }
+
+        // 8) 그 다음 채팅 기록을 가져올 수 있게하는 커서 값 저장
+        final Long nextCursor;
+        if(chats.isEmpty()) {
+            nextCursor = lastChatId;
+        } else {
+            nextCursor = chats.get(chats.size()-1).getId();
+        }
+
+        return new ChatListResponseDto(chats, nextCursor, hasMore);
     }
 }

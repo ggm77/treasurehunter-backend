@@ -2,6 +2,7 @@ package com.treasurehunter.treasurehunter.domain.chat.controller;
 
 import com.treasurehunter.treasurehunter.domain.chat.dto.ChatRequestDto;
 import com.treasurehunter.treasurehunter.domain.chat.dto.ChatResponseDto;
+import com.treasurehunter.treasurehunter.domain.chat.dto.list.ChatListResponseDto;
 import com.treasurehunter.treasurehunter.domain.chat.service.ChatService;
 import com.treasurehunter.treasurehunter.global.validation.Create;
 import lombok.RequiredArgsConstructor;
@@ -28,4 +29,15 @@ public class ChatRestController {
         return ResponseEntity.ok().body(chatService.sendAndPushChat(userIdStr, roomId, chatRequestDto));
     }
 
+    //오프라인 동안 받은 채팅 동기화(가져오는) 하는 API
+    @GetMapping("/chat/room/{roomId}/messages/sync")
+    public ResponseEntity<ChatListResponseDto> syncChat(
+            @PathVariable("roomId") final String roomId,
+            @RequestParam(defaultValue = "0") final Long lastChatId,
+            @RequestParam(defaultValue = "100") final int size,
+            @AuthenticationPrincipal String userIdStr
+    ){
+
+        return ResponseEntity.ok().body(chatService.syncChat(roomId, lastChatId, userIdStr, size));
+    }
 }

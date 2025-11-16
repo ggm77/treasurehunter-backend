@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class ChatResponseDto {
+    private final Long id;
     private final ChatType type;
     private final ChatUserType userType;
     private final String roomId;
@@ -19,6 +20,7 @@ public class ChatResponseDto {
 
     @Builder
     public ChatResponseDto(final Chat chat){
+        this.id = chat.getId();
         this.type = chat.getChatType();
         this.userType = chat.getUserType();
         this.roomId = chat.getRoomId();
