@@ -42,6 +42,9 @@ public class ChatRoomParticipant {
     @Column(nullable = false)
     private boolean isAnonymous;
 
+    @Column(nullable = false)
+    private boolean isCaller;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -52,11 +55,13 @@ public class ChatRoomParticipant {
     public ChatRoomParticipant(
             final User participant,
             final ChatRoom chatRoom,
-            final boolean isAnonymous
+            final boolean isAnonymous,
+            final boolean isCaller
     ){
         this.participant = participant;
         this.chatRoom = chatRoom;
         this.isAnonymous = isAnonymous;
+        this.isCaller = isCaller;
     }
 
     // 유저 탈퇴시 정리하는 메서드

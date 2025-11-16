@@ -110,14 +110,16 @@ public class ChatRoomService {
                         .chatRoom(chatRoom)
                         .participant(requestUser)
                         .isAnonymous(chatRoomRequestDto.getIsAnonymous())
+                        .isCaller(true)
                         .build()
         );
-        // 게시글 작성자 (채팅을 걸린 사람)
+        // 게시글 작성자 (채팅을 걸린 사람 == 게시글 작성자)
         chatRoom.getChatRoomParticipants().add(
                 ChatRoomParticipant.builder()
                         .chatRoom(chatRoom)
                         .participant(post.getAuthor())
                         .isAnonymous(post.isAnonymous())
+                        .isCaller(false)
                         .build()
         );
 

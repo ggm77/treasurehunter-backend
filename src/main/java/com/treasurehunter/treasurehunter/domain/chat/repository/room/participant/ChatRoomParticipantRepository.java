@@ -1,6 +1,7 @@
 package com.treasurehunter.treasurehunter.domain.chat.repository.room.participant;
 
 import com.treasurehunter.treasurehunter.domain.chat.entity.room.participant.ChatRoomParticipant;
+import jakarta.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -27,9 +28,10 @@ public interface ChatRoomParticipantRepository extends JpaRepository<ChatRoomPar
     int deleteByChatRoom_RoomIdAndParticipant_Id(@Param("roomId") String roomId, @Param("userId") Long userId);
 
     @Query("""
-        select u.id from ChatRoomParticipant c
-            join c.participant u
+        select c.participant.id as participantId,
+            c.isCaller as isCaller
+        from ChatRoomParticipant c
         where c.chatRoom.roomId = :roomId
     """)
-    List<Long> findUserIdsByRoomId(@Param("roomId") String roomId);
+    List<Tuple> findParticipantsAndIsCallerByRoomId(@Param("roomId") String roomId);
 }

@@ -45,9 +45,9 @@ public class StompSubscribeGuard {
 
         // 5) 채팅방 참가 가능여부 확인 메서드를 위한 파라미터 준비
         final Long userId = Long.parseLong(userIdStr);
-        final int idxStart = StompConstants.DEST_CHAT_ROOM_PREFIX.length();
-        final int idxEnd = destination.indexOf(".user.", idxStart);
-        final String roomId = destination.substring(idxStart, idxEnd);
+        final int startIdx = StompConstants.DEST_CHAT_ROOM_PREFIX.length();
+        final int endIdx = Math.min(startIdx+StompConstants.ROOM_ID_LEN, destination.length());
+        final String roomId = destination.substring(startIdx, endIdx);
 
         // 6) 채팅방 ID가 36자리인지 (UUID인지) 확인
         if(roomId.isBlank() || roomId.length() != StompConstants.ROOM_ID_LEN) {

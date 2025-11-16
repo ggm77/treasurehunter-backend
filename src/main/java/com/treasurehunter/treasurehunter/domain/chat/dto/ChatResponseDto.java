@@ -2,6 +2,7 @@ package com.treasurehunter.treasurehunter.domain.chat.dto;
 
 import com.treasurehunter.treasurehunter.domain.chat.entity.Chat;
 import com.treasurehunter.treasurehunter.domain.chat.entity.ChatType;
+import com.treasurehunter.treasurehunter.domain.chat.entity.ChatUserType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 public class ChatResponseDto {
     private final ChatType type;
+    private final ChatUserType userType;
     private final String roomId;
     private final String message;
     private final LocalDateTime sentAt;
@@ -18,6 +20,7 @@ public class ChatResponseDto {
     @Builder
     public ChatResponseDto(final Chat chat){
         this.type = chat.getChatType();
+        this.userType = chat.getUserType();
         this.roomId = chat.getRoomId();
         this.message = chat.getMessage();
         this.sentAt = chat.getSentAt();

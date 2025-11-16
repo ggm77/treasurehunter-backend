@@ -24,6 +24,11 @@ public class Chat {
     @Enumerated(EnumType.STRING)
     private ChatType chatType;
 
+    //채팅 보낸 사람 타입 (게시글 작성자, 채팅 건 사람)
+    @Column(nullable = false, updatable = false)
+    @Enumerated(EnumType.STRING)
+    private ChatUserType userType;
+
     //채팅방 ID
     @Column(nullable = false, updatable = false)
     private String roomId;
@@ -52,6 +57,7 @@ public class Chat {
     @Builder
     public Chat(
             final ChatType chatType,
+            final ChatUserType userType,
             final String roomId,
             final String senderId,
             final String message,
@@ -59,6 +65,7 @@ public class Chat {
             final LocalDateTime serverAt
     ){
         this.chatType = chatType;
+        this.userType = userType;
         this.roomId = roomId;
         this.senderId = senderId;
         this.message = message;
