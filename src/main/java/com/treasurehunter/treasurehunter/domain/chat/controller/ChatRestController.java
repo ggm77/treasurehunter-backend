@@ -18,7 +18,7 @@ public class ChatRestController {
     private final ChatService chatService;
 
     //채팅 전송하는 API
-    @PostMapping("/chat/room/{id}/send")
+    @PostMapping("/chat/room/{id}/messages")
     public ResponseEntity<ChatResponseDto> sendChat(
             @PathVariable("id") final String roomId,
             @AuthenticationPrincipal String userIdStr,
