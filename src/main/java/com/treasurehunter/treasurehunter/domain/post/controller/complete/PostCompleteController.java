@@ -16,7 +16,7 @@ public class PostCompleteController {
     @PostMapping("/post/{id}/complete")
     public ResponseEntity<Void> completePost(
             @PathVariable("id") final Long postId,
-            @AuthenticationPrincipal String userIdStr
+            @AuthenticationPrincipal final String userIdStr
     ){
         final Long requestUserId = Long.parseLong(userIdStr);
 

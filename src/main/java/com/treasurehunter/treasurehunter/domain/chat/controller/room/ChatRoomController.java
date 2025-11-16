@@ -22,7 +22,7 @@ public class ChatRoomController {
     // 자신이 참가 중인 채팅방 리스트 조회하는 API
     @GetMapping("/chat/rooms")
     public ResponseEntity<ChatRoomListResponseDto> getChatRoomList(
-            @AuthenticationPrincipal String userIdStr
+            @AuthenticationPrincipal final String userIdStr
     ){
         final Long userId = Long.parseLong(userIdStr);
 
@@ -32,7 +32,7 @@ public class ChatRoomController {
     // 채팅방 생성하는 API
     @PostMapping("/chat/room")
     public ResponseEntity<ChatRoomResponseDto> createChatRoom(
-            @AuthenticationPrincipal String userIdStr,
+            @AuthenticationPrincipal final String userIdStr,
             @Validated(Create.class) @RequestBody final ChatRoomRequestDto chatRoomRequestDto
     ){
         final Long userId = Long.parseLong(userIdStr);
@@ -44,7 +44,7 @@ public class ChatRoomController {
     @GetMapping("/chat/room/{id}")
     public ResponseEntity<ChatRoomResponseDto> getChatRoom(
             @PathVariable("id") final String chatRoomId,
-            @AuthenticationPrincipal String userIdStr
+            @AuthenticationPrincipal final String userIdStr
     ){
         final Long userId = Long.parseLong(userIdStr);
 
@@ -55,7 +55,7 @@ public class ChatRoomController {
     @PatchMapping("/chat/room/{id}")
     public ResponseEntity<ChatRoomResponseDto> updateChatRoom(
             @PathVariable("id") final String chatRoomId,
-            @AuthenticationPrincipal String userIdStr,
+            @AuthenticationPrincipal final String userIdStr,
             @Validated(Update.class) @RequestBody final ChatRoomRequestDto chatRoomRequestDto
     ){
         final Long userId = Long.parseLong(userIdStr);
@@ -68,7 +68,7 @@ public class ChatRoomController {
     @DeleteMapping("/chat/room/{id}")
     public ResponseEntity<Void> deleteChatRoom(
             @PathVariable("id") final String chatRoomId,
-            @AuthenticationPrincipal String userIdStr
+            @AuthenticationPrincipal final String userIdStr
     ){
         final Long userId = Long.parseLong(userIdStr);
 

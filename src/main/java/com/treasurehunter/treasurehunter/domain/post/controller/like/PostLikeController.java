@@ -17,7 +17,7 @@ public class PostLikeController {
     @PostMapping("/post/{id}/like")
     public ResponseEntity<Void> likePost(
             @PathVariable("id") final String postId,
-            @AuthenticationPrincipal String userIdStr
+            @AuthenticationPrincipal final String userIdStr
     ){
         final Long userId = Long.parseLong(userIdStr);
         postLikeService.likePost(Long.parseLong(postId), userId);
@@ -29,7 +29,7 @@ public class PostLikeController {
     @PostMapping("/post/{id}/unlike")
     public ResponseEntity<Void> unlikePost(
             @PathVariable("id") final String postId,
-            @AuthenticationPrincipal String userIdStr
+            @AuthenticationPrincipal final String userIdStr
     ){
         final Long userId = Long.parseLong(userIdStr);
 

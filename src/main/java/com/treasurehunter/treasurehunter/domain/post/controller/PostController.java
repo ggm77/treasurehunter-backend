@@ -20,7 +20,7 @@ public class PostController {
 
     @PostMapping("/post")
     public ResponseEntity<PostResponseDto> createPost(
-            @AuthenticationPrincipal String userIdStr,
+            @AuthenticationPrincipal final String userIdStr,
             @Validated(Create.class) @RequestBody final PostRequestDto postRequestDto
     ){
 
@@ -40,7 +40,7 @@ public class PostController {
     @PatchMapping("/post/{id}")
     public ResponseEntity<PostResponseDto> updatePost(
             @PathVariable final Long id,
-            @AuthenticationPrincipal String userIdStr,
+            @AuthenticationPrincipal final String userIdStr,
             @Validated(Update.class) @RequestBody final PostRequestDto postRequestDto
     ){
 
@@ -52,7 +52,7 @@ public class PostController {
     @DeleteMapping("/post/{id}")
     public ResponseEntity<Void> deletePost(
             @PathVariable final Long id,
-            @AuthenticationPrincipal String userIdStr
+            @AuthenticationPrincipal final String userIdStr
     ){
 
         final Long userId = Long.parseLong(userIdStr);

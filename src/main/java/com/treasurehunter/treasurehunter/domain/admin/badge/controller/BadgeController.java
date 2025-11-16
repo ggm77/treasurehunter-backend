@@ -21,7 +21,7 @@ public class BadgeController {
     //뱃지 추가하는 API
     @PostMapping("/admin/badge")
     public ResponseEntity<BadgeResponseDto> createBadge(
-            @AuthenticationPrincipal String userIdStr,
+            @AuthenticationPrincipal final String userIdStr,
             @Validated(Create.class) @RequestBody final BadgeRequestDto badgeRequestDto
     ){
         final Long userId = Long.parseLong(userIdStr);
@@ -42,7 +42,7 @@ public class BadgeController {
     @PatchMapping("/admin/badge/{id}")
     public ResponseEntity<BadgeResponseDto> updateBadge(
             @PathVariable("id") final Long badgeId,
-            @AuthenticationPrincipal String userIdStr,
+            @AuthenticationPrincipal final String userIdStr,
             @Validated(Update.class) @RequestBody final BadgeRequestDto badgeRequestDto
     ){
         final Long userId = Long.parseLong(userIdStr);
@@ -54,7 +54,7 @@ public class BadgeController {
     @DeleteMapping("/admin/badge/{id}")
     public ResponseEntity<BadgeResponseDto> deleteBadge(
             @PathVariable("id") final Long badgeId,
-            @AuthenticationPrincipal String userIdStr
+            @AuthenticationPrincipal final String userIdStr
     ){
         final Long userId = Long.parseLong(userIdStr);
 

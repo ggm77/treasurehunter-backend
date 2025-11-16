@@ -19,7 +19,7 @@ public class SmsVerificationCodeController {
 
     @PostMapping(value = "/sms/verification/code")
     public ResponseEntity<?> requestSmsVerification(
-            @AuthenticationPrincipal String userIdStr,
+            @AuthenticationPrincipal final String userIdStr,
             @RequestBody final SendSmsVerificationCodeRequestDto sendSmsVerificationCodeRequestDto
     ){
 
@@ -33,7 +33,7 @@ public class SmsVerificationCodeController {
 
     @PostMapping(value = "/sms/verification/verify")
     public ResponseEntity<?> verifySmsVerification(
-            @AuthenticationPrincipal String userIdStr,
+            @AuthenticationPrincipal final String userIdStr,
             @RequestBody final VerifySmsVerificationCodeRequestDto verifySmsVerificationCodeRequestDto
     ){
         final Long userId = Long.parseLong(userIdStr);

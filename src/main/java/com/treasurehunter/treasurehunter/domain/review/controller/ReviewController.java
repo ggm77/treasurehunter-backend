@@ -21,7 +21,7 @@ public class ReviewController {
     //후기 등록 API
     @PostMapping("/review")
     public ResponseEntity<ReviewResponseDto> createReview(
-            @AuthenticationPrincipal String userIdStr,
+            @AuthenticationPrincipal final String userIdStr,
             @Validated(Create.class) @RequestBody final ReviewRequestDto reviewRequestDto
     ){
         final Long userId = Long.parseLong(userIdStr);
@@ -32,8 +32,7 @@ public class ReviewController {
     //후기 조회 API
     @GetMapping("/review/{id}")
     public ResponseEntity<ReviewResponseDto> getReview(
-            @PathVariable("id") final Long reviewId,
-            @AuthenticationPrincipal String userIdStr
+            @PathVariable("id") final Long reviewId
     ){
 
         return ResponseEntity.ok().body(reviewService.getReview(reviewId));
@@ -43,7 +42,7 @@ public class ReviewController {
     @PatchMapping("/review/{id}")
     public ResponseEntity<ReviewResponseDto> updateReview(
             @PathVariable("id") final Long reviewId,
-            @AuthenticationPrincipal String userIdStr,
+            @AuthenticationPrincipal final String userIdStr,
             @Validated(Update.class) @RequestBody final ReviewRequestDto reviewRequestDto
     ){
         final Long userId = Long.parseLong(userIdStr);
@@ -55,7 +54,7 @@ public class ReviewController {
     @DeleteMapping("/review/{id}")
     public ResponseEntity<Void> deleteReview(
             @PathVariable("id") final Long reviewId,
-            @AuthenticationPrincipal String userIdStr
+            @AuthenticationPrincipal final String userIdStr
     ){
         final Long userId = Long.parseLong(userIdStr);
 

@@ -22,7 +22,7 @@ public class ImageController {
      */
     @PostMapping( value = "/file/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createImage(
-            @AuthenticationPrincipal String userIdStr,
+            @AuthenticationPrincipal final String userIdStr,
             @RequestPart(value = "file") final MultipartFile multipartFile
     ){
         final Long userId = Long.parseLong(userIdStr);
@@ -47,7 +47,7 @@ public class ImageController {
     @DeleteMapping("/file/image")
     public ResponseEntity<Void> deleteImage(
             @RequestParam("objectKey") final String objectKey,
-            @AuthenticationPrincipal String userIdStr
+            @AuthenticationPrincipal final String userIdStr
     ){
         final Long userId = Long.parseLong(userIdStr);
 

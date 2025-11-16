@@ -23,7 +23,7 @@ public class UserController {
     @PostMapping("/user/{id}")
     public ResponseEntity<UserResponseDto> createUser(
             @PathVariable final String id,
-            @AuthenticationPrincipal String userIdStr,
+            @AuthenticationPrincipal final String userIdStr,
             @RequestBody final UserRequestDto userRequestDto
     ){
 
@@ -51,7 +51,7 @@ public class UserController {
     @PatchMapping("/user/{id}")
     public ResponseEntity<UserResponseDto> updateUser(
             @PathVariable final String id,
-            @AuthenticationPrincipal String userIdStr,
+            @AuthenticationPrincipal final String userIdStr,
             @RequestBody final UserRequestDto userRequestDto
     ){
 
@@ -69,7 +69,7 @@ public class UserController {
     @DeleteMapping("/user/{id}")
     public ResponseEntity<Void> deleteUser(
             @PathVariable final String id,
-            @AuthenticationPrincipal String userIdStr
+            @AuthenticationPrincipal final String userIdStr
     ){
 
         //다른 유저의 정보에 접근 방지

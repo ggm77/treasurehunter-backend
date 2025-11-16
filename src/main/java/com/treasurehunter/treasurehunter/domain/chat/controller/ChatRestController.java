@@ -22,7 +22,7 @@ public class ChatRestController {
     @PostMapping("/chat/room/{id}/messages")
     public ResponseEntity<ChatResponseDto> sendChat(
             @PathVariable("id") final String roomId,
-            @AuthenticationPrincipal String userIdStr,
+            @AuthenticationPrincipal final String userIdStr,
             @Validated(Create.class) @RequestBody final ChatRequestDto chatRequestDto
     ){
 
@@ -35,7 +35,7 @@ public class ChatRestController {
             @PathVariable("roomId") final String roomId,
             @RequestParam(defaultValue = "0") final Long lastChatId,
             @RequestParam(defaultValue = "100") final int size,
-            @AuthenticationPrincipal String userIdStr
+            @AuthenticationPrincipal final String userIdStr
     ){
 
         return ResponseEntity.ok().body(chatService.syncChat(roomId, lastChatId, userIdStr, size));
