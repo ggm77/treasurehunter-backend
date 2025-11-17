@@ -36,7 +36,7 @@ public class User {
     private String nickname;
 
     //프로필 사진 url
-    @Column(length = 1024, nullable = true)
+    @Column(length = 2048, nullable = true)
     private String profileImage;
 
     //실제 이름

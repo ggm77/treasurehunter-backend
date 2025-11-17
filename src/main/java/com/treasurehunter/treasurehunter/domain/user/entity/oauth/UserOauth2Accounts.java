@@ -33,7 +33,7 @@ public class UserOauth2Accounts {
     @Column(length = 255, nullable = true)
     private String name;
 
-    @Column(length = 255, nullable = true)
+    @Column(length = 2048, nullable = true)
     private String profileImage;
 
     //oauth에서 제공하는 엑세스 토큰 (unlink시 필요함)
