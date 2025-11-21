@@ -14,6 +14,7 @@ import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +24,35 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ChatRoomService {
 
+    private static String lastReadChatIdKey(
+            final String roomId,
+            final boolean isCaller
+    ){
+        if(isCaller){
+            return "chat.read.lastReadChatId:"+roomId+":CALLER";
+        } else {
+            return "chat.read.lastReadChatId:"+roomId+":AUTHOR";
+        }
+
+    }
+
+    private static String rdbSavedAtKey(
+            final String roomId,
+            final boolean isCaller
+    ){
+        if(isCaller){
+            return "chat.read.rdbSavedAt:"+roomId+":CALLER";
+        } else {
+            return "chat.read.rdbSavedAt:"+roomId+":AUTHOR";
+        }
+
+    }
+
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
 
     /**
@@ -217,10 +243,18 @@ public class ChatRoomService {
         final ChatRoom chatRoom = chatRoomRepository.findByRoomId(chatRoomId)
                         .orElseThrow(() -> new CustomException(ExceptionCode.CHAT_ROOM_NOT_EXIST));
         //활성 사용자(탈퇴하지 않은 사용자)가 남아있는지 확인
-        final boolean hasActive = chatRoom.getChatRoomParticipants().stream()
+        final List<ChatRoomParticipant> participants = chatRoom.getChatRoomParticipants();
+        final boolean hasActive = participants.stream()
                         .anyMatch(p -> p.getParticipant() != null);
         if(!hasActive){
             chatRoomRepository.delete(chatRoom);
+
+            // 3) redis 메세지 읽음 저장하는 key 삭제
+            final String callerLKey = lastReadChatIdKey(chatRoomId, true);
+            final String authorLKey = lastReadChatIdKey(chatRoomId, false);
+
+            redisTemplate.delete(callerLKey);
+            redisTemplate.delete(authorLKey);
         }
     }
 
