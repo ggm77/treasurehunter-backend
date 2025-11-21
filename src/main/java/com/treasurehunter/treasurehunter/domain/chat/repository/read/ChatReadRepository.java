@@ -6,8 +6,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
-
 public interface ChatReadRepository extends JpaRepository<ChatRead, Long> {
 
     @Modifying
@@ -24,5 +22,5 @@ public interface ChatReadRepository extends JpaRepository<ChatRead, Long> {
             @Param("isCaller") final boolean isCaller
     );
 
-    Optional<ChatRead> findByRoomIdAndIsCaller(final String roomId, final boolean isCaller);
+    ChatRead findByRoomIdAndIsCaller(final String roomId, final boolean isCaller);
 }

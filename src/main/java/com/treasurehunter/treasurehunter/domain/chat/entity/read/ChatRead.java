@@ -38,7 +38,7 @@ public class ChatRead {
     @Column(length = 36, nullable = false, updatable = false)
     private String roomId;
 
-    @Column(nullable = false, updatable = false)
+    @Column(columnDefinition = "TINYINT(1)", nullable = false, updatable = false)
     private boolean isCaller;
 
     @CreationTimestamp

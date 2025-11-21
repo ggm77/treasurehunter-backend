@@ -77,7 +77,7 @@ public class ChatSyncService {
         // 7) 유저 타입(게시글 작성자, 채팅 건 사람) 확인
         final Boolean isCaller = participantsMap.get(userId);
         if(isCaller == null){
-            throw new CustomException(ExceptionCode.INVALID_REQUEST);
+            throw new CustomException(ExceptionCode.USER_NOT_EXIST);
         }
 
         // 8) 마지막 채팅 id 기준으로 size+1개 만큼의 채팅 가져오기
@@ -112,10 +112,14 @@ public class ChatSyncService {
         final String lastReadChatIdStr = redisTemplate.opsForValue().get(lKey);
         final Long lastReadChatId;
         if(lastReadChatIdStr == null){
-            final ChatRead chatRead = chatReadRepository.findByRoomIdAndIsCaller(roomId, isCaller)
-                    .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REQUEST));
+            final ChatRead chatRead = chatReadRepository.findByRoomIdAndIsCaller(roomId, isCaller);
 
-            lastReadChatId = chatRead.getLastReadChatId();
+            //저장된게 없으면 null 반환
+            if(chatRead != null) {
+                lastReadChatId = chatRead.getLastReadChatId();
+            } else {
+                lastReadChatId = null;
+            }
         } else {
             lastReadChatId = Long.parseLong(lastReadChatIdStr);
         }

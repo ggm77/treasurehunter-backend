@@ -39,10 +39,10 @@ public class ChatRoomParticipant {
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TINYINT(1)", nullable = false)
     private boolean isAnonymous;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TINYINT(1)", nullable = false)
     private boolean isCaller;
 
     @CreationTimestamp
