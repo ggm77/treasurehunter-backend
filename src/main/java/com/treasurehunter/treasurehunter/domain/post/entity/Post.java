@@ -30,7 +30,8 @@ import java.util.*;
                 @Index(name = "idx_post_lat", columnList = "lat"),
                 @Index(name = "idx_post_lon", columnList = "lon"),
                 @Index(name = "idx_post_title", columnList = "title"),
-                @Index(name = "idx_post_content", columnList = "content")
+                @Index(name = "idx_post_content", columnList = "content"),
+                @Index(name = "idx_post_type_user_id", columnList = "post_type, author_id")
         }
 )
 public class Post {

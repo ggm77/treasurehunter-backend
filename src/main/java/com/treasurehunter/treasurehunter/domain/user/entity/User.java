@@ -24,6 +24,13 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(
+        name = "user",
+        indexes = {
+                @Index(name = "idx_point", columnList = "point"),
+                @Index(name = "idx_returned_items_count", columnList = "returned_items_count")
+        }
+)
 public class User {
 
     //PK 유저 고유 ID
@@ -186,5 +193,10 @@ public class User {
     //totalReviews를 1증가
     public void incrementTotalReviews(){
         this.totalReviews += 1;
+    }
+
+    //물건 찾아준 횟수 1증가
+    public void incrementReturnedItemsCount(){
+        this.returnedItemsCount += 1;
     }
 }
