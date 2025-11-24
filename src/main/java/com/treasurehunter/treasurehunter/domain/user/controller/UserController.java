@@ -40,11 +40,11 @@ public class UserController {
     //유저 조회 API
     @GetMapping("/user/{id}")
     public ResponseEntity<UserResponseDto> getUser(
-            @PathVariable final String id
+            @PathVariable("id") final String targetUserIdStr,
+            @AuthenticationPrincipal final String userIdStr
     ){
-        final Long targetUserId = Long.parseLong(id);
 
-        return ResponseEntity.ok().body(userService.getUser(targetUserId));
+        return ResponseEntity.ok().body(userService.getUser(targetUserIdStr, userIdStr));
     }
 
     //유저 정보 수정 API

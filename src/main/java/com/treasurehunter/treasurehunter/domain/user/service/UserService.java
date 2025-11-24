@@ -69,16 +69,40 @@ public class UserService {
     /**
      * 유저의 정보를 조회하는 메서드
      * 다른 회원의 정보도 조회 가능
-     * @param userId 조회할 유저 아이디
+     * 다른 회원 정보시 dto에서 민감한 정보는 빠짐
+     * @param targetUserIdStr 조회할 유저 아이디
+     * @param requestUserIdStr 요청한 유저 아이디
      * @return 등록된 유저 DTO
      */
     @Transactional(readOnly = true) //LazyInitializationException 방어 //N+1 해결을 통해 문제 해결되면 지우기
-    public UserResponseDto getUser(final Long userId){
+    public UserResponseDto getUser(
+            final String targetUserIdStr,
+            final String requestUserIdStr
+    ){
+        // 1) 유저 아이디 변환
+        final Long targetUserId = Long.parseLong(targetUserIdStr);
+        final Long requestUserId = Long.valueOf(requestUserIdStr);
 
-        final User user = userRepository.findById(userId)
+        // 2) 유저 조회
+        final User user = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_EXIST));
 
-        return new UserResponseDto(user);
+        // 3) 기본 DTO생성
+        final UserResponseDto userResponseDto = new UserResponseDto(user);
+
+        // 4) 다른 유저 조회시 민감 정보 삭제
+        final UserResponseDto publicUserResponseDto;
+
+        //다른 유저 조회 할 때
+        if(!targetUserId.equals(requestUserId)){
+            publicUserResponseDto = userResponseDto.removeSensitiveData();
+        }
+        //자기 자신 조회 할 때
+        else {
+            publicUserResponseDto = userResponseDto;
+        }
+
+        return publicUserResponseDto;
     }
 
     /**

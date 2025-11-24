@@ -1,6 +1,5 @@
 package com.treasurehunter.treasurehunter.domain.user.dto;
 
-import com.treasurehunter.treasurehunter.domain.post.entity.Post;
 import com.treasurehunter.treasurehunter.domain.post.entity.like.PostLike;
 import com.treasurehunter.treasurehunter.domain.post.dto.PostSimpleResponseDto;
 import com.treasurehunter.treasurehunter.domain.review.dto.ReviewResponseDto;
@@ -38,6 +37,45 @@ public class UserResponseDto {
     //각각 구현후 아래에 receivedReviews, reviews, posts, blockedUser 추가하기
 
     @Builder
+    private UserResponseDto(
+            final Long id,
+            final String nickname,
+            final String profileImage,
+            final String name,
+            final String phoneNumber,
+            final Role role,
+            final LocalDateTime createdAt,
+            final Integer point,
+            final Integer returnedItemsCount,
+            final Integer badgeCount,
+            final Integer totalScore,
+            final Integer totalReviews,
+            final List<UserOauth2AccountsResponseDto> userOauth2Accounts,
+            final List<ReviewResponseDto> receivedReviews,
+            final List<ReviewResponseDto> reviews,
+            final List<PostSimpleResponseDto> posts,
+            final List<PostSimpleResponseDto> likedPosts
+    ) {
+        this.id = id;
+        this.nickname = nickname;
+        this.profileImage = profileImage;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+        this.createdAt = createdAt;
+        this.point = point;
+        this.returnedItemsCount = returnedItemsCount;
+        this.badgeCount = badgeCount;
+        this.totalScore = totalScore;
+        this.totalReviews = totalReviews;
+        this.userOauth2Accounts = userOauth2Accounts;
+        this.receivedReviews = receivedReviews;
+        this.reviews = reviews;
+        this.posts = posts;
+        this.likedPosts = likedPosts;
+    }
+
+
     public UserResponseDto(final User user){
         this.id = user.getId();
         this.nickname = user.getNickname();
@@ -78,5 +116,28 @@ public class UserResponseDto {
                 .filter(Objects::nonNull)
                 .map(PostSimpleResponseDto::new)
                 .toList();
+    }
+
+    //개인정보 삭제하기 위한 메서드
+    public UserResponseDto removeSensitiveData(){
+        return UserResponseDto.builder()
+                .id(this.id)
+                .nickname(this.nickname)
+                .profileImage(this.profileImage)
+                .name(null)
+                .phoneNumber(null)
+                .role(this.role)
+                .createdAt(this.createdAt)
+                .point(this.point)
+                .returnedItemsCount(this.returnedItemsCount)
+                .badgeCount(this.badgeCount)
+                .totalScore(this.totalScore)
+                .totalReviews(this.totalReviews)
+                .userOauth2Accounts(null)
+                .receivedReviews(this.receivedReviews)
+                .reviews(this.reviews)
+                .posts(this.posts)
+                .likedPosts(this.likedPosts)
+                .build();
     }
 }
