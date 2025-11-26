@@ -16,7 +16,7 @@ public class ReviewImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 255, nullable = false)
+    @Column(length = 2048, nullable = false)
     private String url;
 
     @Column(nullable = false)
