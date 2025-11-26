@@ -20,7 +20,7 @@ public class ReviewRequestDto {
 
     @NotNull(groups = Create.class)
     @Min(value = 1, groups = { Create.class, Update.class })
-    @Max(value = 100, groups = { Create.class, Update.class })
+    @Max(value = 100, groups = Create.class )
     private Integer score;
 
     @NotNull(groups = Create.class)

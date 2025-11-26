@@ -192,7 +192,6 @@ public class ReviewService {
         //나머지 정보들 수정
         Optional.ofNullable(reviewRequestDto.getTitle()).filter(s -> !s.isBlank()).ifPresent(review::updateTitle);
         Optional.ofNullable(reviewRequestDto.getContent()).filter(s -> !s.isBlank()).ifPresent(review::updateContent);
-        Optional.ofNullable(reviewRequestDto.getScore()).ifPresent(review::updateScore);
 
         return new ReviewResponseDto(review);
     }
