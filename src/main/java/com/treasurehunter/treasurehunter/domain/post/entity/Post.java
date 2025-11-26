@@ -3,7 +3,6 @@ package com.treasurehunter.treasurehunter.domain.post.entity;
 import com.treasurehunter.treasurehunter.domain.chat.entity.room.ChatRoom;
 import com.treasurehunter.treasurehunter.domain.post.entity.image.PostImage;
 import com.treasurehunter.treasurehunter.domain.post.entity.like.PostLike;
-import com.treasurehunter.treasurehunter.domain.review.entity.Review;
 import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -31,7 +30,7 @@ import java.util.*;
                 @Index(name = "idx_post_lon", columnList = "lon"),
                 @Index(name = "idx_post_title", columnList = "title"),
                 @Index(name = "idx_post_content", columnList = "content"),
-                @Index(name = "idx_post_type_user_id", columnList = "post_type, author_id")
+                @Index(name = "idx_type_user_id", columnList = "type, author_id")
         }
 )
 public class Post {
@@ -88,10 +87,6 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostLike> postLikes = new ArrayList<>();
-
-    //게시글에 작성된 후기
-    @OneToOne(mappedBy = "post", fetch = FetchType.LAZY)
-    private Review review;
 
     //게시글에서 발생한 채팅방 연관 관계 (게시글 삭제해도 채팅방은 존재)
     @OneToMany(mappedBy = "post", orphanRemoval = false)

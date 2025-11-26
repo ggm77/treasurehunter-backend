@@ -24,7 +24,7 @@ public class ReviewRequestDto {
     private Integer score;
 
     @NotNull(groups = Create.class)
-    private Long postId;
+    private Long targetUserId;
 
     //등록시 없어도 됨
     private List<String> images;

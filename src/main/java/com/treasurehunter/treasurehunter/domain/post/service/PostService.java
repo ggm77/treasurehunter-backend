@@ -8,8 +8,6 @@ import com.treasurehunter.treasurehunter.domain.post.entity.image.PostImage;
 import com.treasurehunter.treasurehunter.domain.post.dto.PostRequestDto;
 import com.treasurehunter.treasurehunter.domain.post.dto.PostResponseDto;
 import com.treasurehunter.treasurehunter.domain.post.repository.PostRepository;
-import com.treasurehunter.treasurehunter.domain.post.repository.image.PostImageRepository;
-import com.treasurehunter.treasurehunter.domain.post.repository.like.PostLikeRepository;
 import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
 import com.treasurehunter.treasurehunter.global.event.domain.EventPublisher;
@@ -31,8 +29,6 @@ public class PostService {
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final PostImageRepository postImageRepository;
-    private final PostLikeRepository postLikeRepository;
     private final EnumUtil enumUtil;
     private final EventPublisher eventPublisher;
 
@@ -274,12 +270,6 @@ public class PostService {
         }
 
         // 4) 자식 정리
-
-        //리뷰 존재하면 정리(리뷰는 삭제 X)
-        if(post.getReview() != null){
-            post.getReview().detachPost();
-        }
-
         //채팅방 존재하면 정리(채팅방은 삭제X)
         if(post.getChatRooms() != null){
             post.getChatRooms()

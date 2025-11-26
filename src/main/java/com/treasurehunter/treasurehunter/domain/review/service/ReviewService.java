@@ -1,6 +1,5 @@
 package com.treasurehunter.treasurehunter.domain.review.service;
 
-import com.treasurehunter.treasurehunter.domain.post.entity.Post;
 import com.treasurehunter.treasurehunter.domain.post.repository.PostRepository;
 import com.treasurehunter.treasurehunter.domain.review.entity.Review;
 import com.treasurehunter.treasurehunter.domain.review.entity.image.ReviewImage;
@@ -53,27 +52,21 @@ public class ReviewService {
     ){
         // 0) 요청값 검증은 DTO에서 어노테이션으로함
 
-        // 1) 게시글 존재 확인
-        final Post post = postRepository.findById(reviewRequestDto.getPostId())
-                .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_EXIST));
+        // 1) 리뷰 당할 상대 유저 확인
+        final User targetUser = userRepository.findById(reviewRequestDto.getTargetUserId())
+                .orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_EXIST));
 
-        // 2) 게시글이 완료 상태가 아닌경우 처리
-        if(!post.isCompleted()){
-            throw new CustomException(ExceptionCode.POST_NOT_COMPLETED);
-        }
-
-        // 3) 게시글에 리뷰가 이미 존재하면 실패 처리
-        if(post.getReview() != null){
-            throw new CustomException(ExceptionCode.REVIEW_ALREADY_EXIST);
-        }
-
-        // 4) 유저 존재 확인
+        // 2) 유저 존재 확인
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_EXIST));
 
-        // 5) 후기 작성에 따른 유저 정보 갱신
-        //리뷰 당할 유저 조회
-        final User targetUser = post.getAuthor();
+        // 3) 이미 리뷰 되었는지 확인
+        final boolean alreadyReviewed = reviewRepository.existsByAuthorIdAndTargetUserId(userId, reviewRequestDto.getTargetUserId());
+        if(alreadyReviewed){
+            throw new CustomException(ExceptionCode.REVIEW_ALREADY_EXIST);
+        }
+
+        // 4) 후기 작성에 따른 유저 정보 갱신
         //불필요한 갱신 제외
         if(reviewRequestDto.getScore() != 0){
             // 총 점수 증가
@@ -82,20 +75,19 @@ public class ReviewService {
         // 총 리뷰 수 1 증가
         targetUser.incrementTotalReviews();
 
-        // 6) review 엔티티 생성
+        // 5) review 엔티티 생성
         final Review review = Review.builder()
                 .title(reviewRequestDto.getTitle())
                 .content(reviewRequestDto.getContent())
                 .score(reviewRequestDto.getScore())
                 .images(new ArrayList<>())
                 .author(user)
-                .post(post)
                 .targetUser(targetUser)
                 .build();
 
 
 
-        // 7) ReviewImage 연관 관계 설정
+        // 6) ReviewImage 연관 관계 설정
         //리스트가 null인 경우, 요소가 null인경우, 빈경우 예외처리
         final List<String> validUrls = Optional.ofNullable(reviewRequestDto.getImages())
                 .orElseGet(List::of).stream()
@@ -117,10 +109,10 @@ public class ReviewService {
             }
         }
 
-        // 8) review DB에 저장
+        // 7) review DB에 저장
         final Review savedReview = reviewRepository.save(review);
 
-        // 9) 배지 수여용 이벤트 발생 시키기
+        // 8) 배지 수여용 이벤트 발생 시키기
         eventPublisher.publish(
                 ReviewCreateEvent.builder()
                         .userId(userId)

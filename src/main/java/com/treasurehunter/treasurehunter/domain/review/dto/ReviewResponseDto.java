@@ -13,7 +13,6 @@ public class ReviewResponseDto {
 
     private final Long id;
     private final UserSimpleResponseDto author;
-    private final PostSimpleResponseDto post;
     private final String title;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
@@ -29,11 +28,6 @@ public class ReviewResponseDto {
             this.author = null;
         }
 
-        if(review.getPost() != null) {
-            this.post = new PostSimpleResponseDto(review.getPost());
-        } else {
-            this.post = null;
-        }
         this.title = review.getTitle();
         this.createdAt = review.getCreatedAt();
         this.updatedAt = review.getUpdatedAt();

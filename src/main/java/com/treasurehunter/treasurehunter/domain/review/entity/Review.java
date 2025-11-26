@@ -1,6 +1,5 @@
 package com.treasurehunter.treasurehunter.domain.review.entity;
 
-import com.treasurehunter.treasurehunter.domain.post.entity.Post;
 import com.treasurehunter.treasurehunter.domain.review.entity.image.ReviewImage;
 import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -23,8 +22,10 @@ import java.util.*;
         name = "review",
         indexes = {
                 @Index(name = "idx_author_id", columnList = "author_id"),
-                @Index(name = "idx_target_user_id", columnList = "target_user_id"),
-                @Index(name = "idx_post_id", columnList = "post_id")
+                @Index(name = "idx_target_user_id", columnList = "target_user_id")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_author_id_target_user_id", columnNames = {"author_id", "target_user_id"})
         }
 )
 public class Review {
@@ -54,11 +55,6 @@ public class Review {
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewImage> images = new ArrayList<>();
 
-    //후기가 적힐 게시글
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", unique = true)
-    private Post post;
-
     //후기 작성한 유저
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
@@ -76,7 +72,6 @@ public class Review {
             final int score,
             final List<ReviewImage> images,
             final User author,
-            final Post post,
             final User targetUser
     ){
         this.title = title;
@@ -84,7 +79,6 @@ public class Review {
         this.score = score;
         this.images = images;
         this.author = author;
-        this.post = post;
         this.targetUser = targetUser;
     }
 
@@ -115,11 +109,6 @@ public class Review {
         }
 
         this.score = score;
-    }
-
-    // 게시글과 연관 관계를 끊는 메서드
-    public void detachPost(){
-        this.post = null;
     }
 
     // 작성자와 연관 관게 끊는 메서드
