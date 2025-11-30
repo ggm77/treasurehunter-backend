@@ -22,17 +22,17 @@ public class UserController {
     //회원가입 API, 프론트에서 OAuth로 등록후 이 API호출
     @PostMapping("/user/{id}")
     public ResponseEntity<UserResponseDto> createUser(
-            @PathVariable final String id,
+            @PathVariable final Long id,
             @AuthenticationPrincipal final String userIdStr,
             @RequestBody final UserRequestDto userRequestDto
     ){
 
+        final Long userId = Long.parseLong(userIdStr);
+
         //다른 유저의 정보에 접근 방지
-        if(!Objects.equals(userIdStr, id)){
+        if(!Objects.equals(userId, id)){
             throw new CustomException(ExceptionCode.FORBIDDEN_USER_RESOURCE_ACCESS);
         }
-
-        final Long userId = Long.parseLong(userIdStr);
 
         return ResponseEntity.ok(userService.createUser(userRequestDto, userId));
     }
@@ -40,27 +40,29 @@ public class UserController {
     //유저 조회 API
     @GetMapping("/user/{id}")
     public ResponseEntity<UserResponseDto> getUser(
-            @PathVariable("id") final String targetUserIdStr,
+            @PathVariable("id") final Long targetUserId,
             @AuthenticationPrincipal final String userIdStr
     ){
 
-        return ResponseEntity.ok().body(userService.getUser(targetUserIdStr, userIdStr));
+        final Long userId = Long.parseLong(userIdStr);
+
+        return ResponseEntity.ok().body(userService.getUser(targetUserId, userId));
     }
 
     //유저 정보 수정 API
     @PatchMapping("/user/{id}")
     public ResponseEntity<UserResponseDto> updateUser(
-            @PathVariable final String id,
+            @PathVariable final Long id,
             @AuthenticationPrincipal final String userIdStr,
             @RequestBody final UserRequestDto userRequestDto
     ){
 
+        final Long userId = Long.parseLong(userIdStr);
+
         //다른 유저의 정보에 접근 방지
-        if(!Objects.equals(userIdStr, id)){
+        if(!Objects.equals(userId, id)){
             throw new CustomException(ExceptionCode.FORBIDDEN_USER_RESOURCE_ACCESS);
         }
-
-        final Long userId = Long.parseLong(userIdStr);
 
         return ResponseEntity.ok().body(userService.updateUser(userId, userRequestDto));
     }
@@ -68,16 +70,16 @@ public class UserController {
     //유저 삭제 API
     @DeleteMapping("/user/{id}")
     public ResponseEntity<Void> deleteUser(
-            @PathVariable final String id,
+            @PathVariable final Long id,
             @AuthenticationPrincipal final String userIdStr
     ){
 
+        final Long userId = Long.parseLong(userIdStr);
+
         //다른 유저의 정보에 접근 방지
-        if(!Objects.equals(userIdStr, id)){
+        if(!Objects.equals(userId, id)){
             throw new CustomException(ExceptionCode.FORBIDDEN_USER_RESOURCE_ACCESS);
         }
-
-        final Long userId = Long.parseLong(userIdStr);
 
         userService.deleteUser(userId);
 

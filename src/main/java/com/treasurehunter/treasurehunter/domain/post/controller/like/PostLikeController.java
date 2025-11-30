@@ -16,11 +16,11 @@ public class PostLikeController {
     //게시글에 좋아요 표시하는 API
     @PostMapping("/post/{id}/like")
     public ResponseEntity<Void> likePost(
-            @PathVariable("id") final String postId,
+            @PathVariable("id") final Long postId,
             @AuthenticationPrincipal final String userIdStr
     ){
         final Long userId = Long.parseLong(userIdStr);
-        postLikeService.likePost(Long.parseLong(postId), userId);
+        postLikeService.likePost(postId, userId);
 
         return ResponseEntity.noContent().build();
     }
@@ -28,12 +28,12 @@ public class PostLikeController {
     //표시한 좋아요 취소하는 API
     @PostMapping("/post/{id}/unlike")
     public ResponseEntity<Void> unlikePost(
-            @PathVariable("id") final String postId,
+            @PathVariable("id") final Long postId,
             @AuthenticationPrincipal final String userIdStr
     ){
         final Long userId = Long.parseLong(userIdStr);
 
-        postLikeService.unlikePost(Long.parseLong(postId), userId);
+        postLikeService.unlikePost(postId, userId);
 
         return ResponseEntity.noContent().build();
     }
