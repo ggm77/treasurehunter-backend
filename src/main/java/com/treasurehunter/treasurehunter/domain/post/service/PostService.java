@@ -15,8 +15,6 @@ import com.treasurehunter.treasurehunter.global.event.model.PostCreateEvent;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import com.treasurehunter.treasurehunter.global.util.EnumUtil;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,10 +29,6 @@ public class PostService {
     private final PostRepository postRepository;
     private final EnumUtil enumUtil;
     private final EventPublisher eventPublisher;
-
-    //entityManager.flush()를 사용하기 위함
-    @PersistenceContext
-    private EntityManager entityManager;
 
     /**
      * 게시글 등록하는 메서드
