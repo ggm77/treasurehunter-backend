@@ -20,6 +20,7 @@ public class PostSimpleResponseDto {
     private final BigDecimal lat;
     private final BigDecimal lon;
     private final LocalDateTime lostAt;
+    private final Long viewCount;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
     private final Boolean isAnonymous;
@@ -36,6 +37,7 @@ public class PostSimpleResponseDto {
         this.lat = post.getLat();
         this.lon = post.getLon();
         this.lostAt = post.getLostAt();
+        this.viewCount = post.getViewCount();
         this.createdAt = post.getCreatedAt();
         this.updatedAt = post.getUpdatedAt();
         this.isAnonymous = post.isAnonymous();

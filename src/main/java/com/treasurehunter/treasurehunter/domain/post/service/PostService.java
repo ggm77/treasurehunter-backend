@@ -15,20 +15,43 @@ import com.treasurehunter.treasurehunter.global.event.model.PostCreateEvent;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import com.treasurehunter.treasurehunter.global.util.EnumUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.connection.DataType;
+import org.springframework.data.redis.core.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostService {
+
+    private String postViewedKey(
+            final String postIdStr,
+            final String userIdStr
+    ){
+        return "post:"+postIdStr+":views:user:"+userIdStr;
+    }
+
+    private String viewCountKey(final String postIdStr){
+        return "post:"+postIdStr+":views:count";
+    }
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final EnumUtil enumUtil;
     private final EventPublisher eventPublisher;
+    private final RedisTemplate<String, String> redisTemplate;
+
+    @Value("${spring.data.redis.max-key-per-run}")
+    private int MAX_KEY_PER_RUN;
 
     /**
      * 게시글 등록하는 메서드
@@ -73,6 +96,7 @@ public class PostService {
                 .lat(postRequestDto.getLat())
                 .lon(postRequestDto.getLon())
                 .lostAt(postRequestDto.getLostAt())
+                .viewCount(0L)
                 .isAnonymous(postRequestDto.getIsAnonymous())
                 .isCompleted(false)
                 .build();
@@ -115,13 +139,36 @@ public class PostService {
 
     /**
      * 게시글 하나 조회하는 메서드
+     * 조회시 24시간에 한번씩 조회수 증가함
      * @param postId 게시글 id
+     * @param userId 조회한 유저 id
      * @return 조회된 게시글 PostResponseDto
      */
-    public PostResponseDto getPost(final Long postId){
+    public PostResponseDto getPost(
+            final Long postId,
+            final Long userId
+    ){
 
+        // 1) 게시글 조회
         final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_EXIST));
+
+        // 2) 게시글 아이디, 유저 아이디 문자열로 변환
+        final String postIdStr = String.valueOf(postId);
+        final String userIdStr = String.valueOf(userId);
+
+        // 3) 조회수 저장을 위한 redis key 생성
+        final String postKey = postViewedKey(postIdStr, userIdStr);
+        final String countKey = viewCountKey(postIdStr);
+
+        // 4) 게시글 요청한 유저가 24시간 이내에 이미 조회한 이력이 있는지 확인
+        final Boolean viewed = redisTemplate.hasKey(postKey);
+
+        // 5) 24시간 이내에 조회 된 적이 없으면 조회수 증가 및 조회 했다고 저장
+        if(Boolean.FALSE.equals(viewed)) {
+            redisTemplate.opsForValue().increment(countKey);
+            redisTemplate.opsForValue().set(postKey, "1", Duration.ofDays(1));
+        }
 
         return new PostResponseDto(post);
     }
@@ -272,5 +319,62 @@ public class PostService {
 
         // 5) 게시글 삭제
         postRepository.delete(post);
+    }
+
+    /**
+     * redis에 저장된 조회수를 db에 저장시키기 위한 스케줄러
+     */
+    @Scheduled(fixedRate = 60000)
+    @Transactional
+    public void syncViewCounts() {
+
+        // 1) redis 측에 MAX_KEY_PER_RUN만큼 가져올거라고 힌트 주기
+        final KeyScanOptions options = (KeyScanOptions) KeyScanOptions.scanOptions()
+                .type(DataType.STRING)
+                .match(viewCountKey("*"))
+                .count(MAX_KEY_PER_RUN)
+                .build();
+
+        // 2) 실제 조회 및 처리
+        redisTemplate.execute((RedisCallback<Object>) connection -> {
+            // 2-1) 처리한 key 개수 세는 변수
+            int processed = 0;
+
+            // 2-2) 커서 설정
+            final Cursor<byte[]> cursor = connection.scan(options);
+
+            // 2-3) 커서 다음 값이 있고, 최대 개수에 걸리지 않았다면 계속해서 처리
+            while(cursor.hasNext() && processed < MAX_KEY_PER_RUN) {
+                //키 설정
+                final String key = new String(cursor.next(), StandardCharsets.UTF_8);
+
+                //redis에 저장된 조회수 가져오기
+                final String countStr = redisTemplate.opsForValue().get(key);
+
+                //값이 null이면 key 삭제하고 다음 값으로 넘어감
+                if(countStr == null) {
+                    redisTemplate.delete(key);
+                    continue;
+                }
+
+                //Long으로 변환
+                final Long delta = Long.valueOf(countStr);
+                final Long postId = Long.valueOf(key.split(":")[1]);
+
+                //DB에 저장
+                postRepository.addViewCount(postId, delta);
+
+                //redis에 저장된 값 삭제
+                redisTemplate.delete(key);
+
+                //처리 되었다고 변수에 저장
+                processed++;
+            }
+
+            // 2-4) 리소스 정리
+            cursor.close();
+
+            return null;
+        });
     }
 }

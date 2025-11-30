@@ -71,6 +71,9 @@ public class Post {
     @Column(nullable = false)
     private LocalDateTime lostAt;
 
+    @Column(nullable = false)
+    private Long viewCount;
+
     @CreationTimestamp
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -104,6 +107,7 @@ public class Post {
             final BigDecimal lat,
             final BigDecimal lon,
             final LocalDateTime lostAt,
+            final Long viewCount,
             final boolean isAnonymous,
             final boolean isCompleted
     ){
@@ -117,6 +121,7 @@ public class Post {
         this.lat = lat;
         this.lon = lon;
         this.lostAt = lostAt;
+        this.viewCount = viewCount;
         this.isAnonymous = isAnonymous;
         this.isCompleted = isCompleted;
     }

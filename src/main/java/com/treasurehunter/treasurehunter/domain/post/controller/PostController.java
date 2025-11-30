@@ -31,10 +31,13 @@ public class PostController {
 
     @GetMapping("/post/{id}")
     public ResponseEntity<PostResponseDto> getPost(
-            @PathVariable final Long id
+            @PathVariable final Long id,
+            @AuthenticationPrincipal final String userIdStr
     ){
 
-        return ResponseEntity.ok(postService.getPost(id));
+        final Long userId = Long.parseLong(userIdStr);
+
+        return ResponseEntity.ok(postService.getPost(id, userId));
     }
 
     @PatchMapping("/post/{id}")
