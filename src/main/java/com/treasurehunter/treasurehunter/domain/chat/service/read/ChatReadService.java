@@ -14,6 +14,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +123,7 @@ public class ChatReadService {
         final String previousRdbSavedAt = redisTemplate.opsForValue().get(rKey);
 
         // 11) redis에 저장
-        redisTemplate.opsForValue().set(lKey, String.valueOf(lastReadChatId));
+        redisTemplate.opsForValue().set(lKey, String.valueOf(lastReadChatId), Duration.ofMinutes(10));
 
         // 12) rdb에 저장해야하는지 판단 (이전 저장으로부터 5분 지나면 저장)
         final boolean shouldSaveToRdb;
@@ -139,7 +140,7 @@ public class ChatReadService {
             chatReadRepository.upsertChatRead(lastReadChatId, roomId, isCaller);
 
             // redis에 저장 시점 저장
-            redisTemplate.opsForValue().set(rKey, rdbSavedAtStr);
+            redisTemplate.opsForValue().set(rKey, rdbSavedAtStr, Duration.ofMinutes(10));
         }
 
         // 14) response dto 생성
