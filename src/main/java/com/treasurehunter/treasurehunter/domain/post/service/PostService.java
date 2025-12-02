@@ -161,13 +161,13 @@ public class PostService {
         final String postKey = postViewedKey(postIdStr, userIdStr);
         final String countKey = viewCountKey(postIdStr);
 
-        // 4) 게시글 요청한 유저가 24시간 이내에 이미 조회한 이력이 있는지 확인
+        // 4) 게시글 요청한 유저가 1시간 이내에 이미 조회한 이력이 있는지 확인
         final Boolean viewed = redisTemplate.hasKey(postKey);
 
-        // 5) 24시간 이내에 조회 된 적이 없으면 조회수 증가 및 조회 했다고 저장
-        if(Boolean.FALSE.equals(viewed)) {
+        // 5) 1시간 이내에 조회 된 적이 없으면 조회수 증가 및 조회 했다고 저장
+        if(!Boolean.TRUE.equals(viewed)) {
             redisTemplate.opsForValue().increment(countKey);
-            redisTemplate.opsForValue().set(postKey, "1", Duration.ofDays(1));
+            redisTemplate.opsForValue().set(postKey, "1", Duration.ofHours(1));
         }
 
         return new PostResponseDto(post);
