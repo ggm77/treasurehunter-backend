@@ -21,6 +21,7 @@ public class PostResponseDto {
     private final BigDecimal lat;
     private final BigDecimal lon;
     private final LocalDateTime lostAt;
+    private final Long likeCount;
     private final Long viewCount;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
@@ -46,6 +47,7 @@ public class PostResponseDto {
         this.lat = post.getLat();
         this.lon = post.getLon();
         this.lostAt = post.getLostAt();
+        this.likeCount = post.getLikeCount();
         this.viewCount = post.getViewCount();
         this.createdAt = post.getCreatedAt();
         this.updatedAt = post.getUpdatedAt();

@@ -72,6 +72,9 @@ public class Post {
     private LocalDateTime lostAt;
 
     @Column(nullable = false)
+    private Long likeCount;
+
+    @Column(nullable = false)
     private Long viewCount;
 
     @CreationTimestamp

@@ -56,6 +56,9 @@ public class PostLikeService {
 
         // 5) 연관관계 설정
         postLikeRepository.save(postLike);
+
+        // 6) 좋아요 개수 설정
+        postRepository.increaseLikeCount(postId);
     }
 
     /**
@@ -75,5 +78,8 @@ public class PostLikeService {
 
         // 2) 있다면 삭제
         postLikeRepository.delete(postLike);
+
+        // 3) 좋아요 개수 설정
+        postRepository.decreaseLikeCount(postId);
     }
 }
