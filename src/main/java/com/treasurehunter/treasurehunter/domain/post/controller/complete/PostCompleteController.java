@@ -1,5 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.post.controller.complete;
 
+import com.treasurehunter.treasurehunter.domain.post.dto.complete.PostCompleteRequestDto;
 import com.treasurehunter.treasurehunter.domain.post.service.complete.PostCompleteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +17,12 @@ public class PostCompleteController {
     @PostMapping("/post/{id}/complete")
     public ResponseEntity<Void> completePost(
             @PathVariable("id") final Long postId,
-            @AuthenticationPrincipal final String userIdStr
+            @AuthenticationPrincipal final String userIdStr,
+            @RequestBody final PostCompleteRequestDto postCompleteRequestDto
     ){
         final Long requestUserId = Long.parseLong(userIdStr);
 
-        postCompleteService.completePost(requestUserId, postId);
+        postCompleteService.completePost(requestUserId, postId, postCompleteRequestDto);
 
         return ResponseEntity.noContent().build();
     }
