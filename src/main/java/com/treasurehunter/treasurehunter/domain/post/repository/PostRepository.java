@@ -1,6 +1,7 @@
 package com.treasurehunter.treasurehunter.domain.post.repository;
 
 import com.treasurehunter.treasurehunter.domain.post.entity.Post;
+import com.treasurehunter.treasurehunter.domain.post.entity.PostType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +11,7 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByOrderByCreatedAtDesc();
+    List<Post> findAllByTypeOrderByCreatedAtDesc(PostType postType);
     Long countByAuthorId(Long userId);
 
     @Modifying
