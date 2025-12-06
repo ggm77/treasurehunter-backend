@@ -110,6 +110,7 @@ public class Post {
             final BigDecimal lat,
             final BigDecimal lon,
             final LocalDateTime lostAt,
+            final Long likeCount,
             final Long viewCount,
             final boolean isAnonymous,
             final boolean isCompleted
@@ -124,6 +125,7 @@ public class Post {
         this.lat = lat;
         this.lon = lon;
         this.lostAt = lostAt;
+        this.likeCount = likeCount;
         this.viewCount = viewCount;
         this.isAnonymous = isAnonymous;
         this.isCompleted = isCompleted;

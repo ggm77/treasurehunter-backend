@@ -28,14 +28,20 @@ public class PostResponseDto {
     private final Boolean isAnonymous;
     private final Boolean isCompleted;
 
-    public PostResponseDto(final Post post) {
+    public PostResponseDto(
+            final Post post,
+            final Long requestUserId
+    ) {
         this.id = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
         this.type = post.getType().name();
 
-        //익명인 경우 유저 정보 제공 X, 유저가 존재하지 않으면 null
-        if(!post.isAnonymous() && post.getAuthor() != null){
+        //작성자 정보 없으면 null, 타인의 익명 게시글이면 null
+        //내가 작성한 익명 게시글이면 정보 제공, isAnonymous == true이면 정보 제공
+        if(post.getAuthor() != null &&
+                ( !post.isAnonymous() || post.getAuthor().getId().equals(requestUserId) )
+        ){
             this.author = new UserSimpleResponseDto(post.getAuthor());
         } else {
             this.author = null;

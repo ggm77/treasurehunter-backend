@@ -96,6 +96,7 @@ public class PostService {
                 .lat(postRequestDto.getLat())
                 .lon(postRequestDto.getLon())
                 .lostAt(postRequestDto.getLostAt())
+                .likeCount(0L)
                 .viewCount(0L)
                 .isAnonymous(postRequestDto.getIsAnonymous())
                 .isCompleted(false)
@@ -134,7 +135,7 @@ public class PostService {
                         .build()
         );
 
-        return new PostResponseDto(savedPost);
+        return new PostResponseDto(savedPost, userId);
     }
 
     /**
@@ -170,7 +171,7 @@ public class PostService {
             redisTemplate.opsForValue().set(postKey, "1", Duration.ofHours(1));
         }
 
-        return new PostResponseDto(post);
+        return new PostResponseDto(post, userId);
     }
 
     /**
@@ -281,7 +282,7 @@ public class PostService {
         Optional.ofNullable(postRequestDto.getLostAt()).ifPresent(post::updateLostAt);
         Optional.ofNullable(postRequestDto.getIsAnonymous()).ifPresent(post::updateIsAnonymous);
 
-        return new PostResponseDto(post);
+        return new PostResponseDto(post, userId);
     }
 
     /**
