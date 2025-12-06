@@ -1,25 +1,23 @@
 package com.treasurehunter.treasurehunter.global.auth.oauth.handler;
 
-import com.treasurehunter.treasurehunter.domain.user.entity.Role;
 import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
 import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
+import com.treasurehunter.treasurehunter.global.util.CookieUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.time.Duration;
+import java.util.Map;
 
 /**
  * OAuth 인증에 성공한 경우를 처리하는 핸들러
@@ -29,34 +27,18 @@ import java.time.Duration;
 @Component
 public class Oauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final String NEW_USER_URI;
-    private final String EXISTING_USER_URI;
-    private final Long accessTokenExpireTime;
-    private final Long refreshTokenExpireTime;
-    private final String jwtCookieDomain;
-    private final Boolean isHttps;
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+    private final CookieUtil cookieUtil;
 
     public Oauth2SuccessHandler(
-            @Value("${url.base}") String BASE_URL,
-            @Value("${path.new-user}") String NEW_USER_PATH,
-            @Value("${path.existing-user}") String EXISTING_USER_PATH,
-            @Value("${jwt.accessToken.exprTime}") Long accessTokenExpireTime,
-            @Value("${jwt.refreshToken.exprTime}") Long refreshTokenExpireTime,
-            @Value("${jwt.cookie.domain}") String jwtCookieDomain,
-            @Value("${server.isHttps}")  Boolean isHttps,
             final UserRepository userRepository,
-            final JwtProvider jwtProvider
+            final JwtProvider jwtProvider,
+            final CookieUtil cookieUtil
     ){
-        this.NEW_USER_URI = BASE_URL + NEW_USER_PATH;
-        this.EXISTING_USER_URI = BASE_URL + EXISTING_USER_PATH;
-        this.accessTokenExpireTime = accessTokenExpireTime;
-        this.refreshTokenExpireTime = refreshTokenExpireTime;
-        this.jwtCookieDomain = jwtCookieDomain;
-        this.isHttps = isHttps;
         this.userRepository = userRepository;
         this.jwtProvider = jwtProvider;
+        this.cookieUtil = cookieUtil;
     }
 
     @Override
@@ -79,77 +61,19 @@ public class Oauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         //리프레시 토큰 발급 (유효 1일)
         final String refreshToken = jwtProvider.creatRefreshToken(user.getId());
 
-        final ResponseCookie accessTokenCookie;
-        final ResponseCookie refreshTokenCookie;
+        final Map<String, ResponseCookie> jwtCookie = cookieUtil.createJwtCookie(accessToken, refreshToken);
 
-        //https일 경우 쿠키세팅
-        if(isHttps) {
-            //엑세스 토큰 담은 쿠키 생성
-            accessTokenCookie = ResponseCookie.from("ACCESS_TOKEN", accessToken)
-                    .httpOnly(true)
-                    .secure(true)
-                    .sameSite("None")
-                    //프론트가 서버와 같은 Url에서 배포 된다면 주석 풀기
-//                    .partitioned(true)
-                    .domain(jwtCookieDomain)
-                    .path("/")
-                    .maxAge(Duration.ofSeconds(accessTokenExpireTime))
-                    .build();
-
-            //리프레시 토큰 담은 쿠키 생성
-            refreshTokenCookie = ResponseCookie.from("REFRESH_TOKEN", refreshToken)
-                    .httpOnly(true)
-                    .secure(true)
-                    .sameSite("None")
-                    //프론트가 서버와 같은 Url에서 배포 된다면 주석 풀기
-//                    .partitioned(true)
-                    .domain(jwtCookieDomain)
-                    .path("/")
-                    .maxAge(Duration.ofSeconds(refreshTokenExpireTime))
-                    .build();
-        } else {
-            //엑세스 토큰 담은 쿠키 생성
-            accessTokenCookie = ResponseCookie.from("ACCESS_TOKEN", accessToken)
-                    .httpOnly(true)
-                    .secure(false)
-                    .sameSite("Lax")
-                    .path("/")
-                    .maxAge(Duration.ofSeconds(accessTokenExpireTime))
-                    .build();
-
-            //리프레시 토큰 담은 쿠키 생성
-            refreshTokenCookie = ResponseCookie.from("REFRESH_TOKEN", refreshToken)
-                    .httpOnly(true)
-                    .secure(false)
-                    .sameSite("Lax")
-                    .path("/")
-                    .maxAge(Duration.ofSeconds(refreshTokenExpireTime))
-                    .build();
-        }
+        final ResponseCookie accessTokenCookie = jwtCookie.get("accessToken");
+        final ResponseCookie refreshTokenCookie = jwtCookie.get("refreshToken");
 
         //쿠키 response에 추가
         httpServletResponse.addHeader("Set-Cookie", accessTokenCookie.toString());
         httpServletResponse.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
         //리다이렉트할 URI만들고 리다이렉트 시키기
-        final String redirectUri = getRedirectUriByRole(user.getRole(), user.getId());
+        final String redirectUri = cookieUtil.getRedirectUriByRole(user.getRole(), user.getId());
         getRedirectStrategy().sendRedirect(httpServletRequest, httpServletResponse, redirectUri);
     }
 
-    //유저 role (신규 / 기존 유저)에 따라서 리다이렉트 URI설정
-    private String getRedirectUriByRole(
-            final Role role,
-            final Long userId
-    ){
-        if(role == Role.NOT_REGISTERED){
-            return UriComponentsBuilder.fromUriString(NEW_USER_URI)
-                    .queryParam("userId", userId)
-                    .build()
-                    .toUriString();
-        }
-        return UriComponentsBuilder.fromUriString(EXISTING_USER_URI)
-                .queryParam("userId", userId)
-                .build()
-                .toUriString();
-    }
+
 }

@@ -1,5 +1,8 @@
 package com.treasurehunter.treasurehunter.global.auth.jwt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.treasurehunter.treasurehunter.domain.user.entity.Role;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
@@ -11,9 +14,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.security.PublicKey;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JWT를 생성하고 검증한다.
@@ -129,6 +136,50 @@ public class JwtProvider {
         } catch (JwtException ex) {
             throw new CustomException(ExceptionCode.INVALID_TOKEN);
         }
+    }
+
+    /**
+     * 애플 idToken에서 Claims를 뽑는 메서드
+     * @param token 애플 idToken
+     * @param publicKey 애플 공개 키
+     * @return Claims
+     */
+    public Claims getClaimsFromAppleToken(
+            final String token,
+            final PublicKey publicKey
+    ){
+        try {
+            return Jwts.parser()
+                    .verifyWith(publicKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (JwtException ex) {
+            throw new CustomException(ExceptionCode.APPLE_AUTH_ERROR);
+        }
+    }
+
+    /**
+     * 토큰에서 헤더의 값만 가져오는 메서드
+     * @param token 헤더를 가진 토큰
+     * @return 맵 형태가 된 헤더
+     */
+    public Map<String, String> getHeaders(final String token){
+        try{
+            final String header = token.split("\\.")[0];
+            return new ObjectMapper().readValue(decode(header), Map.class);
+        } catch (JsonProcessingException ex) {
+            throw new CustomException(ExceptionCode.INVALID_TOKEN);
+        }
+    }
+
+    /**
+     * base64로 인코딩 된 부분을 디코딩 하는 메서드
+     * @param base64 base64로 인코딩 된 문자열
+     * @return 디코딩된 문자열
+     */
+    public String decode(final String base64){
+        return new String(Base64.getDecoder().decode(base64), StandardCharsets.UTF_8);
     }
 
     /**

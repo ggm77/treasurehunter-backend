@@ -43,6 +43,7 @@ public enum ExceptionCode {
     MISSING_EXP(HttpStatus.BAD_REQUEST, "만료 정보가 존재하지 않습니다."),
     INVALID_ATTRIBUTE_FORMAT(HttpStatus.BAD_REQUEST, "어트리뷰트의 형식이나 정보가 잘못되어있습니다."),
     USER_NOT_ONLINE(HttpStatus.BAD_REQUEST, "유저가 현재 온라인 상태가 아닙니다."),
+    APPLE_AUTH_ERROR(HttpStatus.BAD_REQUEST, "애플 인증에서 문제가 발생했습니다."),
 
 
     AUTHENTICATION_ERROR(HttpStatus.UNAUTHORIZED, "인증 되지 않았습니다."),

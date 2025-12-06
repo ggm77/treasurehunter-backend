@@ -40,6 +40,11 @@ dependencies {
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.12.7'
     //OAuth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    //WebClient
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    //for PEM file
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.70'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
     //JDBC
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
     //lombok
