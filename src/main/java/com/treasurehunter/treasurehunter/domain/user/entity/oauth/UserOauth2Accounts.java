@@ -37,7 +37,7 @@ public class UserOauth2Accounts {
     private String profileImage;
 
     //oauth에서 제공하는 리프레시 토큰 (unlink시 필요함)
-    @Column(length = 4100, nullable = false)
+    @Column(length = 4100, nullable = true)
     private String refreshToken;
 
     @CreationTimestamp
