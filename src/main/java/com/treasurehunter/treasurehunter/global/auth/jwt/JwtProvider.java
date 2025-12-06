@@ -45,7 +45,6 @@ public class JwtProvider {
 
     /**
      * 액세스 토큰을 생성하는 메서드
-     * ttlSeconds을 적절하게 설정하여 엑세스 토큰, 리프레시 토큰으로 사용가능하다.
      * @param userId 유저의 고유 아이디 번호
      * @return JWT
      */
@@ -71,7 +70,6 @@ public class JwtProvider {
 
     /**
      * 리프레시 토큰을 생성하는 메서드
-     * ttlSeconds을 적절하게 설정하여 엑세스 토큰, 리프레시 토큰으로 사용가능하다.
      * @param userId 유저의 고유 아이디 번호
      * @return JWT
      */
