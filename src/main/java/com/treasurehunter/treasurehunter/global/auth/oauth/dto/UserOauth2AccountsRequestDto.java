@@ -10,7 +10,7 @@ public class UserOauth2AccountsRequestDto {
     private final String email;
     private final String name;
     private final String profileImage;
-    private final String accessToken;
+    private final String refreshToken;
 
     @Builder
     public UserOauth2AccountsRequestDto(
@@ -19,13 +19,13 @@ public class UserOauth2AccountsRequestDto {
             final String email,
             final String name,
             final String profileImage,
-            final String accessToken
+            final String refreshToken
     ){
         this.provider = provider;
         this.providerUserId = providerUserId;
         this.email = email;
         this.name = name;
         this.profileImage = profileImage;
-        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 }

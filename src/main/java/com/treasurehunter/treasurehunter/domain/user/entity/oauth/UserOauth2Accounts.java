@@ -36,9 +36,9 @@ public class UserOauth2Accounts {
     @Column(length = 2048, nullable = true)
     private String profileImage;
 
-    //oauth에서 제공하는 엑세스 토큰 (unlink시 필요함)
+    //oauth에서 제공하는 리프레시 토큰 (unlink시 필요함)
     @Column(length = 4100, nullable = false)
-    private String accessToken;
+    private String refreshToken;
 
     @CreationTimestamp
     @Column(nullable = false)
@@ -58,7 +58,12 @@ public class UserOauth2Accounts {
         this.email = userOauth2AccountsRequestDto.getEmail();
         this.name = userOauth2AccountsRequestDto.getName();
         this.profileImage = userOauth2AccountsRequestDto.getProfileImage();
-        this.accessToken = userOauth2AccountsRequestDto.getAccessToken();
+        this.refreshToken = userOauth2AccountsRequestDto.getRefreshToken();
         this.user = user;
+    }
+
+    //리프레시 토큰 수정하는 메서드
+    public void updateRefreshToken(final String refreshToken){
+        this.refreshToken = refreshToken;
     }
 }

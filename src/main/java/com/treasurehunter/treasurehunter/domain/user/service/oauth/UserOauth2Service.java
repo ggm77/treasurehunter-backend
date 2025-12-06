@@ -9,12 +9,15 @@ import com.treasurehunter.treasurehunter.domain.user.repository.oauth.UserOauth2
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserOauth2Service {
 
     private final UserRepository userRepository;
@@ -26,6 +29,7 @@ public class UserOauth2Service {
      * @param userOauth2AccountsRequestDto
      * @return
      */
+    @Transactional
     public UserOauth2AccountsResponseDto upsertOAuthUser(final UserOauth2AccountsRequestDto userOauth2AccountsRequestDto) {
         //provider 입력값 null 검사
         if(userOauth2AccountsRequestDto.getProvider() == null || userOauth2AccountsRequestDto.getProvider().isEmpty()){
@@ -37,11 +41,6 @@ public class UserOauth2Service {
             throw new CustomException(ExceptionCode.INVALID_REQUEST);
         }
 
-        //엑세스 토큰 입력값 null 검사
-        if(userOauth2AccountsRequestDto.getAccessToken() == null || userOauth2AccountsRequestDto.getAccessToken().isEmpty()){
-            throw new CustomException(ExceptionCode.INVALID_REQUEST);
-        }
-
         //oauth로 이미 가입했는지 확인
         final Optional<UserOauth2Accounts> userOauth2Accounts = userOauth2AccountsRepository.findByProviderAndProviderUserId(
                 userOauth2AccountsRequestDto.getProvider(),
@@ -50,6 +49,12 @@ public class UserOauth2Service {
 
         //oauth로 이미 가입했다면
         if(userOauth2Accounts.isPresent()){
+
+            //리프레시 토큰이 있으면 갱신하고
+            if(userOauth2AccountsRequestDto.getRefreshToken() != null && !userOauth2AccountsRequestDto.getRefreshToken().isEmpty()){
+                userOauth2Accounts.get().updateRefreshToken(userOauth2AccountsRequestDto.getRefreshToken());
+            }
+
             //회원가입 되어 있으므로 그냥 보냄
             return new UserOauth2AccountsResponseDto(userOauth2Accounts.get());
         } else {
@@ -59,6 +64,16 @@ public class UserOauth2Service {
 
             //유저에 oauth 추가
             final UserOauth2Accounts savedUserOauth2Accounts = userOauth2AccountsRepository.save(new UserOauth2Accounts(userOauth2AccountsRequestDto, savedUser));
+
+            //리프레시 토큰 저장 실패 시 로그 찍기
+            if(userOauth2AccountsRequestDto.getRefreshToken() == null || userOauth2AccountsRequestDto.getRefreshToken().isEmpty()) {
+                log.warn(
+                        "OAuth2 refresh token missing. provider={}, sub={}, userId={}",
+                        userOauth2AccountsRequestDto.getProvider(),
+                        userOauth2AccountsRequestDto.getProviderUserId(),
+                        savedUser.getId()
+                );
+            }
 
             return new UserOauth2AccountsResponseDto(savedUserOauth2Accounts);
         }

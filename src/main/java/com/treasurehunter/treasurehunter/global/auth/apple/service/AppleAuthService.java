@@ -68,7 +68,7 @@ public class AppleAuthService {
                 .email(email)
                 .name(name)
                 .profileImage(null)
-                .accessToken(appleRefreshToken)
+                .refreshToken(appleRefreshToken)
                 .build();
 
         // 8) 신규 유저면 DB에 정보 저장하고 정보 조회, 기존 유저면 그냥 정보만 조회

@@ -8,28 +8,27 @@ import java.util.Map;
 
 public class CustomDefaultOauth2User extends DefaultOAuth2User {
 
-    private final Long userId;
+    private final String provider;
 
     /**
-     * DefaultOAuth2User에서 userId만 추가됨
+     * DefaultOAuth2User에서 provider만 추가됨
      * @param authorities
      * @param attributes
      * @param nameAttributeKey
-     * @param userId 유저 아이디
+     * @param provider OAuth 제공자 (google, naver ...)
      */
     public CustomDefaultOauth2User(
             final Collection<? extends GrantedAuthority> authorities,
             final Map<String, Object> attributes,
             final String nameAttributeKey,
-            final Long userId
+            final String provider
     ){
         super(authorities, attributes, nameAttributeKey);
-        this.userId = userId;
+        this.provider = provider;
     }
 
-    //유저 아이디로 유저를 구분
-    @Override
-    public String getName(){
-        return userId.toString();
+    //provider 리턴하는 메서드
+    public String getProvider() {
+        return this.provider;
     }
 }
