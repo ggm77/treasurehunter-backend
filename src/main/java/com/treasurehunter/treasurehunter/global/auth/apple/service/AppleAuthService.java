@@ -58,7 +58,7 @@ public class AppleAuthService {
      */
     public String buildAppleAuthorizeUrl(){
         final String state = jwtProvider.createStateToken();
-        final String redirectUrl = BASE_URL + "/login/oauth2/code/apple"; //컨트롤러에 정의 되어있는 값과 똑같이 설정 해야함
+        final String redirectUrl = BASE_URL + "/auth/apple/callback"; //컨트롤러에 정의 되어있는 값과 똑같이 설정 해야함
 
         return APPLE_AUTH_BASE_URL+APPLE_AUTHORIZE +
                 "?response_type=code%20id_token" +

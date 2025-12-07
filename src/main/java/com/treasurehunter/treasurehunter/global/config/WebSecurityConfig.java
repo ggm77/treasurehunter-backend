@@ -48,6 +48,7 @@ public class WebSecurityConfig {
                                 "/ping",
                                 "/ready",
                                 "/login/oauth2/code/**", //oauth 리다이렉트 하는 곳
+                                "/auth/apple/callback", //애플 로그인 리다이렉트 하는 곳
                                 "/oauth2/authorization/**", //프론트에서 로그인 요청하는 곳
                                 "/api/swagger/**",
                                 "/api/v1/auth/**",

@@ -34,7 +34,7 @@ public class AppleAuthController {
     }
 
     //애플측에서 리다이렉트 하는 API
-    @PostMapping("/login/oauth2/code/apple")
+    @PostMapping("/auth/apple/callback")
     public ResponseEntity<Void> appleAuth(
             @ModelAttribute final AppleAuthRequestDto appleAuthRequestDto
     ) {

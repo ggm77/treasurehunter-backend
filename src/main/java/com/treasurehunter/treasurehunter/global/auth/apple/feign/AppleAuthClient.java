@@ -1,13 +1,14 @@
 package com.treasurehunter.treasurehunter.global.auth.apple.feign;
 
 import com.treasurehunter.treasurehunter.global.auth.apple.dto.key.ApplePublicKeyResponseDto;
-import com.treasurehunter.treasurehunter.global.auth.apple.dto.token.AppleTokenRequestDto;
 import com.treasurehunter.treasurehunter.global.auth.apple.dto.token.AppleTokenResponseDto;
 import com.treasurehunter.treasurehunter.global.auth.apple.util.AppleKeyGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
@@ -37,18 +38,16 @@ public class AppleAuthClient {
 
     // https://appleid.apple.com/auth/token에 요청을 넣고 토큰을 받아온다.
     public AppleTokenResponseDto requestToken(final String authorizationCode) {
-
-        final AppleTokenRequestDto body = AppleTokenRequestDto.builder()
-                .code(authorizationCode)
-                .client_id(APPLE_CLIENT_ID)
-                .client_secret(appleKeyGenerator.generateClientSecrete())
-                .grant_type("authorization_code")
-                .build();
+        final MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("code", authorizationCode);
+        formData.add("client_id", APPLE_CLIENT_ID);
+        formData.add("client_secret", appleKeyGenerator.generateClientSecrete());
+        formData.add("grant_type", "authorization_code");
 
         return appleWebClient.post()
                 .uri(APPLE_TOKEN_URI)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .bodyValue(body)
+                .bodyValue(formData)
                 .retrieve()
                 .bodyToMono(AppleTokenResponseDto.class)
                 .block();
