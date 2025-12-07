@@ -28,7 +28,17 @@ public class Oauth2RegistrationPrecheckFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(final HttpServletRequest httpServletRequest){
         final String requestURI = httpServletRequest.getRequestURI();
-        return (requestURI == null) || (!requestURI.startsWith("/oauth2/authorization/"));
+
+        if (requestURI == null){
+            return true;
+        }
+
+        //애플의 경우는 예외 처리 (커스텀 API 사용)
+        if (requestURI.startsWith("/oauth2/authorization/apple")) {
+            return true;
+        }
+
+        return !requestURI.startsWith("/oauth2/authorization/");
     }
 
     @Override

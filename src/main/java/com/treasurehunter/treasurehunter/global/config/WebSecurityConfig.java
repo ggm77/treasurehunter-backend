@@ -5,6 +5,7 @@ import com.treasurehunter.treasurehunter.global.auth.filter.Oauth2RegistrationPr
 import com.treasurehunter.treasurehunter.global.auth.oauth.CustomOauth2UserService;
 import com.treasurehunter.treasurehunter.global.auth.oauth.handler.Oauth2FailureHandler;
 import com.treasurehunter.treasurehunter.global.auth.oauth.handler.Oauth2SuccessHandler;
+import com.treasurehunter.treasurehunter.global.auth.oauth.resolver.CustomAuthorizationRequestResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -30,7 +32,10 @@ public class WebSecurityConfig {
     private final CustomOauth2UserService customOauth2UserService;
 
     @Bean
-    protected SecurityFilterChain configure(final HttpSecurity httpSecurity) throws Exception {
+    protected SecurityFilterChain configure(
+            final HttpSecurity httpSecurity,
+            final ClientRegistrationRepository clientRegistrationRepository
+            ) throws Exception {
         httpSecurity
                 .cors(Customizer.withDefaults())
                 .csrf((csrf) -> csrf.disable())
@@ -59,6 +64,16 @@ public class WebSecurityConfig {
                         //그 외 요청은 인증 필요
                         .anyRequest().authenticated())
                 .oauth2Login(customConfigurer -> customConfigurer
+                        .authorizationEndpoint(
+                                auth -> auth
+                                        .baseUri("/oauth2/authorization")
+                                        .authorizationRequestResolver(
+                                                new CustomAuthorizationRequestResolver(
+                                                        clientRegistrationRepository,
+                                                        "/oauth2/authorization"
+                                                )
+                                        )
+                        )
                         .successHandler(oauth2SuccessHandler)
                         .failureHandler(oauth2FailureHandler)
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOauth2UserService))
