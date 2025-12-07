@@ -17,10 +17,7 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * JWT를 생성하고 검증한다.
@@ -38,6 +35,9 @@ public class JwtProvider {
 
     @Value("${jwt.refreshToken.exprTime}")
     private Integer REFRESH_TOKEN_EXPIRATION_SECONDS;
+
+    @Value("${jwt.stateToken.exprTime}")
+    private Integer STATE_TOKEN_EXPIRATION_SECONDS;
 
     public String getTokenType(){
         return "Bearer";
@@ -86,6 +86,30 @@ public class JwtProvider {
                 .type("JWT")
                 .and()
                 .subject(userIdStr)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(exp))
+                .signWith(key)
+                .compact();
+    }
+
+    /**
+     * CSRF방지를 위해 state 값이 필요한 경우
+     * 사용하는 JWT을 생성하는 메서드
+     * @return sub가 UUID인 5분짜리 JWT
+     */
+    public String createStateToken(){
+
+        final SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
+
+        final String sub = UUID.randomUUID().toString();
+        final Instant now = Instant.now();
+        final Instant exp = now.plusSeconds(STATE_TOKEN_EXPIRATION_SECONDS);
+
+        return Jwts.builder()
+                .header()
+                .type("JWT")
+                .and()
+                .subject(sub)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(exp))
                 .signWith(key)

@@ -10,9 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.Map;
@@ -24,10 +22,21 @@ public class AppleAuthController {
     private final AppleAuthService appleAuthService;
     private final CookieUtil cookieUtil;
 
-    //애플 로그인 하는 API
-    @PostMapping("/oauth2/authorization/apple")
+    //프론트에서 애플 로그인 요청하는 API
+    @GetMapping("/oauth2/authorization/apple")
+    public ResponseEntity<Void> redirectToApple() {
+        final String appleAuthorizeUrl = appleAuthService.buildAppleAuthorizeUrl();
+
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .location(URI.create(appleAuthorizeUrl))
+                .build();
+    }
+
+    //애플측에서 리다이렉트 하는 API
+    @PostMapping("/login/oauth2/code/apple")
     public ResponseEntity<Void> appleAuth(
-            @RequestBody final AppleAuthRequestDto appleAuthRequestDto
+            @ModelAttribute final AppleAuthRequestDto appleAuthRequestDto
     ) {
         // 1) 요청 받은 정보 토대로 애플 인증 진행
         final AppleAuthResponseDto appleAuthResponseDto = appleAuthService.processAppleAuth(appleAuthRequestDto);
