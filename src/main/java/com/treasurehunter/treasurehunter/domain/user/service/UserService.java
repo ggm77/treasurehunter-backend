@@ -166,6 +166,12 @@ public class UserService {
                     .forEach(Review::detachAuthor);
         }
 
+        // 자식 정리 (받은 후기)
+        if(user.getReceivedReviews() != null){
+            user.getReceivedReviews()
+                    .forEach(Review::detachAuthor);
+        }
+
         // 자식 정리 (채팅방)
         if(user.getChatRoomParticipants() != null){
             user.getChatRoomParticipants()
