@@ -28,7 +28,7 @@ public class SolapiSmsSender {
         final Message message = new Message();
         message.setFrom(solapiConfig.getSenderNumber());
         message.setTo(phoneNumber);
-        message.setText("[TreasureHunter] 인증번호 [" + code + "] 타인 유출로 인한 피해 주의");
+        message.setText("[TreasureHunter] 인증번호 [" + code + "] 타인 유출로 인한 피해 주의\n\n@treasurehunter.seohamin.com #"+code);
 
         try{
             messageService.send(message);
