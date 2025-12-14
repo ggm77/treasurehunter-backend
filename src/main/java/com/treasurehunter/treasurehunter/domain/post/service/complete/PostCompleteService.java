@@ -69,7 +69,9 @@ public class PostCompleteService {
         // 6) 참가자 정보 맵으로 추출
         final Map<Long, Boolean> participantsMap = participants.stream()
                 .collect(Collectors.toMap(
-                        t -> t.get("participantId", Long.class),
+                        t -> t.get("participantId") == null
+                            ? null
+                            : ((Number) t.get("participantId")).longValue(),
                         t -> t.get("isCaller", Boolean.class)
                 ));
 
