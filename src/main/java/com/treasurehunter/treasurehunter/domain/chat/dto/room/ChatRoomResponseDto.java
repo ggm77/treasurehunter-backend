@@ -18,7 +18,12 @@ public class ChatRoomResponseDto {
     public ChatRoomResponseDto(final ChatRoom chatRoom) {
         this.roomId = chatRoom.getRoomId();
         this.name = chatRoom.getName();
-        this.post = new PostSimpleResponseDto(chatRoom.getPost());
+        //게시글이 삭제 된 경우 예외처리
+        if(chatRoom.getPost() != null) {
+            this.post = new PostSimpleResponseDto(chatRoom.getPost());
+        } else {
+            this.post = null;
+        }
         this.participants = chatRoom.getChatRoomParticipants().stream()
                 .filter(p -> p.getParticipant() != null) // 참가자가 탈퇴한 경우
                 .map(p -> {
