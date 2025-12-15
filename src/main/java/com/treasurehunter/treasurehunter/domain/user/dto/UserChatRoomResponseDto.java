@@ -1,5 +1,6 @@
 package com.treasurehunter.treasurehunter.domain.user.dto;
 
+import com.treasurehunter.treasurehunter.domain.chat.entity.ChatUserType;
 import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import lombok.Getter;
 
@@ -11,7 +12,7 @@ public class UserChatRoomResponseDto {
     private final String profileImage;
     private final Integer totalScore;
     private final Integer totalReviews;
-    private final Boolean isCaller;
+    private final ChatUserType userType;
 
     public UserChatRoomResponseDto(
             final User user,
@@ -22,7 +23,11 @@ public class UserChatRoomResponseDto {
         this.profileImage = user.getProfileImage();
         this.totalScore = user.getTotalScore();
         this.totalReviews = user.getTotalReviews();
-        this.isCaller = isCaller;
+        if(isCaller) {
+            this.userType = ChatUserType.CALLER;
+        } else {
+            this.userType = ChatUserType.AUTHOR;
+        }
     }
 
     //익명 사용자
@@ -32,6 +37,10 @@ public class UserChatRoomResponseDto {
         this.profileImage = null;
         this.totalScore = 0;
         this.totalReviews = 0;
-        this.isCaller = isCaller;
+        if(isCaller) {
+            this.userType = ChatUserType.CALLER;
+        } else {
+            this.userType = ChatUserType.AUTHOR;
+        }
     }
 }
