@@ -2,7 +2,7 @@ package com.treasurehunter.treasurehunter.domain.chat.dto.room;
 
 import com.treasurehunter.treasurehunter.domain.chat.entity.room.ChatRoom;
 import com.treasurehunter.treasurehunter.domain.post.dto.PostSimpleResponseDto;
-import com.treasurehunter.treasurehunter.domain.user.dto.UserSimpleResponseDto;
+import com.treasurehunter.treasurehunter.domain.user.dto.UserChatRoomResponseDto;
 import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import lombok.Getter;
 
@@ -13,7 +13,7 @@ public class ChatRoomResponseDto {
     private final String roomId;
     private final String name;
     private final PostSimpleResponseDto post;
-    private final List<UserSimpleResponseDto> participants;
+    private final List<UserChatRoomResponseDto> participants;
 
     public ChatRoomResponseDto(final ChatRoom chatRoom) {
         this.roomId = chatRoom.getRoomId();
@@ -31,10 +31,10 @@ public class ChatRoomResponseDto {
 
                     //익명인 경우 처리
                     if(p.isAnonymous()){
-                        return new UserSimpleResponseDto();
+                        return new UserChatRoomResponseDto(p.isCaller());
                     }
 
-                    return new UserSimpleResponseDto(u);
+                    return new UserChatRoomResponseDto(u, p.isCaller());
                 })
                 .toList();
     }
