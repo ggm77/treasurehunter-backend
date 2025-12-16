@@ -108,7 +108,7 @@ public class ChatSyncService {
         }
 
         // 12) 상대가 마지막으로 읽은 채팅 ID가져오기
-        final String lKey = lastReadChatIdKey(roomId, isCaller);
+        final String lKey = lastReadChatIdKey(roomId, !isCaller);
         final String lastReadChatIdStr = redisTemplate.opsForValue().get(lKey);
         final Long lastReadChatId;
         if(lastReadChatIdStr == null){
