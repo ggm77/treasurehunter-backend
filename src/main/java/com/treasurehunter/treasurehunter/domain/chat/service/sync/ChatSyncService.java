@@ -112,7 +112,7 @@ public class ChatSyncService {
         final String lastReadChatIdStr = redisTemplate.opsForValue().get(lKey);
         final Long lastReadChatId;
         if(lastReadChatIdStr == null){
-            final ChatRead chatRead = chatReadRepository.findByRoomIdAndIsCaller(roomId, isCaller);
+            final ChatRead chatRead = chatReadRepository.findByRoomIdAndIsCaller(roomId, !isCaller);
 
             //저장된게 없으면 null 반환
             if(chatRead != null) {
