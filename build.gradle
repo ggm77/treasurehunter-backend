@@ -60,6 +60,8 @@ dependencies {
     implementation 'com.solapi:sdk:1.0.3'
     //libphonenumber
     implementation 'com.googlecode.libphonenumber:libphonenumber:9.0.16'
+	//FCM
+	implementation 'com.google.firebase:firebase-admin:9.7.0'
 }
 
 tasks.named('bootRun') {
