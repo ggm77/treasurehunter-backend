@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -20,4 +21,9 @@ public interface NotificationTokenRepository extends JpaRepository<NotificationT
             @Param("userId") final Long userId,
             @Param("platform") final PlatformType platform
     );
+
+    //파이어베이스로 알림 전송 실패시 사용하는 메서드
+    //이 메서드를 호출하는 메서드에 Transactional을 붙일 수 없음
+    @Transactional
+    void deleteByToken(final String token);
 }
