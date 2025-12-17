@@ -68,9 +68,9 @@ public class PostService {
 
         // 1) 게시물 유형과 카테고리 검증 및 변환
         final PostType postType = enumUtil.toEnum(PostType.class, postRequestDto.getType())
-                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REQUEST));
+                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_ENUM_VALUE));
         final ItemCategory itemCategory = enumUtil.toEnum(ItemCategory.class, postRequestDto.getItemCategory())
-                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REQUEST));
+                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_ENUM_VALUE));
 
         // 2) 게시글과 연관 관계 가질 유저 정보 가져오기
         final User user = userRepository.findById(userId)
@@ -207,13 +207,13 @@ public class PostService {
         final ItemCategory itemCategory;
         if(postRequestDto.getType() != null && !postRequestDto.getType().isEmpty()){
             postType = enumUtil.toEnum(PostType.class, postRequestDto.getType())
-                    .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REQUEST));
+                    .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_ENUM_VALUE));
         } else {
             postType = null;
         }
         if(postRequestDto.getItemCategory() != null && !postRequestDto.getItemCategory().isEmpty()) {
             itemCategory = enumUtil.toEnum(ItemCategory.class, postRequestDto.getItemCategory())
-                    .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REQUEST));
+                    .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_ENUM_VALUE));
         } else {
             itemCategory = null;
         }

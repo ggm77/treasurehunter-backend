@@ -27,7 +27,7 @@ public class LeaderboardService {
 
         // 1) 랭킹 조회할 방식 지정
         final RankingType rankingType = enumUtil.toEnum(RankingType.class, rankingTypeStr.toUpperCase())
-                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REQUEST));
+                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_ENUM_VALUE));
 
         // 2) 조회 방식에 맞게 유저 리스트 조회
         final List<User> leaderboard;

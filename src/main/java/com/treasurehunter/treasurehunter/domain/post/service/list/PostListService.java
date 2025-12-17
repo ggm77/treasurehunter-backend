@@ -66,7 +66,7 @@ public class PostListService {
         if(postTypeStr != null && !postTypeStr.isEmpty()) {
             //Enum 검사
             postType = enumUtil.toEnum(PostType.class, postTypeStr)
-                    .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REQUEST));
+                    .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_ENUM_VALUE));
         } else {
             postType = null;
         }

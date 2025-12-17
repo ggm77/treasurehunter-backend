@@ -51,7 +51,7 @@ public class BadgeService {
 
         // 3) 뱃지 이름 Enum 변환
         final BadgeName badgeName = enumUtil.toEnum(BadgeName.class, badgeRequestDto.getName())
-                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REQUEST));
+                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_ENUM_VALUE));
 
         // 4) 뱃지 엔티티 생성
         final Badge badge = Badge.builder()
@@ -112,7 +112,7 @@ public class BadgeService {
         // 4) 배지 이름 Enum으로 변환 및 업데이트
         if(badgeRequestDto.getName() != null) {
             final BadgeName badgeName = enumUtil.toEnum(BadgeName.class, badgeRequestDto.getName())
-                    .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REQUEST));
+                    .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_ENUM_VALUE));
             // 업데이트
             badge.updateName(badgeName);
         }
