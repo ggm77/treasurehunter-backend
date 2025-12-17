@@ -8,6 +8,7 @@ import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import com.treasurehunter.treasurehunter.global.util.EnumUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -18,6 +19,12 @@ import java.math.BigDecimal;
 @Service
 @RequiredArgsConstructor
 public class PostListService {
+
+    @Value("${full.text.search.min.len}")
+    private int FULL_TEXT_SEARCH_MIN_LEN;
+
+    @Value("${full.text.search.max.len}")
+    private int FULL_TEXT_SEARCH_MAX_LEN;
 
     //위도 경도 검사를 위한 상수값
     private static final BigDecimal MIN_LAT = BigDecimal.valueOf(-90);
@@ -147,7 +154,11 @@ public class PostListService {
                 .replaceAll("[^0-9a-zA-Z가-힣\\s]", ""); //특수문자 제거 (한글, 영어, 숫자, 공백만 남김)
 
         // 3) 쿼리 길이 검증
-        if(normalizedQuery.isBlank() || normalizedQuery.trim().length() < 3 || normalizedQuery.trim().length() > 100){
+        if(
+                normalizedQuery.isBlank()
+                || normalizedQuery.trim().length() < FULL_TEXT_SEARCH_MIN_LEN
+                || normalizedQuery.trim().length() > FULL_TEXT_SEARCH_MAX_LEN
+        ){
             throw new CustomException(ExceptionCode.INVALID_QUERY);
         }
 
