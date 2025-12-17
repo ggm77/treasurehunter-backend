@@ -21,6 +21,11 @@ public class NotificationTokenService {
     private final UserRepository userRepository;
     private final NotificationTokenRepository notificationTokenRepository;
 
+    /**
+     * 알림 전송할 때 쓰이는 토큰을 저장하거나 변경하는 메서드
+     * @param userIdStr 요청한 유저의 아이디 문자열
+     * @param notificationTokenRequestDto 토큰과 플랫폼 정보가 담긴 DTO
+     */
     @Transactional
     public void upsertNotificationToken(
             final String userIdStr,
@@ -60,6 +65,12 @@ public class NotificationTokenService {
                 );
     }
 
+    /**
+     * 유저가 로그아웃 했을 때 알림이 가지 않도록
+     * 알림 토큰을 삭제하는 메서드
+     * @param userIdStr 요청한 유저 아이디 문자열
+     * @param rawPlatform 요청한 플랫폼
+     */
     @Transactional
     public void deleteNotificationToken(
             final String userIdStr,
