@@ -8,13 +8,31 @@ import java.util.List;
 
 @Getter
 public class PostListResponseDto {
-    private boolean hasNext;
-    private List<PostSimpleResponseDto> posts;
+    private final String clientMinLat;
+    private final String clientMinLon;
+    private final String clientMaxLat;
+    private final String clientMaxLon;
+    private final String clientLat;
+    private final String clientLon;
+    private final boolean hasNext;
+    private final List<PostSimpleResponseDto> posts;
 
     public PostListResponseDto(
             final List<Post> posts,
-            final boolean hasNext
+            final boolean hasNext,
+            final String clientMinLat,
+            final String clientMinLon,
+            final String clientMaxLat,
+            final String clientMaxLon,
+            final String clientLat,
+            final String clientLon
     ) {
+        this.clientMinLat = clientMinLat;
+        this.clientMinLon = clientMinLon;
+        this.clientMaxLat = clientMaxLat;
+        this.clientMaxLon = clientMaxLon;
+        this.clientLat = clientLat;
+        this.clientLon = clientLon;
         this.hasNext = hasNext;
         this.posts = posts.stream()
                 .map(PostSimpleResponseDto ::new)

@@ -140,7 +140,16 @@ public class PostListService {
             posts = postRepository.findAllByTypeOrderByCreatedAtDesc(postType, pageable);
         }
 
-        return new PostListResponseDto(posts.getContent(), posts.hasNext());
+        return new PostListResponseDto(
+                posts.getContent(),
+                posts.hasNext(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
     }
 
     /**
@@ -189,7 +198,16 @@ public class PostListService {
             posts = postRepository.searchByFullTextAndType(query, postType.name(), pageable);
         }
 
-        return new PostListResponseDto(posts.getContent(), posts.hasNext());
+        return new PostListResponseDto(
+                posts.getContent(),
+                posts.hasNext(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
     }
 
     /**
@@ -260,7 +278,16 @@ public class PostListService {
             );
         }
 
-        return new PostListResponseDto(posts.getContent(), posts.hasNext());
+        return new PostListResponseDto(
+                posts.getContent(),
+                posts.hasNext(),
+                minLatStr,
+                minLonStr,
+                maxLatStr,
+                maxLonStr,
+                null,
+                null
+        );
     }
 
     /**
@@ -365,6 +392,15 @@ public class PostListService {
             );
         }
 
-        return new PostListResponseDto(posts.getContent(), posts.hasNext());
+        return new PostListResponseDto(
+                posts.getContent(),
+                posts.hasNext(),
+                null,
+                null,
+                null,
+                null,
+                latStr,
+                lonStr
+        );
     }
 }
