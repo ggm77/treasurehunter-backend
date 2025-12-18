@@ -15,6 +15,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class PostListService {
     private static final BigDecimal MAX_LAT = BigDecimal.valueOf(90);
     private static final BigDecimal MIN_LON = BigDecimal.valueOf(-180);
     private static final BigDecimal MAX_LON = BigDecimal.valueOf(180);
+    private static final BigDecimal KM_PER_DEGREE_LAT = BigDecimal.valueOf(111.32);
 
     private final PostRepository postRepository;
     private final EnumUtil enumUtil;
@@ -52,10 +54,13 @@ public class PostListService {
     public PostListResponseDto searchPosts(
             final String searchType,
             final String query,
+            final String latStr,
+            final String lonStr,
             final String minLatStr,
             final String minLonStr,
             final String maxLatStr,
             final String maxLonStr,
+            final Integer maxDistance,
             final String postTypeStr,
             final Integer size,
             final Integer page
@@ -95,6 +100,16 @@ public class PostListService {
                     minLonStr,
                     maxLatStr,
                     maxLonStr,
+                    postType,
+                    pageable
+            );
+        }
+        //거리순 검색
+        else if ("distance".equalsIgnoreCase(searchType)){
+            postListResponseDto = getPostsByDistance(
+                    latStr,
+                    lonStr,
+                    maxDistance,
                     postType,
                     pageable
             );
@@ -241,6 +256,111 @@ public class PostListService {
                     maxLat,
                     maxLon,
                     postType,
+                    pageable
+            );
+        }
+
+        return new PostListResponseDto(posts.getContent(), posts.hasNext());
+    }
+
+    /**
+     * 게시글을 가까운 순으로 조회하는 메서드
+     * maxDistance를 통해서 범위를 지정할 수 있다.
+     * @param latStr 중심 위도 문자열
+     * @param lonStr 중심 경도 문자열
+     * @param maxDistance 최대 거리 ( Km )
+     * @param postType 게시물 유형에 따라서 거를 수 있게 하는 파라미터
+     * @param pageable 페이지네이션
+     * @return 검색된 게시물 리스트와 게시글이 더 있는지 여부를 담은 DTO
+     */
+    private PostListResponseDto getPostsByDistance(
+            final String latStr,
+            final String lonStr,
+            final Integer maxDistance,
+            final PostType postType,
+            final Pageable pageable
+    ){
+        // 1) null 검사
+        if(latStr == null || lonStr == null || maxDistance == null) {
+            throw new CustomException(ExceptionCode.INVALID_REQUEST);
+        }
+
+        // 2) 최대 거리 검사 ( 1~50Km )
+        if(maxDistance > 50 || maxDistance < 1)  {
+            throw new CustomException(ExceptionCode.INVALID_MAX_DISTANCE);
+
+        }
+
+        // 3) BigDecimal로 변환
+        final BigDecimal lat;
+        final BigDecimal lon;
+        try{
+            lat = new BigDecimal(latStr.trim());
+            lon = new BigDecimal(lonStr.trim());
+
+            //위도 경도 검증
+            if(
+                    lat.compareTo(MIN_LAT) < 0
+                    || lat.compareTo(MAX_LAT) > 0
+                    || lon.compareTo(MIN_LON) < 0
+                    || lon.compareTo(MAX_LON) > 0
+            ){
+                throw new CustomException(ExceptionCode.INVALID_REQUEST);
+            }
+
+        } catch (NumberFormatException ex) {
+            throw new CustomException(ExceptionCode.INVALID_REQUEST);
+        }
+
+        // 4) 최대 거리로 최대 최소 위도 계산
+        final BigDecimal latDiff = BigDecimal.valueOf(maxDistance)
+                .divide(KM_PER_DEGREE_LAT, 10, RoundingMode.HALF_UP);
+
+        final BigDecimal minLat = lat.subtract(latDiff);
+        final BigDecimal maxLat = lat.add(latDiff);
+
+        // 5) 최대 거리로 최대 최소 경도 계산
+        final BigDecimal minLon;
+        final BigDecimal maxLon;
+
+        //분모 0 방지
+        if(lon.abs().compareTo(BigDecimal.valueOf(89.9)) > 0) {
+            minLon = MIN_LON;
+            maxLon = MAX_LON;
+        } else {
+            final double cosVal = Math.cos(Math.toRadians(lat.doubleValue()));
+
+            final BigDecimal kmPerDegreeLat = KM_PER_DEGREE_LAT.multiply(BigDecimal.valueOf(cosVal));
+            final BigDecimal lonDiff = BigDecimal.valueOf(maxDistance)
+                    .divide(kmPerDegreeLat, 10, RoundingMode.HALF_UP);
+
+            minLon = lon.subtract(lonDiff);
+            maxLon = lon.add(lonDiff);
+        }
+
+
+        // 6) 거리순으로 조회
+        final Slice<Post> posts;
+        //postType 존재하면 postType으로 거르기
+        if(postType == null) {
+            posts = postRepository.findNearestByLatLon(
+                    lat,
+                    lon,
+                    minLat,
+                    minLon,
+                    maxLat,
+                    maxLon,
+                    pageable
+            );
+        } else {
+            posts = postRepository.findNearestByLatLonAndType(
+                    lat,
+                    lon,
+                    minLat,
+                    minLon,
+                    maxLat,
+                    maxLon,
+                    postType.name(),
                     pageable
             );
         }

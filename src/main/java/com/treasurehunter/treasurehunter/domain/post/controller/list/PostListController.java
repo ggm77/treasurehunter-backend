@@ -21,10 +21,13 @@ public class PostListController {
     public ResponseEntity<PostListResponseDto> getPosts(
             @RequestParam(required = false) final String searchType,
             @RequestParam(required = false) final String query,
+            @RequestParam(required = false) final String lat,
+            @RequestParam(required = false) final String lon,
             @RequestParam(required = false) final String minLat,
             @RequestParam(required = false) final String minLon,
             @RequestParam(required = false) final String maxLat,
             @RequestParam(required = false) final String maxLon,
+            @RequestParam(required = false, defaultValue = "5") final Integer maxDistance,
             @RequestParam(required = false) final String postType,
             @RequestParam(required = false, defaultValue = "10") final Integer size,
             @RequestParam(required = false, defaultValue = "0") final Integer page
@@ -33,10 +36,13 @@ public class PostListController {
         return ResponseEntity.ok(postListService.searchPosts(
                 searchType,
                 query,
+                lat,
+                lon,
                 minLat,
                 minLon,
                 maxLat,
                 maxLon,
+                maxDistance,
                 postType,
                 size,
                 page

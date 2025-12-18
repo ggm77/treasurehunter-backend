@@ -89,6 +89,49 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             Pageable pageable
     );
 
+    //거리 기반 검색
+    @Query(value =
+            """
+                SELECT * FROM post p
+                WHERE p.lat BETWEEN :minLat AND :maxLat
+                AND p.lon BETWEEN :minLon AND :maxLon
+                ORDER BY (6371 * acos(cos(radians(:lat)) * cos(radians(p.lat)) * cos(radians(p.lon) - radians(:lon)) + sin(radians(:lat)) * sin(radians(p.lat))))
+                ASC
+            """,
+            nativeQuery = true
+    )
+    Slice<Post> findNearestByLatLon(
+            @Param("lat") BigDecimal lat,
+            @Param("lon") BigDecimal lon,
+            @Param("minLat") BigDecimal minLat,
+            @Param("minLon") BigDecimal minLon,
+            @Param("maxLat") BigDecimal maxLat,
+            @Param("maxLon") BigDecimal maxLon,
+            Pageable pageable
+    );
+
+    @Query(value =
+            """
+                SELECT * FROM post p
+                WHERE p.lat BETWEEN :minLat AND :maxLat
+                AND p.lon BETWEEN :minLon AND :maxLon
+                AND p.type = :postType
+                ORDER BY (6371 * acos(cos(radians(:lat)) * cos(radians(p.lat)) * cos(radians(p.lon) - radians(:lon)) + sin(radians(:lat)) * sin(radians(p.lat))))
+                ASC
+            """,
+            nativeQuery = true
+    )
+    Slice<Post> findNearestByLatLonAndType(
+            @Param("lat") BigDecimal lat,
+            @Param("lon") BigDecimal lon,
+            @Param("minLat") BigDecimal minLat,
+            @Param("minLon") BigDecimal minLon,
+            @Param("maxLat") BigDecimal maxLat,
+            @Param("maxLon") BigDecimal maxLon,
+            @Param("postType") String postType,
+            Pageable pageable
+    );
+
 
     Long countByAuthorId(Long userId);
 
