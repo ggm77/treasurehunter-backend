@@ -88,7 +88,7 @@ public class PostListService {
         if("text".equalsIgnoreCase(searchType)){
             postListResponseDto = getPostsByText(query, postType, pageable);
         }
-        //거리순 검색
+        //범위 검색
         else if("bounds".equalsIgnoreCase(searchType)){
             postListResponseDto = getPostsByBound(
                     minLatStr,
