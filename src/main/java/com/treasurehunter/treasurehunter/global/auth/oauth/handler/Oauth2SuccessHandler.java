@@ -3,7 +3,6 @@ package com.treasurehunter.treasurehunter.global.auth.oauth.handler;
 import com.treasurehunter.treasurehunter.domain.user.entity.Role;
 import com.treasurehunter.treasurehunter.domain.user.service.oauth.UserOauth2Service;
 import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
-import com.treasurehunter.treasurehunter.global.auth.oauth.CustomDefaultOauth2User;
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsRequestDto;
 import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsResponseDto;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
@@ -61,12 +60,10 @@ public class Oauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         //어트리뷰트 변수에 저장
         final Map<String, Object> attributes = oauth2User.getAttributes();
 
-        //provider를 얻기 위해서 잠시 캐스팅
-        final String provider = ((CustomDefaultOauth2User) oauth2User).getProvider();
-
-        //리프레시 토큰 추출을 위해 캐스팅
+        //리프레시 토큰 추출과 provider 추츨을 위해 캐스팅
         final OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
-        final OAuth2AuthorizedClient oAuth2AuthorizedClient = oAuth2AuthorizedClientService.loadAuthorizedClient(oauthToken.getAuthorizedClientRegistrationId(), oauthToken.getName());
+        final String provider = oauthToken.getAuthorizedClientRegistrationId().toLowerCase();
+        final OAuth2AuthorizedClient oAuth2AuthorizedClient = oAuth2AuthorizedClientService.loadAuthorizedClient(provider, oauthToken.getName());
 
         //리프레시 토큰 추출, 없으면 null
         final String oauth2RefreshToken;

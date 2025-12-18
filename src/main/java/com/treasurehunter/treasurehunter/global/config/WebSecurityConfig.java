@@ -2,7 +2,6 @@ package com.treasurehunter.treasurehunter.global.config;
 
 import com.treasurehunter.treasurehunter.global.auth.filter.JwtAuthenticationFilter;
 import com.treasurehunter.treasurehunter.global.auth.filter.Oauth2RegistrationPrecheckFilter;
-import com.treasurehunter.treasurehunter.global.auth.oauth.CustomOauth2UserService;
 import com.treasurehunter.treasurehunter.global.auth.oauth.handler.Oauth2FailureHandler;
 import com.treasurehunter.treasurehunter.global.auth.oauth.handler.Oauth2SuccessHandler;
 import com.treasurehunter.treasurehunter.global.auth.oauth.resolver.CustomAuthorizationRequestResolver;
@@ -29,7 +28,6 @@ public class WebSecurityConfig {
     private final Oauth2RegistrationPrecheckFilter oauth2AuthenticationRequestExceptionHandlingFilter;
     private final Oauth2SuccessHandler oauth2SuccessHandler;
     private final Oauth2FailureHandler oauth2FailureHandler;
-    private final CustomOauth2UserService customOauth2UserService;
 
     @Bean
     protected SecurityFilterChain configure(
@@ -77,7 +75,6 @@ public class WebSecurityConfig {
                         )
                         .successHandler(oauth2SuccessHandler)
                         .failureHandler(oauth2FailureHandler)
-                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOauth2UserService))
                 );
 
         httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
