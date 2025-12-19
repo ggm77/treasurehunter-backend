@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,14 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;   // enum Role { USER, ADMIN, NOT_REGISTERED }
+
+    //유저 활동 지역의 중심 위도
+    @Column(precision = 9, scale = 6, nullable = true)
+    private BigDecimal lat;
+
+    //유저 활동 지역의 중심 경도
+    @Column(precision = 9, scale = 6, nullable = true)
+    private BigDecimal lon;
 
     //회원 등록일시 (자동 생성)
     @CreationTimestamp
@@ -156,6 +165,16 @@ public class User {
     //role을 일반 유저로 변경
     public void updateRoleToUser(){
         this.role = Role.USER;
+    }
+
+    //유저 활동 지역의 중심 위도 변경
+    public void updateLat(final BigDecimal lat){
+        this.lat = lat;
+    }
+
+    //유저 활동 지역의 중심 경도 변경
+    public void updateLon(final BigDecimal lon){
+        this.lon = lon;
     }
 
     public void addPoint(final int point){

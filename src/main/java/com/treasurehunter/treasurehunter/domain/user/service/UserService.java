@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -48,6 +50,24 @@ public class UserService {
             throw new CustomException(ExceptionCode.NICKNAME_DUPLICATE);
         }
 
+        final String latStr = userRequestDto.getLat();
+        final String lonStr = userRequestDto.getLon();
+
+        final BigDecimal lat;
+        final BigDecimal lon;
+        try {
+            if (latStr != null && lonStr != null) {
+                lat = new BigDecimal(latStr);
+                lon = new BigDecimal(lonStr);
+            }
+            else {
+                lat = null;
+                lon = null;
+            }
+        } catch (NumberFormatException ex) {
+            throw new CustomException(ExceptionCode.INVALID_REQUEST);
+        }
+
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_EXIST));
 
@@ -58,6 +78,10 @@ public class UserService {
         user.updateNickname(userRequestDto.getNickname());
         user.updateName(userRequestDto.getName());
         user.updateRoleToNotVerified();
+        if(lat != null && lon != null){
+            user.updateLat(lat);
+            user.updateLon(lon);
+        }
 
         if(userRequestDto.getProfileImage() != null && !userRequestDto.getProfileImage().isEmpty()){
             user.updateProfileImage(userRequestDto.getProfileImage());
@@ -138,6 +162,22 @@ public class UserService {
         //변경할 이름이 존재하면 변경
         if(userRequestDto.getName() != null && !userRequestDto.getName().isEmpty()){
             user.updateName(userRequestDto.getName());
+        }
+
+        //변경할 위도 경도 존재하면 변경
+        if(userRequestDto.getLat() != null && userRequestDto.getLon() != null){
+            final BigDecimal lat;
+            final BigDecimal lon;
+
+            try {
+                lat = new BigDecimal(userRequestDto.getLat());
+                lon = new BigDecimal(userRequestDto.getLon());
+            } catch (NumberFormatException ex) {
+                throw new CustomException(ExceptionCode.INVALID_REQUEST);
+            }
+
+            user.updateLat(lat);
+            user.updateLon(lon);
         }
 
         return new UserResponseDto(user);

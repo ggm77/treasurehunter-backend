@@ -9,6 +9,7 @@ import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2Account
 import lombok.Builder;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,8 @@ public class UserResponseDto {
     private final String name;
     private final String phoneNumber;
     private final Role role;
+    private final String lat;
+    private final String lon;
     private final LocalDateTime createdAt;
     private final Integer point;
     private final Integer returnedItemsCount;
@@ -44,6 +47,8 @@ public class UserResponseDto {
             final String name,
             final String phoneNumber,
             final Role role,
+            final BigDecimal lat,
+            final BigDecimal lon,
             final LocalDateTime createdAt,
             final Integer point,
             final Integer returnedItemsCount,
@@ -62,6 +67,8 @@ public class UserResponseDto {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.role = role;
+        this.lat = lat.toPlainString();
+        this.lon = lon.toPlainString();
         this.createdAt = createdAt;
         this.point = point;
         this.returnedItemsCount = returnedItemsCount;
@@ -83,6 +90,8 @@ public class UserResponseDto {
         this.name = user.getName();
         this.phoneNumber = user.getPhoneNumber();
         this.role = user.getRole();
+        this.lat = user.getLat().toPlainString();
+        this.lon = user.getLon().toPlainString();
         this.createdAt = user.getCreatedAt();
         this.point = user.getPoint();
         this.returnedItemsCount = user.getReturnedItemsCount();
@@ -127,6 +136,8 @@ public class UserResponseDto {
                 .name(null)
                 .phoneNumber(null)
                 .role(this.role)
+                .lat(null)
+                .lon(null)
                 .createdAt(this.createdAt)
                 .point(this.point)
                 .returnedItemsCount(this.returnedItemsCount)
