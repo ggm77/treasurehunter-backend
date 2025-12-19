@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -34,4 +35,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
         GROUP BY u.id
     """)
     List<UserFoundCountDto> findFoundCount(@Param("userIds") List<Long> userIds);
+
+    List<User> findByLatBetweenAndLonBetween(
+            BigDecimal minLat, BigDecimal maxLat,
+            BigDecimal minLon, BigDecimal maxLon
+    );
 }

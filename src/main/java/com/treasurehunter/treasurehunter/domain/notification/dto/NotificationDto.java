@@ -2,15 +2,17 @@ package com.treasurehunter.treasurehunter.domain.notification.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class NotificationDto {
-    private final Long targetUserId;
-    private final String token;
-    private final String title;
-    private final String body;
-    private final String url;
-    private final String profileImage;
+    private Long targetUserId;
+    private String token;
+    private String title;
+    private String body;
+    private String url;
+    private String profileImage;
 
     @Builder
     public NotificationDto(
