@@ -121,8 +121,8 @@ public class ChatService {
             targetUserOnline = false;
         }
 
-        // 12) 온라인이면 알림 전송
-        if(targetUserOnline){
+        // 12) 오프라인이면 알림 전송
+        if(!targetUserOnline){
 
             final List<NotificationToken> notificationTokens = notificationTokenRepository.findByUser_Id(targetUserId);
 

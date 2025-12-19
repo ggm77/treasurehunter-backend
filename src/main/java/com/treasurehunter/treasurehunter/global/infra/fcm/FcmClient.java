@@ -28,11 +28,11 @@ public class FcmClient {
                             Notification.builder()
                                     .setTitle(notificationDto.getTitle())
                                     .setBody(notificationDto.getBody())
+                                    .setImage(notificationDto.getProfileImage())
                                     .build()
                     )
 
                     .putData("url", notificationDto.getUrl())
-                    .putData("profileImage", notificationDto.getProfileImage())
 //                    .putData("action", "취할 액션")
 
                     .build();
