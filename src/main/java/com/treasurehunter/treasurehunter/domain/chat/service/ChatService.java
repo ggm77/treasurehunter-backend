@@ -9,6 +9,7 @@ import com.treasurehunter.treasurehunter.domain.chat.repository.room.participant
 import com.treasurehunter.treasurehunter.domain.notification.dto.NotificationDto;
 import com.treasurehunter.treasurehunter.domain.notification.entity.token.NotificationToken;
 import com.treasurehunter.treasurehunter.domain.notification.repository.token.NotificationTokenRepository;
+import com.treasurehunter.treasurehunter.domain.notification.service.NotificationService;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import com.treasurehunter.treasurehunter.global.infra.fcm.FcmClient;
@@ -41,7 +42,7 @@ public class ChatService {
     private final ChatRepository chatRepository;
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
     private final RedisTemplate<String, String> redisTemplate;
-    private final FcmClient fcmClient;
+    private final NotificationService notificationService;
     private final NotificationTokenRepository notificationTokenRepository;
 
     @Transactional
@@ -135,7 +136,7 @@ public class ChatService {
                         .profileImage(chatRequestDto.getProfileImage())
                         .build();
 
-                fcmClient.send(notificationDto);
+                notificationService.sendNotification(notificationDto);
             }
         }
 
