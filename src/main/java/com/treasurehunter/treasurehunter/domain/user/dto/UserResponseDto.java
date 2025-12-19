@@ -90,8 +90,13 @@ public class UserResponseDto {
         this.name = user.getName();
         this.phoneNumber = user.getPhoneNumber();
         this.role = user.getRole();
-        this.lat = user.getLat().toPlainString();
-        this.lon = user.getLon().toPlainString();
+        if(user.getLat() != null && user.getLon() != null) {
+            this.lat = user.getLat().toString();
+            this.lon = user.getLon().toString();
+        } else {
+            this.lat = null;
+            this.lon = null;
+        }
         this.createdAt = user.getCreatedAt();
         this.point = user.getPoint();
         this.returnedItemsCount = user.getReturnedItemsCount();
