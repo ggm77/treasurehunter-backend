@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.*;
 
 @Service
@@ -307,7 +308,7 @@ public class ChatRoomService {
 
         // 3) type에 따라 redis에 정보 저장 혹은 삭제
         if("enter".equalsIgnoreCase(type)){
-            redisTemplate.opsForValue().set(key, "1");
+            redisTemplate.opsForValue().set(key, "1", Duration.ofDays(1));
         } else {
             redisTemplate.delete(key);
         }
