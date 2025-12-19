@@ -31,8 +31,8 @@ public class FcmClient {
                                     .build()
                     )
 
-                    //프론트와 협의 후 결정
-//                    .putData("url", "목표 URL")
+                    .putData("url", notificationDto.getUrl())
+                    .putData("profileImage", notificationDto.getProfileImage())
 //                    .putData("action", "취할 액션")
 
                     .build();

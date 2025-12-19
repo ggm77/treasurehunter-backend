@@ -23,4 +23,9 @@ public class ChatRequestDto {
     @NotNull
     private LocalDateTime sentAt;
 
+    @NotBlank
+    private String nickname;
+
+    @NotBlank
+    private String profileImage;
 }

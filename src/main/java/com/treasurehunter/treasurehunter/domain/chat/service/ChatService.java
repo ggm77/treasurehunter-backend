@@ -6,11 +6,16 @@ import com.treasurehunter.treasurehunter.domain.chat.entity.Chat;
 import com.treasurehunter.treasurehunter.domain.chat.entity.ChatUserType;
 import com.treasurehunter.treasurehunter.domain.chat.repository.ChatRepository;
 import com.treasurehunter.treasurehunter.domain.chat.repository.room.participant.ChatRoomParticipantRepository;
+import com.treasurehunter.treasurehunter.domain.notification.dto.NotificationDto;
+import com.treasurehunter.treasurehunter.domain.notification.entity.token.NotificationToken;
+import com.treasurehunter.treasurehunter.domain.notification.repository.token.NotificationTokenRepository;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
+import com.treasurehunter.treasurehunter.global.infra.fcm.FcmClient;
 import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +30,19 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ChatService {
 
+    private static String isOnlineKey(
+            final String roomId,
+            final String userId
+    ) {
+        return "chat.isOnline:"+roomId+":"+userId;
+    }
+
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ChatRepository chatRepository;
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final FcmClient fcmClient;
+    private final NotificationTokenRepository notificationTokenRepository;
 
     @Transactional
     public ChatResponseDto sendAndPushChat(
@@ -67,7 +82,13 @@ public class ChatService {
             userType = ChatUserType.AUTHOR;
         }
 
-        // 7) 저장할 채팅 엔티티 생성
+        // 7) 상대 유저 아이디 추출
+        final Long targetUserId = participantsMap.keySet().stream()
+                .filter(k -> !k.equals(userId))
+                .findAny()
+                .orElse(null);
+
+        // 8) 저장할 채팅 엔티티 생성
         final Chat chat = Chat.builder()
                 .chatType(chatRequestDto.getType())
                 .userType(userType)
@@ -78,15 +99,47 @@ public class ChatService {
                 .serverAt(LocalDateTime.now())
                 .build();
 
-        // 8) 채팅 저장
+        // 9) 채팅 저장
         final Chat savedChat = chatRepository.save(chat);
 
-        // 9) 채팅 DTO에 담기
+        // 10) 채팅 DTO에 담기
         final ChatResponseDto chatResponseDto = ChatResponseDto.builder()
                 .chat(savedChat)
                 .build();
 
-        // 10) 채팅방에 채팅 전송
+        // 11) 상대가 채팅방 화면에 있는지 확인
+        final boolean targetUserOnline;
+        if(targetUserId != null){
+            final String targetUserOnlineStr = redisTemplate.opsForValue().get(isOnlineKey(roomId, targetUserId.toString()));
+            if(targetUserOnlineStr != null && targetUserOnlineStr.equals("1")) {
+                targetUserOnline = true;
+            } else {
+                targetUserOnline = false;
+            }
+        } else {
+            targetUserOnline = false;
+        }
+
+        // 12) 온라인이면 알림 전송
+        if(targetUserOnline){
+
+            final List<NotificationToken> notificationTokens = notificationTokenRepository.findByUser_Id(targetUserId);
+
+            for (NotificationToken notificationToken : notificationTokens){
+                final NotificationDto notificationDto = NotificationDto.builder()
+                        .targetUserId(targetUserId)
+                        .token(notificationToken.getToken())
+                        .title(chatRequestDto.getNickname())
+                        .body(savedChat.getMessage())
+                        .url("https://treasurehunter.seohamin.com/chat/"+roomId)
+                        .profileImage(chatRequestDto.getProfileImage())
+                        .build();
+
+                fcmClient.send(notificationDto);
+            }
+        }
+
+        // 13) 채팅방에 채팅 전송
         simpMessagingTemplate.convertAndSend("/topic/chat.room."+roomId, chatResponseDto);
 
         return chatResponseDto;

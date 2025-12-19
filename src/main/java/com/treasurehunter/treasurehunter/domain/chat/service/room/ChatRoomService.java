@@ -48,6 +48,13 @@ public class ChatRoomService {
 
     }
 
+    private static String isOnlineKey(
+            final String roomId,
+            final String userId
+    ) {
+        return "chat.isOnline:"+roomId+":"+userId;
+    }
+
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final ChatRoomRepository chatRoomRepository;
@@ -277,5 +284,32 @@ public class ChatRoomService {
 
         // 2) 채팅방에 포함 되어있는지 확인
         return chatRoomParticipantRepository.existsParticipantInChatRoom(chatRoomId, requestUserId);
+    }
+
+    /**
+     * 유저가 채팅방 화면에 들어가 있는지를 redis에 반영하는 메서드
+     * @param chatRoomId 채팅방 아이디
+     * @param type 채팅방에 들어간건지, 나간건지 타입 (enter, exit)
+     * @param requestUserId 요청 유저 아이디
+     */
+    public void changeChatRoomParticipantActivity(
+            final String chatRoomId,
+            final String type,
+            final Long requestUserId
+    ){
+        // 1) type 검사
+        if(!"enter".equalsIgnoreCase(type) && !"exit".equalsIgnoreCase(type)){
+            throw new CustomException(ExceptionCode.INVALID_REQUEST);
+        }
+
+        // 2) key 생성
+        final String key = isOnlineKey(chatRoomId, requestUserId.toString());
+
+        // 3) type에 따라 redis에 정보 저장 혹은 삭제
+        if("enter".equalsIgnoreCase(type)){
+            redisTemplate.opsForValue().set(key, "1");
+        } else {
+            redisTemplate.delete(key);
+        }
     }
 }

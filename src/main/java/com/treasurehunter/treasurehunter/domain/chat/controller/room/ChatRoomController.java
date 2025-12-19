@@ -76,4 +76,19 @@ public class ChatRoomController {
 
         return ResponseEntity.noContent().build();
     }
+
+    //채팅방 화면에 들어가 있는지 프론트가 알려주는 API
+    @PostMapping("/chat/room/{id}/activity")
+    public ResponseEntity<Void> enterChatRoom(
+            @PathVariable("id") final String chatRoomId,
+            @RequestParam final String type,
+            @AuthenticationPrincipal final String userIdStr
+    ){
+
+        final Long userId = Long.parseLong(userIdStr);
+
+        chatRoomService.changeChatRoomParticipantActivity(chatRoomId, type, userId);
+
+        return ResponseEntity.noContent().build();
+    }
 }
