@@ -20,19 +20,13 @@ public class UserController {
     private final UserService userService;
 
     //회원가입 API, 프론트에서 OAuth로 등록후 이 API호출
-    @PostMapping("/user/{id}")
+    @PostMapping("/user")
     public ResponseEntity<UserResponseDto> createUser(
-            @PathVariable final Long id,
             @AuthenticationPrincipal final String userIdStr,
             @RequestBody final UserRequestDto userRequestDto
     ){
 
         final Long userId = Long.parseLong(userIdStr);
-
-        //다른 유저의 정보에 접근 방지
-        if(!Objects.equals(userId, id)){
-            throw new CustomException(ExceptionCode.FORBIDDEN_USER_RESOURCE_ACCESS);
-        }
 
         return ResponseEntity.ok(userService.createUser(userRequestDto, userId));
     }
