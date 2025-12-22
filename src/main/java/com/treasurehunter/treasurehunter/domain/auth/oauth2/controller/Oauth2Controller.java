@@ -15,7 +15,7 @@ public class Oauth2Controller {
 
     private final Oauth2Service oauth2Service;
 
-    //프론트에서 idToken 받아서 oauth2완료하는 API
+    //프론트에서 authorization code 받아서 oauth2완료하는 API
     @PostMapping("/api/v1/auth/oauth2")
     public ResponseEntity<TokenResponseDto> oauth2Login(
             @RequestBody final Oauth2RequestDto oauth2RequestDto
