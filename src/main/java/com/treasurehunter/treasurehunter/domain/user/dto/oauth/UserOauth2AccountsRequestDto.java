@@ -1,4 +1,4 @@
-package com.treasurehunter.treasurehunter.global.auth.oauth.dto;
+package com.treasurehunter.treasurehunter.domain.user.dto.oauth;
 
 import lombok.Builder;
 import lombok.Getter;

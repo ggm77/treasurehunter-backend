@@ -40,6 +40,10 @@ dependencies {
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.12.7'
     //OAuth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	//Google OAuth2
+	implementation 'com.google.api-client:google-api-client:2.8.1'
+	implementation 'com.google.oauth-client:google-oauth-client-jetty:1.39.0'
+	implementation 'com.google.apis:google-api-services-oauth2:v2-rev157-1.25.0'
     //WebClient
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     //for PEM file

@@ -9,8 +9,8 @@ import com.treasurehunter.treasurehunter.global.auth.apple.dto.token.AppleTokenR
 import com.treasurehunter.treasurehunter.global.auth.apple.feign.AppleAuthClient;
 import com.treasurehunter.treasurehunter.global.auth.apple.util.AppleKeyGenerator;
 import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
-import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsRequestDto;
-import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsResponseDto;
+import com.treasurehunter.treasurehunter.domain.user.dto.oauth.UserOauth2AccountsRequestDto;
+import com.treasurehunter.treasurehunter.domain.user.dto.oauth.UserOauth2AccountsResponseDto;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import com.treasurehunter.treasurehunter.global.util.JsonUtil;

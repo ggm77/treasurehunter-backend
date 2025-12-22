@@ -1,4 +1,4 @@
-package com.treasurehunter.treasurehunter.global.auth.oauth.dto;
+package com.treasurehunter.treasurehunter.domain.user.dto.oauth;
 
 import com.treasurehunter.treasurehunter.domain.user.entity.Role;
 import com.treasurehunter.treasurehunter.domain.user.entity.oauth.UserOauth2Accounts;

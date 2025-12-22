@@ -7,7 +7,7 @@ import com.treasurehunter.treasurehunter.domain.post.entity.like.PostLike;
 import com.treasurehunter.treasurehunter.domain.review.entity.Review;
 import com.treasurehunter.treasurehunter.domain.user.entity.oauth.UserOauth2Accounts;
 import com.treasurehunter.treasurehunter.domain.userBadge.entity.UserBadge;
-import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsRequestDto;
+import com.treasurehunter.treasurehunter.domain.user.dto.oauth.UserOauth2AccountsRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

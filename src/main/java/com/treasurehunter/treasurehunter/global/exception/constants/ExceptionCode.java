@@ -48,6 +48,7 @@ public enum ExceptionCode {
     INVALID_QUERY(HttpStatus.BAD_REQUEST, "검색 쿼리의 길이가 올바르지 않거나 없습니다."),
     INVALID_ENUM_VALUE(HttpStatus.BAD_REQUEST, "올바르지 않은 Enum입니다."),
     INVALID_MAX_DISTANCE(HttpStatus.BAD_REQUEST, "올바르지 않은 최대 거리입니다."),
+    INVALID_PROVIDER(HttpStatus.BAD_REQUEST, "잘못된 OAuth provider입니다."),
 
 
     AUTHENTICATION_ERROR(HttpStatus.UNAUTHORIZED, "인증 되지 않았습니다."),
@@ -58,6 +59,7 @@ public enum ExceptionCode {
     DAILY_LIMIT(HttpStatus.TOO_MANY_REQUESTS, "일일 요청가능한 횟수를 초과했습니다."),
     ATTEMPT_LIMIT(HttpStatus.TOO_MANY_REQUESTS, "시도 가능한 횟수를 초과했습니다."),
 
+    GOOGLE_REQUEST_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "구글과 통신 중 오류가 발생했습니다."),
     FILE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 삭제에 실패 했습니다."),
     FILE_SAVE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 저장에 실패 했습니다."),
     FILE_NAME_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일명 생성에 실패했습니다."),

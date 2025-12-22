@@ -18,11 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class TokenService {
-    @Value("${jwt.accessToken.exprTime}")
-    private Long accessTokenExpireTime;
-
-    @Value("${jwt.refreshToken.exprTime}")
-    private Long refreshTokenExpireTime;
 
     private final CookieUtil cookieUtil;
     private final JwtProvider jwtProvider;
@@ -41,7 +36,7 @@ public class TokenService {
         return TokenResponseDto.builder()
                 .accessToken(accessToken)
                 .tokenType(jwtProvider.getTokenType())
-                .exprTime(accessTokenExpireTime)
+                .exprTime(jwtProvider.getAccessTokenExpirationSeconds())
                 .refreshToken(refreshToken)
                 .build();
     }
@@ -68,7 +63,7 @@ public class TokenService {
         return TokenResponseDto.builder()
                 .accessToken(accessToken)
                 .tokenType(jwtProvider.getTokenType())
-                .exprTime(accessTokenExpireTime)
+                .exprTime(jwtProvider.getAccessTokenExpirationSeconds())
                 .refreshToken(refreshToken)
                 .build();
     }

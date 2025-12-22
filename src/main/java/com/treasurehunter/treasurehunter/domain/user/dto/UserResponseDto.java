@@ -5,7 +5,7 @@ import com.treasurehunter.treasurehunter.domain.post.dto.PostSimpleResponseDto;
 import com.treasurehunter.treasurehunter.domain.review.dto.ReviewResponseDto;
 import com.treasurehunter.treasurehunter.domain.user.entity.Role;
 import com.treasurehunter.treasurehunter.domain.user.entity.User;
-import com.treasurehunter.treasurehunter.global.auth.oauth.dto.UserOauth2AccountsResponseDto;
+import com.treasurehunter.treasurehunter.domain.user.dto.oauth.UserOauth2AccountsResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 

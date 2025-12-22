@@ -43,6 +43,10 @@ public class JwtProvider {
         return "Bearer";
     }
 
+    public Long getAccessTokenExpirationSeconds(){
+        return Long.valueOf(ACCESS_TOKEN_EXPIRATION_SECONDS);
+    }
+
     /**
      * 액세스 토큰을 생성하는 메서드
      * @param userId 유저의 고유 아이디 번호
