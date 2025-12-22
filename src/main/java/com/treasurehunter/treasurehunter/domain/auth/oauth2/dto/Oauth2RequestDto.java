@@ -6,4 +6,5 @@ import lombok.Getter;
 public class Oauth2RequestDto {
     private String code;
     private String provider;
+    private String name;
 }

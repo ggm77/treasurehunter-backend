@@ -11,14 +11,21 @@ import com.treasurehunter.treasurehunter.domain.user.dto.oauth.UserOauth2Account
 import com.treasurehunter.treasurehunter.domain.user.dto.oauth.UserOauth2AccountsResponseDto;
 import com.treasurehunter.treasurehunter.domain.user.entity.Role;
 import com.treasurehunter.treasurehunter.domain.user.service.oauth.UserOauth2Service;
+import com.treasurehunter.treasurehunter.global.auth.apple.dto.key.ApplePublicKeyResponseDto;
+import com.treasurehunter.treasurehunter.global.auth.apple.dto.token.AppleTokenResponseDto;
+import com.treasurehunter.treasurehunter.global.auth.apple.feign.AppleAuthClient;
+import com.treasurehunter.treasurehunter.global.auth.apple.util.AppleKeyGenerator;
 import com.treasurehunter.treasurehunter.global.auth.jwt.JwtProvider;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.security.PublicKey;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +39,8 @@ public class Oauth2Service {
 
     private final UserOauth2Service userOauth2Service;
     private final JwtProvider jwtProvider;
+    private final AppleAuthClient appleAuthClient;
+    private final AppleKeyGenerator appleKeyGenerator;
 
     /**
      * OAuth2를 진행하는 메서드
@@ -61,9 +70,9 @@ public class Oauth2Service {
         if("google".equalsIgnoreCase(provider)) {
             userOauth2AccountsResponseDto = googleOauth2(code);
         }
-//        else if ("apple".equalsIgnoreCase(provider)) {
-//
-//        }
+        else if ("apple".equalsIgnoreCase(provider)) {
+            userOauth2AccountsResponseDto = appleOauth2(code, oauth2RequestDto.getName());
+        }
         else {
             throw new CustomException(ExceptionCode.INVALID_PROVIDER);
         }
@@ -141,4 +150,51 @@ public class Oauth2Service {
         return userOauth2Service.upsertOAuthUser(userOauth2AccountsRequestDto);
     }
 
+    /**
+     * 프론트에서 받은 code를 통해서 애플 OAuth2를 진행하는 메서드
+     * UserOauth2Service.upsertOAuthUser 메서드를 통해서 유저 upsert를 진행함
+     * @param code 프론트에서 받은 code
+     * @param name 프론트에서 애플 인증하고 받은 이름
+     * @return upsert된 유저의 정보가 담긴 DTO
+     */
+    private UserOauth2AccountsResponseDto appleOauth2(
+            final String code,
+            final String name
+    ){
+        // 1) idToken과 리프레시 토큰(탈퇴 용) 가져오기
+        final AppleTokenResponseDto appleTokenResponseDto = appleAuthClient.requestToken(code);
+        final String idToken = appleTokenResponseDto.getId_token();
+        final String appleRefreshToken = appleTokenResponseDto.getRefresh_token();
+
+        // 2) 헤더 추출
+        final Map<String, String> headers = jwtProvider.getHeaders(idToken);
+
+        // 3) 애플에 공개키 요청
+        final ApplePublicKeyResponseDto applePublicKeyResponseDto = appleAuthClient.requestKeys();
+
+        // 4) 키 조합
+        final PublicKey publicKey = appleKeyGenerator.generatePublicKey(
+                headers,
+                applePublicKeyResponseDto
+        );
+
+        // 5) 애플 아이디와 이메일 가져오기
+        final Claims claims = jwtProvider.getClaimsFromAppleToken(idToken, publicKey);
+        final String accountId = claims.getSubject();
+        final String email = claims.get("email", String.class);
+
+        // 6) oauth2 정보 저장용 dto 생성
+        final UserOauth2AccountsRequestDto userOauth2AccountsRequestDto = UserOauth2AccountsRequestDto.builder()
+                .provider("apple")
+                .providerUserId(accountId)
+                .email(email)
+                .name(name)
+                .profileImage(null)
+                .refreshToken(appleRefreshToken)
+                .build();
+
+        // 7) 신규 유저면 DB에 정보 저장하고 정보 조회, 기존 유저면 그냥 정보만 조회
+        return userOauth2Service.upsertOAuthUser(userOauth2AccountsRequestDto);
+
+    }
 }
