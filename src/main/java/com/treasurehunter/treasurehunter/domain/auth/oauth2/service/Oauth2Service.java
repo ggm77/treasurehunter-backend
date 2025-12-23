@@ -6,7 +6,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.treasurehunter.treasurehunter.domain.auth.oauth2.dto.Oauth2RequestDto;
-import com.treasurehunter.treasurehunter.domain.auth.token.dto.TokenResponseDto;
+import com.treasurehunter.treasurehunter.domain.auth.oauth2.dto.Oauth2ResponseDto;
 import com.treasurehunter.treasurehunter.domain.user.dto.oauth.UserOauth2AccountsRequestDto;
 import com.treasurehunter.treasurehunter.domain.user.dto.oauth.UserOauth2AccountsResponseDto;
 import com.treasurehunter.treasurehunter.domain.user.entity.Role;
@@ -49,7 +49,7 @@ public class Oauth2Service {
      * @param oauth2RequestDto code와 provider가 담긴 DTO
      * @return JWT
      */
-    public TokenResponseDto processOauth2(final Oauth2RequestDto oauth2RequestDto) {
+    public Oauth2ResponseDto processOauth2(final Oauth2RequestDto oauth2RequestDto) {
 
         // 1) code와 provider 변수에 저장
         final String code = oauth2RequestDto.getCode();
@@ -85,7 +85,8 @@ public class Oauth2Service {
         final String accessToken = jwtProvider.creatAccessToken(userId, userRole);
         final String refreshToken = jwtProvider.creatRefreshToken(userId);
 
-        return TokenResponseDto.builder()
+        return Oauth2ResponseDto.builder()
+                .role(userRole)
                 .accessToken(accessToken)
                 .tokenType(jwtProvider.getTokenType())
                 .exprTime(jwtProvider.getAccessTokenExpirationSeconds())
