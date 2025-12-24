@@ -112,9 +112,9 @@ public class Oauth2Service {
                     WEB_CLIENT_ID,
                     WEB_CLIENT_SECRET,
                     code,
-                    "postmessage"
+                    ""
             ).execute();
-        } catch (IOException e) {
+        } catch (IOException ex) {
             throw new CustomException(ExceptionCode.GOOGLE_REQUEST_ERROR);
         }
 
