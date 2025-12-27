@@ -27,16 +27,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${stomp.relay.password}")
     private String RELAY_PASSWORD;
 
-    @Value("${cors.allowed-origins}")
-    private String[] allowedOrigins;
-
     private final StompAuthChannelInterceptor stompAuthChannelInterceptor;
 
     // 엔트포인트 등록
     @Override
     public void registerStompEndpoints(final StompEndpointRegistry stompEndpointRegistry){
         stompEndpointRegistry.addEndpoint("/ws")
-                .setAllowedOriginPatterns(allowedOrigins) //cors 설정
+                .setAllowedOriginPatterns("*") //cors 설정
                 .withSockJS();
     }
 

@@ -1,35 +1,29 @@
 package com.treasurehunter.treasurehunter.global.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 public class CorsConfig {
 
-    @Value("${cors.allowed-origins}")
-    private String[] allowedOrigins;
-
     @Bean
-    public WebMvcConfigurer corsConfigurer(){
+    public CorsConfigurationSource corsConfigurationSource(){
+        final CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        return new WebMvcConfigurer(){
-            @Override
-            public void addCorsMappings(final CorsRegistry corsRegistry){
-                corsRegistry.addMapping("/api/v1/auth/token")
-                        .allowedOriginPatterns(allowedOrigins)
-                        .allowedMethods("GET", "POST", "PATCH", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true)
-                        .maxAge(3600);
-                corsRegistry.addMapping("/**")
-                        .allowedOriginPatterns(allowedOrigins)
-                        .allowedMethods("GET", "POST", "PATCH", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .maxAge(3600);
-            }
-        };
+        corsConfiguration.setAllowedOriginPatterns(List.of("*"));
+        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        corsConfiguration.setAllowedHeaders(List.of("*"));
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setMaxAge(3600L);
+
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+
+        return source;
     }
 }
