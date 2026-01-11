@@ -67,8 +67,14 @@ public class UserResponseDto {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.role = role;
-        this.lat = lat.toPlainString();
-        this.lon = lon.toPlainString();
+        // 위도 경도 정보 비어있을 때 예외 처리
+        if(lat != null && lon != null) {
+            this.lat = lat.toString();
+            this.lon = lon.toString();
+        } else {
+            this.lat = null;
+            this.lon = null;
+        }
         this.createdAt = createdAt;
         this.point = point;
         this.returnedItemsCount = returnedItemsCount;
