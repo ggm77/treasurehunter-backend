@@ -4,15 +4,19 @@ import com.treasurehunter.treasurehunter.global.auth.apple.dto.key.ApplePublicKe
 import com.treasurehunter.treasurehunter.global.auth.apple.dto.token.AppleTokenResponseDto;
 import com.treasurehunter.treasurehunter.global.auth.apple.util.AppleKeyGenerator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AppleAuthClient {
 
     @Value("${apple.auth.public-key-uri}")
@@ -23,6 +27,9 @@ public class AppleAuthClient {
 
     @Value("${apple.client-id}")
     private String APPLE_CLIENT_ID;
+
+    @Value("${apple.redirect.url}")
+    private String APPLE_REDIRECT_URI;
 
     private final WebClient appleWebClient;
     private final AppleKeyGenerator appleKeyGenerator;
@@ -42,6 +49,7 @@ public class AppleAuthClient {
         formData.add("code", authorizationCode);
         formData.add("client_id", APPLE_CLIENT_ID);
         formData.add("client_secret", appleKeyGenerator.generateClientSecrete());
+        formData.add("redirect_uri", APPLE_REDIRECT_URI);
         formData.add("grant_type", "authorization_code");
 
         return appleWebClient.post()
@@ -49,6 +57,13 @@ public class AppleAuthClient {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .bodyValue(formData)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, response ->
+                        response.bodyToMono(String.class).flatMap(body -> {
+                            // Apple이 보내주는 {"error": "...", "error_description": "..."} 확인
+                            log.error("Apple Token API Error: ", body);
+                            return Mono.error(new RuntimeException("Apple Login Failed: " + body));
+                        })
+                )
                 .bodyToMono(AppleTokenResponseDto.class)
                 .block();
     }
