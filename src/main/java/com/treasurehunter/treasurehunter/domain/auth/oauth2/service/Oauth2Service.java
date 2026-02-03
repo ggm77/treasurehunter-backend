@@ -2,6 +2,7 @@ package com.treasurehunter.treasurehunter.domain.auth.oauth2.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
@@ -10,6 +11,9 @@ import com.treasurehunter.treasurehunter.domain.auth.oauth2.dto.Oauth2ResponseDt
 import com.treasurehunter.treasurehunter.domain.user.dto.oauth.UserOauth2AccountsRequestDto;
 import com.treasurehunter.treasurehunter.domain.user.dto.oauth.UserOauth2AccountsResponseDto;
 import com.treasurehunter.treasurehunter.domain.user.entity.Role;
+import com.treasurehunter.treasurehunter.domain.user.entity.User;
+import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
+import com.treasurehunter.treasurehunter.domain.user.repository.oauth.UserOauth2AccountsRepository;
 import com.treasurehunter.treasurehunter.domain.user.service.oauth.UserOauth2Service;
 import com.treasurehunter.treasurehunter.global.auth.apple.dto.key.ApplePublicKeyResponseDto;
 import com.treasurehunter.treasurehunter.global.auth.apple.dto.token.AppleTokenResponseDto;
@@ -20,15 +24,19 @@ import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.PublicKey;
+import java.util.Collections;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class Oauth2Service {
 
     @Value("${google.web.client-id}")
@@ -41,6 +49,80 @@ public class Oauth2Service {
     private final JwtProvider jwtProvider;
     private final AppleAuthClient appleAuthClient;
     private final AppleKeyGenerator appleKeyGenerator;
+    private final UserOauth2AccountsRepository userOauth2AccountsRepository;
+    private final UserRepository userRepository;
+
+    /**
+     * 구글 OAuth 관련 이벤트 발생하면 처리하는 메서드
+     * @param token 구글에서 보내는 정보가 담긴 토큰
+     */
+    @Transactional
+    public void handleGoogleRiscEvent(final String token) {
+        try {
+            // 1. 구글 공개키를 사용하여 토큰 검증
+            final GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+                    .setAudience(Collections.singletonList(WEB_CLIENT_ID))
+                    .build();
+
+            final GoogleIdToken idToken = verifier.verify(token);
+            if (idToken == null) {
+                log.error("Invalid Google RISC token");
+                return;
+            }
+
+            // 2. 이벤트 타입 확인 (계정 삭제 또는 토큰 취소)
+            final String payload = idToken.getPayload().toString();
+            if (payload.contains("account-purged") || payload.contains("tokens-revoked")) {
+                final String providerUserId = idToken.getPayload().getSubject(); // 구글의 sub(식별자)
+
+                // 3. DB에서 해당 구글 계정 정보를 조회
+                userOauth2AccountsRepository.findByProviderAndProviderUserId("google", providerUserId)
+                        .ifPresent(account -> {
+                            final User user = account.getUser();
+                            final Long userId = user.getId();
+                            // 4. 유저 삭제 (CascadeType.ALL에 의해 연관된 OAuth 계정도 삭제됨)
+                            userRepository.delete(user);
+                            log.info("User deleted by Google RISC request: {}", userId);
+                        });
+            }
+        } catch (Exception e) {
+            log.error("Error processing Google RISC event", e);
+        }
+    }
+
+    /**
+     * 애플 OAuth 관련 이벤트 발생하면 처리하는 메서드
+     * @param payload 애플 측에서 보내는 정보
+     */
+    @Transactional
+    public void handleAppleSpsEvent(final String payload) {
+        try {
+            // 1. 애플 공개키 가져오기 및 검증
+            final Map<String, String> headers = jwtProvider.getHeaders(payload);
+            final ApplePublicKeyResponseDto applePublicKeyResponseDto = appleAuthClient.requestKeys();
+            final PublicKey publicKey = appleKeyGenerator.generatePublicKey(headers, applePublicKeyResponseDto);
+
+            // 2. JWT 파싱 및 클레임 추출
+            final Claims claims = jwtProvider.getClaimsFromAppleToken(payload, publicKey);
+
+            // 3. 이벤트 타입 확인 (consent-revoked: 앱 연결 해제)
+            final String eventType = claims.get("type", String.class);
+            if ("consent-revoked".equals(eventType)) {
+                final String providerUserId = claims.getSubject(); // 애플의 sub
+
+                // 4. DB 조회 및 유저 삭제
+                userOauth2AccountsRepository.findByProviderAndProviderUserId("apple", providerUserId)
+                        .ifPresent(account -> {
+                            final User user = account.getUser();
+                            final Long userId = user.getId();
+                            userRepository.delete(user);
+                            log.info("User deleted by Apple SPS request: {}", userId);
+                        });
+            }
+        } catch (Exception e) {
+            log.error("Error processing Apple SPS event", e);
+        }
+    }
 
     /**
      * OAuth2를 진행하는 메서드

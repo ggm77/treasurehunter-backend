@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,5 +22,23 @@ public class Oauth2Controller {
             @RequestBody final Oauth2RequestDto oauth2RequestDto
     ){
         return ResponseEntity.ok().body(oauth2Service.processOauth2(oauth2RequestDto));
+    }
+
+    // 구글에서 OAuth 이벤트 발생시 요청 보내는 API
+    @PostMapping("/api/v1/auth/google/risc")
+    public ResponseEntity<Void> handleRiscEvent(
+            @RequestBody final String securityEventToken
+    ) {
+        oauth2Service.handleGoogleRiscEvent(securityEventToken);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 애플에서 OAuth 이벤트 발생시 요청 보내는 API
+    @PostMapping("/api/v1/auth/apple/sps")
+    public ResponseEntity<Void> handleAppleSps(
+            @RequestParam("payload") String payload
+    ) {
+        oauth2Service.handleAppleSpsEvent(payload);
+        return ResponseEntity.noContent().build();
     }
 }
