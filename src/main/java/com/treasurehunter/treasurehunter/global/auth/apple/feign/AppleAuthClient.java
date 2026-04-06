@@ -25,6 +25,9 @@ public class AppleAuthClient {
     @Value("${apple.auth.token-uri}")
     private String APPLE_TOKEN_URI;
 
+    @Value("${apple.auth.token-revoke}")
+    private String APPLE_TOKEN_REVOKE_URI;
+
     @Value("${apple.client-id}")
     private String APPLE_CLIENT_ID;
 
@@ -65,6 +68,29 @@ public class AppleAuthClient {
                         })
                 )
                 .bodyToMono(AppleTokenResponseDto.class)
+                .block();
+    }
+
+    // https://appleid.apple.com/auth/revoke에 회원 탈퇴를 요청한다.
+    public void revokeToken(final String appleRefreshToken) {
+        final MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("client_id", APPLE_CLIENT_ID);
+        formData.add("client_secret", appleKeyGenerator.generateClientSecrete());
+        formData.add("token", appleRefreshToken);
+        formData.add("token_type_hint", "refresh_token");
+
+        appleWebClient.post()
+                .uri(APPLE_TOKEN_REVOKE_URI)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, response ->
+                        response.bodyToMono(String.class).flatMap(body -> {
+                            log.error("Apple Token Revoke API Error: ", body);
+                            return Mono.error(new RuntimeException("Apple Token Revoke Failed: "+body));
+                        })
+                )
+                .toBodilessEntity()
                 .block();
     }
 }

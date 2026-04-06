@@ -7,7 +7,11 @@ import com.treasurehunter.treasurehunter.domain.user.entity.Role;
 import com.treasurehunter.treasurehunter.domain.user.entity.User;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserRequestDto;
 import com.treasurehunter.treasurehunter.domain.user.dto.UserResponseDto;
+import com.treasurehunter.treasurehunter.domain.user.entity.oauth.UserOauth2Accounts;
 import com.treasurehunter.treasurehunter.domain.user.repository.UserRepository;
+import com.treasurehunter.treasurehunter.domain.user.repository.oauth.UserOauth2AccountsRepository;
+import com.treasurehunter.treasurehunter.global.auth.apple.feign.AppleAuthClient;
+import com.treasurehunter.treasurehunter.global.auth.apple.service.AppleAuthService;
 import com.treasurehunter.treasurehunter.global.exception.CustomException;
 import com.treasurehunter.treasurehunter.global.exception.constants.ExceptionCode;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +19,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserOauth2AccountsRepository userOauth2AccountsRepository;
+    private final AppleAuthService appleAuthService;
 
     /**
      * 유저정보를 등록하는 서비스
@@ -193,6 +201,15 @@ public class UserService {
 
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.USER_NOT_EXIST));
+
+        // OAuth 계정 중에 애플 계정 있으면 token revoke 요청 넣기
+        final Optional<UserOauth2Accounts> oauth2Account = userOauth2AccountsRepository.findByProviderAndUserId("apple", userId);
+        if (oauth2Account.isPresent()) {
+            final String appleRefreshToken = oauth2Account.get().getRefreshToken();
+
+            appleAuthService.revokeAppleAuth(appleRefreshToken);
+        }
+
 
         //자식 정리 (게시글)
         if(user.getPosts() != null){

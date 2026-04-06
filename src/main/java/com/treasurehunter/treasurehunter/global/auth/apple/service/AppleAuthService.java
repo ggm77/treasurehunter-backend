@@ -1,6 +1,7 @@
 package com.treasurehunter.treasurehunter.global.auth.apple.service;
 
 import com.treasurehunter.treasurehunter.domain.user.entity.Role;
+import com.treasurehunter.treasurehunter.domain.user.entity.oauth.UserOauth2Accounts;
 import com.treasurehunter.treasurehunter.domain.user.service.oauth.UserOauth2Service;
 import com.treasurehunter.treasurehunter.global.auth.apple.dto.auth.AppleAuthRequestDto;
 import com.treasurehunter.treasurehunter.global.auth.apple.dto.auth.AppleAuthResponseDto;
@@ -25,6 +26,7 @@ import java.security.PublicKey;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -166,6 +168,14 @@ public class AppleAuthService {
                 .refreshToken(refreshToken)
                 .role(role)
                 .build();
+    }
+
+    /**
+     * 애플에 토큰 무효화하는 요청 넣는 메서드.
+     * @param refreshToken 요청 넣을 계정의 리프레시 토큰
+     */
+    public void revokeAppleAuth(final String refreshToken) {
+        appleAuthClient.revokeToken(refreshToken);
     }
 
     //애플에게 받은 user에서 정보가 존재할 때 추출하기 위한 메서드
