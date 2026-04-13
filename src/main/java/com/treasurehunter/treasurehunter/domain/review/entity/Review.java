@@ -115,4 +115,9 @@ public class Review {
     public void detachAuthor(){
         this.author = null;
     }
+
+    // 리뷰 받은 사람과 연관 관계 끊는 메서드
+    public void detachTargetUser() {
+        this.targetUser = null;
+    }
 }

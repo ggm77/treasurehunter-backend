@@ -226,7 +226,7 @@ public class UserService {
         // 자식 정리 (받은 후기)
         if(user.getReceivedReviews() != null){
             user.getReceivedReviews()
-                    .forEach(Review::detachAuthor);
+                    .forEach(Review::detachTargetUser);
         }
 
         // 자식 정리 (채팅방)
