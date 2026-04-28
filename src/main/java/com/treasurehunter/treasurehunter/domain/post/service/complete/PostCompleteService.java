@@ -98,9 +98,13 @@ public class PostCompleteService {
         final int point = post.getSetPoint();
         targetUser.addPoint(point);
 
-        // 7) 물건 찾아준거면 물건 찾아준 횟수 증가
+        // 7-1) 물건 찾아준거면 물건 찾아준 횟수 증가 (게시글이 Lost인 경우)
         if(postType.equals(PostType.LOST)){
             targetUser.incrementReturnedItemsCount();
+        }
+        // 7-2) 물건 찾아준거면 물건 찾아준 횟수 증가 (게시글이 Found인 경우)
+        if (postType.equals(PostType.FOUND)) {
+            post.getAuthor().incrementReturnedItemsCount();
         }
     }
 }
